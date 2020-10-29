@@ -23,4 +23,17 @@ export class LayoutService {
       debounceTime(350),
     );
   }
+
+  // board
+  initLayoutSize() {
+    this.layoutSize$.next();
+  }
+
+  onInitLayoutSize(): Observable<any> {
+    return this.layoutSizeChange$.pipe(
+      debounceTime(350),
+    );
+  }
+
+
 }

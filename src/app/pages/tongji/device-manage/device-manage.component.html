@@ -1,0 +1,52 @@
+
+
+<div class="row device_manage_table">
+    <div class="col-md-12">
+        <nb-card>
+            <nb-card-body>
+                <div class="row" style="margin-bottom: 20px;">
+                    <div class="col-md-3 my-select">
+                        <ngx-my-select-group #departmentselect [selectdatas]="departments"></ngx-my-select-group>
+                    </div>
+                    <div class="col-md-3 my-select">
+                        <ngx-my-select #device_tpye [selectdatas]="devicetpye"></ngx-my-select>
+                    </div>
+                    <div class="col-md-3 my-select">
+                        <ngx-my-select #asset_number [selectdatas]="assets"></ngx-my-select>
+                    </div>
+                
+                    <div class="col-md-3 my-select">
+                        <div class="row">
+                            
+                            <div class="col-md-4 my-button" *ngFor="let button of buttons2">
+                                <button nbButton size="small" [status]="button.class" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
+                                <!-- <button nbButton status="info" size="small" (click)="query()">搜索</button> -->
+                                <input type="file" class="import" id="import" (change)="onFileChange($event)" multiple="false" >
+                            </div>
+
+                            <!-- <div class="col-md-4 my-button">
+                                <button nbButton status="info" size="small" (click)="query()">搜索</button>
+                            </div>
+                            <div class="col-md-4 my-button">
+                                <button nbButton status="info" size="small" (click)="importfile()">导入</button>
+                                <input type="file" class="import" id="import" (change)="onFileChange($event)" multiple="false">
+                            </div>
+                            <div class="col-md-4 my-button">
+                                <button nbButton status="info" size="small" (click)="download('设备管理')">导出</button>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1" style="margin-bottom: 12px;" *ngFor="let button of buttons">
+                        <button nbButton [status]="button.class" size="small" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
+                    </div>
+                </div>
+                <div class="smart-table-container">
+                    <ngx-my-table-ng2 #mytable [datas]="device_manage_table_data" (outer)="runParent($event)" 
+                    (nzpageindexchange)="nzpageindexchange($event)"></ngx-my-table-ng2>
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>

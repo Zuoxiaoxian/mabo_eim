@@ -39,7 +39,13 @@
               "node_modules/nebular-icons/scss/nebular-icons.scss",
               "node_modules/pace-js/templates/pace-theme-flash.tmpl.css",
               "node_modules/leaflet/dist/leaflet.css",
-              "src/app/@theme/styles/styles.scss"
+              "src/app/@theme/styles/styles.scss",
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css"
+
+
+
+              
             ],
             "scripts": [
               "node_modules/pace-js/pace.min.js",
@@ -50,7 +56,14 @@
               "node_modules/tinymce/plugins/table/plugin.min.js",
               "node_modules/echarts/dist/echarts.min.js",
               "node_modules/echarts/dist/extension/bmap.min.js",
-              "node_modules/chart.js/dist/Chart.min.js"
+              "node_modules/chart.js/dist/Chart.min.js",
+              "node_modules/echarts/map/js/china.js",
+              
+
+              "src/assets/pages/home/js/eim-home-iconfont.js",
+              "src/assets/pages/home/js/iconfont.js"
+
+              
             ]
           },
           "configurations": {

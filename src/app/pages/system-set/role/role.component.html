@@ -1,0 +1,103 @@
+<!-- 
+    这是layui的 树状表格，感觉数据结构有些复杂！
+<button type="button" class="layui-btn layui-btn-primary layui-btn-sm get-checked">获取选中</button>
+<button type="button" class="layui-btn layui-btn-primary layui-btn-sm refresh">刷新（新增）</button>
+<button type="button" class="layui-btn layui-btn-primary layui-btn-sm open-all">全部展开</button>
+<button type="button" class="layui-btn layui-btn-primary layui-btn-sm close-all">全部关闭</button>
+<button type="button" class="layui-btn layui-btn-primary layui-btn-sm change-icon">随机更换小图标</button>
+
+<table class="layui-table layui-form" id="tree-table" lay-size="sm"></table> 
+
+-->
+<!-- <div id="test1" class="demo-tree-more"></div> -->
+
+<!-- <div class="row" style="margin-bottom: 20px;">
+    <div class="col-md-3">
+        <button nbButton status="info" size="small" (click)="addrole()">
+            <nb-icon icon="plus-outline"></nb-icon>
+            新增
+        </button>
+    </div>
+    <div class="col-md-3">
+
+    </div>
+    <div class="col-md-3">
+
+    </div>
+    <div class="col-md-3">
+
+    </div>
+</div> -->
+
+<nb-card>
+    <nb-card-body>
+        <div class="row" style="margin-bottom: 20px; ">
+            <div class="example-items-rows" style="padding: 0 15px;">
+                <label for=""  style="margin-right: 20px;" >账号</label>
+                <input nbInput shape="rectangle" placeholder="Rectangle" status="success" type="text" id="employeenumber">
+            </div>
+            <div class="col-md-6">
+            </div>
+            <div class="example-items-rows" style="text-align: right;margin-right: 27px; margin-top: 5px;margin-left: 15px;" *ngFor="let button of buttons2">
+                <button nbButton [status]="button.class" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
+            </div>
+        </div>
+
+        <div class="row" style="padding: 0 15px;">
+            <div class="example-items-rows" style="margin-bottom: 12px;margin-right: 27px;" *ngFor="let button of buttons">
+                <button nbButton [status]="button.class" size="small" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>
+
+
+
+
+<div class="row">
+    <div class="col-md-8">
+        <nb-card>
+            <nb-card-header>
+                角色列表
+            </nb-card-header>
+            <nb-card-body>
+                <div class="row">
+                    <div class="col-md-12">
+                        <ngx-my-table-ng2 #mytable  [datas]="table_data"  
+                        (outer)="runParent($event)" (delrole)="delrole($event)" 
+                        (uprole)="uprole($event)" (addrole)="addroleIcon($event)"
+                        ></ngx-my-table-ng2>
+                    </div>
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+    <div class="col-md-4">
+        <nb-card>
+            <nb-card-header>
+                <div class="row">
+                    <div class="col-md-2" style="text-align: left;  padding-right: 0px;">菜单分配</div>
+                    <div class="col-md-6"></div>
+                    <div class="col-md-4" style="text-align: right;">
+                        <!-- <button id="save" nbButton status='info' size="small" disabled (click)="saveTree()"><nb-icon icon="checkmark-outline"></nb-icon>保存</button> -->
+                        <form class="layui-form" action="" lay-filter="tree">
+                            <!-- <button type="submit" id="save" lay-submit lay-filter="save" nbButton status='info' size="small" disabled><nb-icon icon="checkmark-outline"></nb-icon>保存</button> -->
+                            <button type="submit" id="save" class="layui-btn layui-btn-disabled" lay-submit lay-filter="save"  ><nb-icon icon="checkmark-outline"></nb-icon>保存</button>
+                        </form>
+                          
+                    </div>
+                </div>
+            </nb-card-header>
+            <nb-card-body>
+                <div id="menuFengPei" lay-filter="treedata"></div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>
+
+
+
+
+
+
+

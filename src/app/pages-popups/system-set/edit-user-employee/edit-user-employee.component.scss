@@ -1,0 +1,10 @@
+// 必填
+.mulu_title::before{
+    content: "*";
+    color: #ff4949;
+    margin-right: 4px;
+}
+
+.mylabel{
+    padding: 9px 0px;
+}

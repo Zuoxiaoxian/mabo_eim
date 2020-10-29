@@ -5,13 +5,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./footer.component.scss'],
   template: `
     <span class="created-by">
-      Created with ♥ by <b><a href="https://akveo.page.link/8V2f" target="_blank">Akveo</a></b> 2019
+      Created with ♥ by <b><a href="http://www.mabotech.com/" target="_blank">Mabo</a></b> 2019
     </span>
     <div class="socials">
-      <a href="#" target="_blank" class="ion ion-social-github"></a>
-      <a href="#" target="_blank" class="ion ion-social-facebook"></a>
-      <a href="#" target="_blank" class="ion ion-social-twitter"></a>
-      <a href="#" target="_blank" class="ion ion-social-linkedin"></a>
+      <a href="https://github.com/mabotech" target="_blank" class="ion ion-social-github"></a>
+      <a href="https://twitter.com/mabotech" target="_blank" class="ion ion-social-twitter"></a>
+      <a href="mailto:info@mabotech.com" target="_blank" class="fas fa-envelope"></a>
+      <!-- <a href="#" target="_blank" class="ion ion-social-linkedin"></a> -->
+      <!-- <a href="https://github.com/mabotech" target="_blank" class="ion ion-social-facebook"></a> -->
     </div>
   `,
 })

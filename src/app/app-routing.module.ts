@@ -9,11 +9,25 @@ import {
   NbResetPasswordComponent,
 } from '@nebular/auth';
 
+import { AuthGuard } from './setup/auth/auth.guard';
+
 export const routes: Routes = [
   {
     path: 'pages',
+    canActivate: [AuthGuard],
     loadChildren: () => import('./pages/pages.module')
       .then(m => m.PagesModule),
+  },
+  {
+    path: 'popus',
+    // canActivate: [AuthGuard],
+    loadChildren: () => import('./pages-popups/pages-popups.module')
+      .then(m => m.PagesPopupsModule),
+  },
+  {
+    path: 'setup',
+    loadChildren: () => import('./setup/setup.module')
+      .then(m => m.SetupModule),
   },
   {
     path: 'auth',
@@ -45,7 +59,7 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '', redirectTo: 'pages', pathMatch: 'full' },
+  { path: '', redirectTo: 'setup', pathMatch: 'full' },
   { path: '**', redirectTo: 'pages' },
 ];
 
@@ -55,6 +69,7 @@ const config: ExtraOptions = {
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, config)],
+  // imports: [RouterModule.forRoot(routes), RouterModule.forRoot(routes, {useHash: true})],
   exports: [RouterModule],
 })
 export class AppRoutingModule {

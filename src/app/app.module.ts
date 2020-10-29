@@ -19,7 +19,30 @@ import {
   NbSidebarModule,
   NbToastrModule,
   NbWindowModule,
+
+  
 } from '@nebular/theme';
+
+// 多语言切换
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient } from '@angular/common/http';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+
+// Aot requires an export function for factories
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
+
+// ngx-toast
+import { ToastrModule } from 'ngx-toastr';
+
+import { NgZorroAntdModule } from 'ng-zorro-antd';
+import { NzTableModule } from 'ng-zorro-antd/table';
+
+import { ComponentTModule } from './pages/tongji/components/componentT.module'
+
+import { AgGridModule } from 'ag-grid-angular';
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,8 +62,33 @@ import {
     }),
     CoreModule.forRoot(),
     ThemeModule.forRoot(),
+    // Translate
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
+
+    ToastrModule.forRoot(),
+    /**     ng-zorro-antd 模块        **/
+    NgZorroAntdModule,
+    NzTableModule,
+
+    ComponentTModule, // 自定义共享模块
+    AgGridModule.withComponents([]),
+    
+    
   ],
   bootstrap: [AppComponent],
+
+  // 刷新
+  // providers:[
+  //   {
+  //     provide: LocationStrategy, useClass:HashLocationStrategy
+  //   }
+  // ]
 })
 export class AppModule {
 }

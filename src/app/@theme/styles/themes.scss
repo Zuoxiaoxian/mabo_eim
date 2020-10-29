@@ -22,6 +22,12 @@ $nb-themes: nb-register-theme((
   slide-out-background: #f7f9fc,
   slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
   slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,
+
+  // input框
+  // border-basic-color-4: #fff
+  // 输入基本禁用背景色
+  background-basic-color-2:#fff
+  // color-success-default: red
 ), default, default);
 
 $nb-themes: nb-register-theme((

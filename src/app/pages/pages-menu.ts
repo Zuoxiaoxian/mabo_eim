@@ -2,246 +2,142 @@ import { NbMenuItem } from '@nebular/theme';
 
 export const MENU_ITEMS: NbMenuItem[] = [
   {
-    title: 'E-commerce',
-    icon: 'shopping-cart-outline',
-    link: '/pages/dashboard',
-    home: true,
+    title: '首页',
+    icon: 'globe-2-outline',
+    link: '/pages/home',
   },
   {
-    title: 'IoT Dashboard',
-    icon: 'home-outline',
-    link: '/pages/iot-dashboard',
+    title: '设备在线',
+    icon: 'globe-2-outline',
+    link: '/pages/deviceinline',
   },
   {
-    title: 'FEATURES',
-    group: true,
-  },
-  {
-    title: 'Layout',
+    title: '统计分析',
     icon: 'layout-outline',
     children: [
+
       {
-        title: 'Stepper',
-        link: '/pages/layout/stepper',
+        title: '设备管理',
+        link: '/pages/tongji/deviceManage',
       },
       {
-        title: 'List',
-        link: '/pages/layout/list',
+        title: '设备KPI报表',
+        link: '/pages/tongji/deviceKpiReport',
       },
       {
-        title: 'Infinite List',
-        link: '/pages/layout/infinite-list',
+        title: '工时KPI报表',
+        link: '/pages/tongji/manHourKpiReport',
       },
       {
-        title: 'Accordion',
-        link: '/pages/layout/accordion',
-      },
-      {
-        title: 'Tabs',
-        pathMatch: 'prefix',
-        link: '/pages/layout/tabs',
+        title: '试验任务管理',
+        link: '/pages/tongji/testManage',
       },
     ],
   },
   {
-    title: 'Forms',
-    icon: 'edit-2-outline',
+    title: '个人信息',
+    icon: 'person-outline',
     children: [
       {
-        title: 'Form Inputs',
-        link: '/pages/forms/inputs',
+        title: '个人资料',
+        link: '/pages/tongji',
       },
       {
-        title: 'Form Layouts',
-        link: '/pages/forms/layouts',
+        title: '个人收藏',
+        link: '/pages/tongji/deviceManage',
       },
       {
-        title: 'Buttons',
-        link: '/pages/forms/buttons',
+        title: '个人消息',
+        link: '/pages/tongji/deviceKpiReport',
       },
-      {
-        title: 'Datepicker',
-        link: '/pages/forms/datepicker',
-      },
+
     ],
   },
   {
-    title: 'UI Features',
-    icon: 'keypad-outline',
-    link: '/pages/ui-features',
+    title: '设备健康数据中心',
+    icon: 'hard-drive-outline',
     children: [
       {
-        title: 'Grid',
-        link: '/pages/ui-features/grid',
+        title: '设备健康数据中心',
+        link: '/pages/datacenter',
       },
-      {
-        title: 'Icons',
-        link: '/pages/ui-features/icons',
-      },
-      {
-        title: 'Typography',
-        link: '/pages/ui-features/typography',
-      },
-      {
-        title: 'Animated Searches',
-        link: '/pages/ui-features/search-fields',
-      },
+
     ],
   },
   {
-    title: 'Modal & Overlays',
-    icon: 'browser-outline',
-    children: [
+    title: '运维管理',
+    icon: 'monitor-outline',
+    children:[
       {
-        title: 'Dialog',
-        link: '/pages/modal-overlays/dialog',
+        title: '边缘网关管理',
+        link: '/pages/operation/border-gateway',
       },
       {
-        title: 'Window',
-        link: '/pages/modal-overlays/window',
+        title: '视频集成服务器管理',
+        link: '/pages/operation/video-interation',
       },
-      {
-        title: 'Popover',
-        link: '/pages/modal-overlays/popover',
-      },
-      {
-        title: 'Toastr',
-        link: '/pages/modal-overlays/toastr',
-      },
-      {
-        title: 'Tooltip',
-        link: '/pages/modal-overlays/tooltip',
-      },
-    ],
+      
+    ]
   },
   {
-    title: 'Extra Components',
-    icon: 'message-circle-outline',
-    children: [
+    title: '移动资产管理',
+    icon: 'options-2-outline',
+    children:[
       {
-        title: 'Calendar',
-        link: '/pages/extra-components/calendar',
+        title: '定位监控',
+        link: '/pages/mobile-gps/location-monitore',
       },
       {
-        title: 'Progress Bar',
-        link: '/pages/extra-components/progress-bar',
+        title: '统计报表',
+        link: '/pages/mobile-gps/tongji-report',
       },
       {
-        title: 'Spinner',
-        link: '/pages/extra-components/spinner',
+        title: 'GPS模块管理',
+        link: '/pages/mobile-gps/gpsmodule-manage',
       },
-      {
-        title: 'Alert',
-        link: '/pages/extra-components/alert',
-      },
-      {
-        title: 'Calendar Kit',
-        link: '/pages/extra-components/calendar-kit',
-      },
-      {
-        title: 'Chat',
-        link: '/pages/extra-components/chat',
-      },
-    ],
+      
+    ]
   },
   {
-    title: 'Maps',
-    icon: 'map-outline',
-    children: [
+    title: '举升机监控',
+    icon: 'eye-outline',
+    children:[
       {
-        title: 'Google Maps',
-        link: '/pages/maps/gmaps',
+        title: '状态监控',
+        link: '/pages/lift-machine/status',
       },
       {
-        title: 'Leaflet Maps',
-        link: '/pages/maps/leaflet',
+        title: '设备KPI统计',
+        link: '/pages/lift-machine/kpi',
       },
-      {
-        title: 'Bubble Maps',
-        link: '/pages/maps/bubble',
-      },
-      {
-        title: 'Search Maps',
-        link: '/pages/maps/searchmap',
-      },
-    ],
+
+      
+    ]
   },
   {
-    title: 'Charts',
-    icon: 'pie-chart-outline',
-    children: [
+    title: '系统设置',
+    icon: 'settings-outline',
+    children:[
+
       {
-        title: 'Echarts',
-        link: '/pages/charts/echarts',
+        title: '权限',
+        link: '/pages/system-set/auth',
       },
       {
-        title: 'Charts.js',
-        link: '/pages/charts/chartjs',
+        title: '菜单',
+        link: '/pages/system-set/menu',
       },
       {
-        title: 'D3',
-        link: '/pages/charts/d3',
+        title: '角色',
+        link: '/pages/system-set/role',
       },
-    ],
+      {
+        title: '操作日志',
+        link: '/pages/lift-machine/status',
+      },
+
+      
+    ]
   },
-  {
-    title: 'Editors',
-    icon: 'text-outline',
-    children: [
-      {
-        title: 'TinyMCE',
-        link: '/pages/editors/tinymce',
-      },
-      {
-        title: 'CKEditor',
-        link: '/pages/editors/ckeditor',
-      },
-    ],
-  },
-  {
-    title: 'Tables & Data',
-    icon: 'grid-outline',
-    children: [
-      {
-        title: 'Smart Table',
-        link: '/pages/tables/smart-table',
-      },
-      {
-        title: 'Tree Grid',
-        link: '/pages/tables/tree-grid',
-      },
-    ],
-  },
-  {
-    title: 'Miscellaneous',
-    icon: 'shuffle-2-outline',
-    children: [
-      {
-        title: '404',
-        link: '/pages/miscellaneous/404',
-      },
-    ],
-  },
-  {
-    title: 'Auth',
-    icon: 'lock-outline',
-    children: [
-      {
-        title: 'Login',
-        link: '/auth/login',
-      },
-      {
-        title: 'Register',
-        link: '/auth/register',
-      },
-      {
-        title: 'Request Password',
-        link: '/auth/request-password',
-      },
-      {
-        title: 'Reset Password',
-        link: '/auth/reset-password',
-      },
-    ],
-  },
+
 ];

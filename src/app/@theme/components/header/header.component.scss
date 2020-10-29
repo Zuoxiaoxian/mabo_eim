@@ -41,6 +41,9 @@
         font-size: 1.75rem;
       }
     }
+    nb-select {
+      margin-left: 1.444444rem;
+    }
 
     .logo {
       padding: 0 1.25rem;
@@ -49,6 +52,10 @@
       @include nb-rtl(border-right, 1px solid nb-theme(divider-color));
       white-space: nowrap;
       text-decoration: none;
+      
+      #title{
+        font-size: medium;
+      }
     }
   }
 

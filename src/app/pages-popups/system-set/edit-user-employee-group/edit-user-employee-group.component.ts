@@ -1,0 +1,165 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
+import { Observable } from 'rxjs';
+import { HttpserviceService } from '../../../services/http/httpservice.service';
+import { PublicmethodService } from '../../../services/publicmethod/publicmethod.service';
+
+declare let layui;
+
+declare let $;
+
+// 验证表单！
+import { EmployeeGroup } from '../form_verification';
+
+@Component({
+  selector: 'ngx-edit-user-employee-group',
+  templateUrl: './edit-user-employee-group.component.html',
+  styleUrls: ['./edit-user-employee-group.component.scss']
+})
+export class EditUserEmployeeGroupComponent implements OnInit {
+  @Input() rowdata: string;
+  @Input() res: string;
+
+  
+  constructor(protected dialogRef: NbDialogRef<EditUserEmployeeGroupComponent>, private http: HttpserviceService, private publicmethod: PublicmethodService) { }
+  
+  
+  UpSuccess :any = {position: 'bottom-end', status: 'success', conent:"修改成功!"};
+  UpDanger :any = {position: 'bottom-end', status: 'danger', conent:"修改失败！"}
+  
+
+  ngOnInit(): void {
+    this.layuiform();
+  }
+
+
+  layuiform(){
+    // 得到的编辑数据
+    console.log("this.rowdata ", this.rowdata);
+    var rowdata = JSON.parse(this.rowdata);
+    // rowdata['active'] = rowdata['active'] === "是"? true: false;
+    rowdata['active'] = rowdata['active'] === 1? true: false;
+    console.log("layuiform ", rowdata);
+    // 得到all角色---
+    // var res = JSON.parse(this.res);
+    // var rids = rowdata["rids"];
+
+    
+
+    
+    var dialogRef = this.dialogRef;
+    var http = this.http;
+    var getsecurity = this.getsecurity;
+    var publicmethod = this.publicmethod;
+    var success = this.success;
+    var danger = this.danger;
+
+    layui.use('form', function(){
+      var form = layui.form;
+
+      // 初始化表单
+      var formdata = {}
+      formdata = rowdata;
+      
+      form.val("employeegroup", formdata); 
+
+
+      // 验证 表单
+      form.verify({
+        group_: function(value, item){
+          console.log("验证、表单: AddEmployee",EmployeeGroup);
+          console.log("验证、表单: employeeno",EmployeeGroup["group_"]);
+          console.log("验证、表单: value",value);
+          console.log("验证、表单: item",item);
+          if (! new RegExp(EmployeeGroup["group_"]).test(value)){
+            if (value.length > 20){
+              return "账号最大长度不超过20！"
+            }
+            return "账号不能有特殊字符或中文字符"
+          }
+        },
+        group_name: function(value, item){
+          if (! new RegExp(EmployeeGroup["group_name"]).test(value)){
+            if (value.length > 100){
+              return "用户名最大长度不超过100！"
+            }
+            return "用户名不能有特殊字符"
+          }
+        },
+        
+      })
+
+      // form.render(); // 刷新所有！
+      // form.render("checkbox"); // 刷新复选框！
+
+      form.on("submit(submit)", function(data){
+        //获取表单区域所有值
+        console.log("v======获取表单区域所有值",data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+        var data1 = form.val("employeegroup");
+        console.log(data.field) //被执行事件的元素DOM对象，一般为button对象
+        var send_data = data.field;
+        // send_data["active"] = send_data["active"] === undefined? 1: 0;
+        send_data["active"] = send_data["active"] === "on"? 1: 0;
+        send_data["groupid"] = rowdata["groupid"];
+
+        console.log("提交修改的",  send_data, data1, data1["active"]) //被执行事件的元素DOM对象，一般为button对象
+        // console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+        // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+
+        // 更新修改的数据！ update_employee
+        getsecurity("groups", "update_group",send_data,http).subscribe((res)=>{
+          console.log("update_group", res, send_data);
+          if (res ===1 ){
+            // publicmethod
+            // publicmethod.toastr(UpSuccess);
+            success(publicmethod);
+            dialogRef.close();
+            setTimeout(() => {
+              location.reload();
+            }, 1000);
+
+          }else{
+            // UpDanger["conent"] = res
+            // publicmethod.toastr(UpDanger);
+            danger(publicmethod)
+          }
+        })
+        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+      })
+    });
+
+
+  }
+
+
+
+  // × 关闭diallog   及关闭弹框
+  closedialog(){
+    this.dialogRef.close();
+  }
+
+  // 取消
+  cancel(){
+    this.dialogRef.close();
+  }
+
+  getsecurity(table: string, method: string, colums: object, http){
+    return new Observable((res)=>{
+      http.callRPC(table, method, colums).subscribe((result)=>{
+        console.log("更新用户信息！", result)
+        var result =  result['result']['message'][0];
+        res.next(result)
+      })
+    })
+  }
+
+
+  // 展示状态
+  success(publicservice){
+    publicservice.showngxtoastr({position: 'toast-top-right', status: 'success', conent:"修改成功!"});
+  }
+  danger(publicservice){
+    publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"修改失败!"});
+  }
+
+}

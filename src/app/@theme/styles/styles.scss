@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
+// @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
 
 // themes - our custom or/and out of the box themes
 @import 'themes';
@@ -18,6 +18,20 @@
 @import './layout';
 @import './overrides';
 
+
+// ag-Grid
+
+@import '~ag-grid-community/src/styles/ag-grid.scss';
+@import '~ag-grid-community/src/styles/ag-theme-alpine/sass/ag-theme-alpine-mixin';
+@import '~ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin';
+
+.ag-theme-alpine {
+  @include ag-theme-alpine();
+}
+.ag-theme-material {
+  @include ag-theme-material();
+}
+
 // install the framework and custom global styles
 @include nb-install() {
 
@@ -31,3 +45,11 @@
 
   @include nb-overrides();
 };
+
+// datetime 时间范围
+@import "~ng-pick-datetime/assets/style/picker.min.css";
+
+// @import "~ng-zorro-antd/ng-zorro-antd.less";
+@import "~ng-zorro-antd/ng-zorro-antd.min.css";
+
+
