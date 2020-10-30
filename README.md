@@ -1,31 +1,31 @@
+# EIM 系统管理
+
+## 安装
+
+    npm install
+
+## 基础数据
+
+    1、沿用唐山项目组的dockers 环境
+    2、创建数据eim，使用pgadmin web 还原eim数据库
+
+## 参考
+- [icon图标](https://akveo.github.io/eva-icons/#/?searchKey=m&type=outline)  
+- [组件文档](https://akveo.github.io/nebular/docs/components/components-overview)  
+- [表单及验证](https://www.layui.com/doc/modules/form.html)  
+- [ng2-smart-table](https://akveo.github.io/ng2-smart-table/#/documentation)  
+- [ag-Grid](https://www.ag-grid.com/javascript-grid-components/#registering-framework-components)  
+- etc
+
+## 登录地址、登录密码
+- 地址：setup/adminlogin
+- 用户名：admin/其它用户名
+- 密码：zxx/123456
+
 # ngx-admin [<img src="https://i.imgur.com/oMcxwZ0.png" alt="Eva Design System" height="20px" />](https://hubs.ly/H0n4ZDy0) [![Build Status](https://travis-ci.org/akveo/ngx-admin.svg?branch=master)](https://travis-ci.org/akveo/ngx-admin)
 
 [Who uses ngx-admin?](https://github.com/akveo/ngx-admin/issues/1645)| [Documentation](https://hubs.ly/H0n4Sfq0) | [Installation Guidelines](https://hubs.ly/H0n4Svc0)
 
-# New! Material theme for ngx-admin
-
-Material admin theme is based on the most popular Angular dashboard template - [ngx-admin](https://hubs.ly/H0nJG1G0)
-To use material theme checkout `feat/material-theme` branch.
-
-Get material ngx-admin integrated with backend technology of your choice. [Check out our store](https://hubs.ly/H0qwyl60).
-
-## Key features
-
-- The most popular and trusted Angular open source dashboard template is out there. Used by hundreds of thousands developers worldwide and Fortune 500 companies*.
-- Over 40+ Angular Components and 60+ Usage Examples. Kick off your project and save money by using ngx-admin.
-- Already using ngx-admin and willing to switch to material theme? Material theme is backward-compatible. Check out the article describing how to do that.
-- ngx-admin material works perfectly with Angular Material and Nebular. Take the best from both!
-
-### To use material theme checkout `feat/material-theme` branch
-
-# Admin template based on Angular 9+ and <a href="https://github.com/akveo/nebular">Nebular</a>
-<a target="_blank" href="https://hubs.ly/H0n4Sw20"><img src="https://i.imgur.com/mFdqvgG.png"/></a>
-
-### Backend Integration Bundles
-Easy way to integrate ngx-admin with any backend (PHP, .Net, .Net Core, Java etc. )
-<a href="https://hubs.ly/H0qwyl60"><img src="https://i.imgur.com/qbtASmP.png"></a>
-
-[Check out our Store](https://hubs.ly/H0qwyl60) for ready to use Backend Bundles.
 
 ### Free Bundles
 <a href="https://hubs.ly/H0rD0XL0"><img src="https://i.imgur.com/NzTDxRG.png"></a>
@@ -78,15 +78,3 @@ This project runs its tests on multiple desktop and mobile browsers using [Brows
 - [Eva Icons](https://github.com/akveo/eva-icons) - 480+ beautiful Open Source icons
 - [Nebular](https://github.com/akveo/nebular) - Angular Components, Auth and Security
 
-### How can I support developers?
-- Star our GitHub repo :star:
-- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
-- Follow us on [Twitter](https://twitter.com/akveo_inc) :feet:
-- Like our page on [Facebook](https://www.facebook.com/akveo/) :thumbsup:
-
-### Looking for engineering services? 
-Visit [our homepage](https://hubs.ly/H0n4YJt0) or simply leave us a message to [contact@akveo.com](mailto:contact@akveo.com). We will be happy to work with you!
-
-### From Developers
-Made with :heart: by [Akveo team](https://hubs.ly/H0n4YwQ0). Follow us on [Twitter](https://twitter.com/akveo_inc) to get the latest news first!
-We're always happy to receive your feedback!
