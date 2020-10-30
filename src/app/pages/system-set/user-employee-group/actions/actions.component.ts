@@ -98,7 +98,7 @@ export class ActionsComponent implements ViewCell, OnInit {
     // 得到所有的角色--数据
     this.getsecurity('employee', 'insert_group', {}).subscribe((res)=>{
       console.log("insert_group", res);
-      this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(rowdata_), res: JSON.stringify(res)} })
+      this.dialogService.open(EditUserEmployeeGroupComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowdata_), res: JSON.stringify(res)} })
     });
     // this.dialogService.open(EditUserEmployeeComponent, { context: { rowdata: JSON.stringify(this.rowData)} })
 
@@ -120,7 +120,7 @@ export class ActionsComponent implements ViewCell, OnInit {
     var danger = this.danger;
 
     // 提示选择行数据
-    this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除用户用户组提示', content:   `确定要删除本条数据吗？`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户用户组提示', content:   `确定要删除本条数据吗？`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
       name=>{
         console.log("----name-----", name);
         if (name){

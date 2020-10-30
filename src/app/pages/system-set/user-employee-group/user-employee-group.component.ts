@@ -222,7 +222,7 @@ export class UserEmployeeGroupComponent implements OnInit {
 
   // button 新增用户组
   add(){
-    this.dialogService.open(AddUserEmployeeGroupComponent);
+    this.dialogService.open(AddUserEmployeeGroupComponent, {closeOnBackdropClick: false,});
   }
 
   // button 编辑用户组
@@ -232,12 +232,12 @@ export class UserEmployeeGroupComponent implements OnInit {
     if (rowdata === undefined || rowdata["selected"].length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '编辑用户组提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       // this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(this.rowdata), res: JSON.stringify(res)} })
     }else if (rowdata["selected"].length > 1){
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '编辑用户组提示', content:   `请选择一条要需要修改的的行数`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择一条要需要修改的的行数`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       
@@ -247,7 +247,7 @@ export class UserEmployeeGroupComponent implements OnInit {
       console.log("---------------------rowdata_===",rowdata_)
       rowdata_["active"] = rowdata_["active"] === "是" || rowdata_["active"] === 1? 1 :0;
       console.log("---------------------rowdata_===",rowdata_)
-      this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(rowdata_)} })
+      this.dialogService.open(EditUserEmployeeGroupComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowdata_)} })
 
     }
   }
@@ -259,7 +259,7 @@ export class UserEmployeeGroupComponent implements OnInit {
     if (rowdata === undefined || rowdata["selected"].length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除用户组提示', content:   `请选择要需要删除的的行！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户组提示', content:   `请选择要需要删除的行！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       // this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(this.rowdata), res: JSON.stringify(res)} })
@@ -271,7 +271,7 @@ export class UserEmployeeGroupComponent implements OnInit {
       var http = this.http;
       var success = this.success;
       var danger = this.danger;
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除用户组提示', content:   `请选择要需要删除的的行！`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户组提示', content:   `确定要删除${rownum}数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           if (name){

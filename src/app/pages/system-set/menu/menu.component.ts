@@ -254,7 +254,7 @@ export class MenuComponent implements OnInit {
     // 弹出函数
     function open() {
       // dialogService.open(dialog, { context: 'this is some additional data passed to dialog' });
-      dialogService.open(MenuComponent2)
+      dialogService.open(MenuComponent2, {closeOnBackdropClick: false,})
       // .onClose.subscribe(name => name && this.names.push(name));
     }
   }
@@ -275,7 +275,7 @@ export class MenuComponent implements OnInit {
       var http = this.http;
       console.log("要删除的行数据！", rowmenu);
       
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除菜单提示', content:   `确定要删除${row.title}吗？`,rowData: JSON.stringify(row)}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除菜单提示', content:   `确定要删除${row.title}吗？`,rowData: JSON.stringify(row)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           if (name){
@@ -292,7 +292,7 @@ export class MenuComponent implements OnInit {
     }else{
       // 提示选择行数据
 
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除菜单提示', content:   `请选择要删除的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除菜单提示', content:   `请选择要删除的行数！`}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           
@@ -453,7 +453,7 @@ export class MenuComponent implements OnInit {
                     },
                     'click .remove': function (e, value, row, index) {
                         console.log("删除的row数据：", row);
-                        dialogService.open(EditDelTooltipComponent, { context: { title: '删除菜单提示', content:   `确定要删除${row.title}吗？`,rowData: JSON.stringify(row)}} ).onClose.subscribe(
+                        dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除菜单提示', content:   `确定要删除${row.title}吗？`,rowData: JSON.stringify(row)}} ).onClose.subscribe(
                           name=>{
                             console.log("----name-----", name);
                             if (name){
@@ -738,7 +738,7 @@ export class MenuComponent implements OnInit {
 
     // 弹出函数
     function open() {
-      dialogService.open(EditMenuComponent);
+      dialogService.open(EditMenuComponent,{closeOnBackdropClick: false,});
       // dialogService.open(dialog, { context: 'this is some additional data passed to dialog' });
       // .onClose.subscribe(name => name && this.names.push(name));
     }

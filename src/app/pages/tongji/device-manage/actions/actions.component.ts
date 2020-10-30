@@ -77,7 +77,7 @@ export class ActionsComponent implements ViewCell, OnInit {
     var rowDataList = [];
     rowDataList.push(this.rowData);
      var rowData =  this.option_table_before(rowDataList)
-    this.dialogService.open(DeviceManageComponent, {context: { title: '编辑设备提示', content: `true`,  rowData: JSON.stringify(rowData)} });
+    this.dialogService.open(DeviceManageComponent, {closeOnBackdropClick: false,context: { title: '编辑设备提示', content: `true`,  rowData: JSON.stringify(rowData)} });
   }
 
   remove(){
@@ -85,7 +85,7 @@ export class ActionsComponent implements ViewCell, OnInit {
     console.log("remove>>>>>rowData",rowData)
 
 
-    this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除设备提示', content:   `确定要删除本条数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除设备提示', content:   `确定要删除本条数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
       name=>{
         console.log("----name-----", name);
         if (name){

@@ -24,13 +24,13 @@
 
 export const Device =  {
     devicename: "^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]{1,20}$",       // 数字、字母、中文
-    deviceno: "^[a-zA-Z0-9]{1,100}$",  // 数字、字母
+    deviceno: "^[a-zA-Z0-9_]{1,100}$",  // 数字、字母
     assetno: "^[a-zA-Z0-9]{1,50}$",       //数字、字母
     factoryno: "^[a-zA-Z0-9]{1,50}$",       //数字、字母
     purchaseon: "^[a-zA-Z0-9_@]{1,50}$",       //时间
 
     supplier: "^[a-zA-Z_\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
-    location: "^[0-9._\u4e00-\u9fa5\\s·]{1,50}$",       //数字、. 、中文 
+    location: "^[a-zA-Z0-9_]{1,50}$",       //数字、. 、中文 
     department: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
     groups: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
     belonged: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //数字、中文  

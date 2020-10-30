@@ -360,7 +360,7 @@ export class RoleComponent implements OnInit {
     open();
     function open() {
       // dialogService.open(dialog, { context: 'this is some additional data passed to dialog' });
-      dialogService.open(AddRoleComponent)
+      dialogService.open(AddRoleComponent, {closeOnBackdropClick: false,})
       // .onClose.subscribe(name => name && this.names.push(name));
     }
   }
@@ -372,18 +372,18 @@ export class RoleComponent implements OnInit {
     if (rowdata === undefined || rowdata["selected"].length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '编辑角色提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑角色提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
     }else if (rowdata["selected"].length > 1){
       console.log("button按钮执行222！ 编辑", rowdata);
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '编辑用户组提示', content:   `请选择一条要需要修改的的行数`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择一条要需要修改的的行数`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       
     }else{
       var rowData = rowdata["selected"][0]
-      this.dialogService.open(EditRoleComponent, {context: { rowdata: JSON.stringify(rowData)} });
+      this.dialogService.open(EditRoleComponent, {closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData)} });
     }
 
   }
@@ -401,14 +401,14 @@ export class RoleComponent implements OnInit {
     if (rowdata === undefined || rowdata["selected"].length === 0){
           console.log("没有选中行数据", rowdata);
           // 提示选择行数据
-          this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除角色提示', content:   `请选择要需要删除的的行数！`}} ).onClose.subscribe(
+          this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除角色提示', content:   `请选择要需要删除的的行数！`}} ).onClose.subscribe(
             name=>{console.log("----name-----", name)}
           );
     }else{
       var rowData = rowdata["selected"];
       var text = rowData.length > 1 ? "这些": "这条";
-      console.log("-------------------->>>>>>>>>>>>",rowData);
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除角色提示', content:   `您确定要删除！${text}数据`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+      console.log("-------------------->>>>>>>>>>>>",rowData);   
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除角色提示', content:   `确定要删除${text}数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           if (name){

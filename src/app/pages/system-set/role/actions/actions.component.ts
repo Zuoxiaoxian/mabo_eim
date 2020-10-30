@@ -80,7 +80,7 @@ export class ActionsComponent implements ViewCell, OnInit {
   edit(){
     console.log("编辑角色", this.rowData);
     // 得到所有的角色--数据
-    this.dialogService.open(EditRoleComponent, {context: { rowdata: JSON.stringify(this.rowData)} });
+    this.dialogService.open(EditRoleComponent, {closeOnBackdropClick: false,context: { rowdata: JSON.stringify(this.rowData)} });
     // this.getsecurity('employee', 'get_rolename', {}).subscribe((res)=>{
     //   console.log("role_result", res);
     //   this.dialogService.open(EditRoleComponent, { context: { rowdata: JSON.stringify(this.rowData), res: JSON.stringify(res)} })
@@ -102,7 +102,8 @@ export class ActionsComponent implements ViewCell, OnInit {
     var success = this.success;
     var danger = this.danger;
 
-    this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除角色提示', content:   `确定要删除本条数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+    var text = "本条";
+    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除角色提示', content:   `确定要删除${text}数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
       name=>{
         console.log("----name-----", name);
         if (name){

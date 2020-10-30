@@ -270,7 +270,7 @@ export class DeviceManageComponent implements OnInit {
   // button add
   add(){
     console.log("button----add");
-    this.dialogService.open(Add_Edit_DeviceManageComponent, { context: { title: '添加设备', content:  'false'}} )
+    this.dialogService.open(Add_Edit_DeviceManageComponent, { closeOnBackdropClick: false,context: { title: '添加设备', content:  'false'}} )
   }
 
   // button del  -- dev_delete_device
@@ -278,7 +278,7 @@ export class DeviceManageComponent implements OnInit {
     console.log("删除-设备管理", this.rowdata);
     if (this.rowdata.length === 0){
       // 未选中
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除设备提示', content:   `请选择要需要删除的的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false, context: { title: '删除设备提示', content:   `请选择要需要删除的的行数！`}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
         }
@@ -340,7 +340,7 @@ export class DeviceManageComponent implements OnInit {
       }else if (this.rowdata.length === 1){
         // 选中一条
         console.log("选中一条", this.rowdata);
-      this.dialogService.open(Add_Edit_DeviceManageComponent, { context: { title: '编辑设备提示', content:   `true`, rowData: JSON.stringify(this.rowdata)}} ).onClose.subscribe(
+      this.dialogService.open(Add_Edit_DeviceManageComponent, { closeOnBackdropClick: false, context: { title: '编辑设备提示', content:   `true`, rowData: JSON.stringify(this.rowdata)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
         }

@@ -115,7 +115,7 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
 
       this.getsecurity("groups", "get_groups", column).subscribe((goups:any[])=>{
         console.log("根据用户角色得到，用户对应的组:", goups, "res", res);
-        this.dialogService.open(EditUserEmployeeComponent, { context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
+        this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
       });
 
     });
@@ -135,7 +135,7 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
     var success = this.success;
     var danger = this.danger;
 
-    this.dialogService.open(EditDelTooltipComponent, { context: { title: '删除用户提示', content:   `您确定要删除${e_name}数据`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户提示', content:   `确定要删除${e_name}吗？`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
       name=>{
         console.log("----name-----", name);
         if (name){
