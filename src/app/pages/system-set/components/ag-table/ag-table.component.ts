@@ -51,13 +51,12 @@ export class AgTableComponent implements OnInit {
   ngOnInit(): void {
   }
   
+
   ngAfterViewInit(){
     
     setTimeout(() => {
-      
       this.gridOptions();
-
-    }, 3000);
+    }, 1000);
     
   }
   

@@ -24,13 +24,21 @@
             </div>
         </div>
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-md-12">
                 <ngx-my-table-ng2 #mytable  [datas]="table_data" 
                 (outer)="runParent($event)"
                 (uprole)="uprole($event)" (addrole)="addroleIcon($event)"
                 ></ngx-my-table-ng2>
             </div>
+        </div> -->
+
+        <div class="row">
+            <div class="col-md-12">
+                <ngx-ag-table #agGrid *ngIf="!isloding" [tableDatas]="tableDatas" (nzpageindexchange)="nzpageindexchange($event)"></ngx-ag-table>
+            </div>
         </div>
+
+
     </nb-card-body>
 </nb-card>

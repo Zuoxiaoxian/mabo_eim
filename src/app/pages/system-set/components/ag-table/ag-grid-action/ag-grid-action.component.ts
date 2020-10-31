@@ -17,6 +17,8 @@ import { PublicmethodService } from '../../../../../services/publicmethod/public
 
 import { EditDelTooltipComponent }  from '../../../../../pages-popups/prompt-diallog/edit-del-tooltip/edit-del-tooltip.component';
 
+import {employeegroup_action } from '../../../../../appconfig';
+
 declare let layui;
 
 declare let $;
@@ -30,7 +32,31 @@ declare let $;
 export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
   private params: any;
 
-  constructor(private router: Router,private dialogService: NbDialogService, private http: HttpserviceService, private publicservice: PublicmethodService) { }
+  // 动态改变组件，如编辑组件
+  change_component;
+  // 当前删除的plv8函数！
+  plv8;
+
+
+
+  constructor(private router: Router,private dialogService: NbDialogService, private http: HttpserviceService, private publicservice: PublicmethodService) { 
+
+    // 接受编辑的组件！
+    this.publicservice.currentcomponent.subscribe(currentcomponent=>{
+      // {component: EditUserEmployeeComponent, plv8: "delete_employee"}
+      this.change_component = currentcomponent
+      
+
+      // console.log("得到编辑的组件！", this.change_component);
+    })
+    
+    // 接受plv8方法
+    this.publicservice.currentmethod.subscribe(currentmethod=>{
+      this.plv8 = currentmethod
+      // console.log("得到当前删除的plv8函数！", this.plv8);
+    })
+
+  }
 
   agInit(params: any) {
     this.params = params;
@@ -70,13 +96,15 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
     this.isactive();
     console.log("**********************************************")
     
-    this.publicservice.get_current_pathname().subscribe(res=>{console.log(res)})
+    // this.publicservice.get_current_pathname().subscribe(res=>{console.log(res)});
+    
   }
 
 
   // 是否禁用button
   isactive(){
-    var button_list = localStorage.getItem("employee_action")? JSON.parse(localStorage.getItem("employee_action")): false;
+    var button_list = localStorage.getItem(employeegroup_action)? JSON.parse(localStorage.getItem(employeegroup_action)): false;
+    // var button_list = localStorage.getItem("employee_action")? JSON.parse(localStorage.getItem("employee_action")): false;
     if (button_list){
       if (button_list["edit"]){ // 编辑存在
         $(".edit-edit").attr("disabled", false);
@@ -96,7 +124,7 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
 
           
 
-      // console.log("actions_list>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",button_list);
+      console.log("actions_list>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",button_list);
 
     }
 
@@ -115,7 +143,8 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
 
       this.getsecurity("groups", "get_groups", column).subscribe((goups:any[])=>{
         console.log("根据用户角色得到，用户对应的组:", goups, "res", res);
-        this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
+        this.dialogService.open(this.change_component, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
+        // this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
       });
 
     });
@@ -135,12 +164,13 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
     var success = this.success;
     var danger = this.danger;
 
-    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户提示', content:   `确定要删除${e_name}吗？`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户提示', content:   `确定要删除本条吗？`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
       name=>{
         console.log("----name-----", name);
         if (name){
           // 在这里执行删除 用户！
-          getsecurity2('employee', 'delete_employee', rowData, http).subscribe((res)=>{
+          var method = this.plv8; // delete_employee
+          getsecurity2('employee', method, rowData, http).subscribe((res)=>{
             console.log("delete_employee", res);
             if (res === 1){
               // publicservice.toastr(DelSuccess);

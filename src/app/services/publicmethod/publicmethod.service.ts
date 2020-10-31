@@ -16,6 +16,11 @@ import { map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
+
+// 订阅
+import { BehaviorSubject } from 'rxjs' 
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -236,6 +241,7 @@ export class PublicmethodService {
          console.log("userInfo  =======================", userInfo)
          if (userInfo["status"] === 401){
            this.toastr({position: 'top-right', status: 'warning', conent:"token 过期了！需要重新登录"});
+           this.router.navigate([loginurl])
            observe.next(roles_list);
          }
          else if (userInfo['userInfo']['roles']) {
@@ -357,8 +363,25 @@ export class PublicmethodService {
   }
 
 
+  // ==========================================
+    // 非父子组件见的传值
+    // 订阅的属性：用来给订阅方存储数据
+    public currentcomponent = new BehaviorSubject<any>(null);
   
+    // 订阅的方法：用来接受数据
+    getcomponent(component: any): void{
+      this.currentcomponent.next(component);
+    }
 
+    // 订阅的属性：用来给订阅方存储数据
+    public currentmethod = new BehaviorSubject<string>(null);
+
+    // 订阅的方法：用来接受数据
+    getmethod(method: string): void{
+      this.currentmethod.next(method);
+    }
+  
+  // ==========================================
 
 
 }

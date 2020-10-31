@@ -12,7 +12,7 @@ declare let $;
 
 import { HttpserviceService } from '../../../services/http/httpservice.service';
 
-import { url, adminlocalstorage, ssotoken, SYSMENU, SYSMENUEDIT,MULU, menu_button_list, Data } from '../../../appconfig';
+import { url, adminlocalstorage, ssotoken, SYSMENU, SYSMENUEDIT,MULU, menu_button_list, Data, loginurl } from '../../../appconfig';
 import { LocalStorageService } from '../../../services/local-storage/local-storage.service';
 import { PublicmethodService } from '../../../services/publicmethod/publicmethod.service';
 
@@ -22,6 +22,7 @@ import { MenuComponent as  MenuComponent2 } from '../../../pages-popups/system-s
 import { EditMenuComponent } from '../../../pages-popups/system-set/edit-menu/edit-menu.component';
 import { NbToastrService, NbGlobalPhysicalPosition } from '@nebular/theme';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-menu',
@@ -40,7 +41,7 @@ export class MenuComponent implements OnInit {
 
   constructor(private http: HttpserviceService, private localstorageservice: LocalStorageService,
     private publicservice: PublicmethodService, private dialogService: NbDialogService,
-    private toastrService: NbToastrService) { 
+    private toastrService: NbToastrService, private router: Router) { 
     // local store 得到token id 
     var admintoken = JSON.parse(localStorage.getItem(adminlocalstorage))? JSON.parse(localStorage.getItem(adminlocalstorage)): false;
     var token = localStorage.getItem(ssotoken)? localStorage.getItem(ssotoken): false;
@@ -813,25 +814,31 @@ export class MenuComponent implements OnInit {
     var sysmenu = localStorage.getItem(SYSMENU) == null ? [] : JSON.parse(localStorage.getItem(SYSMENU));
     var mulu_language = localStorage.getItem('mulu_language') == null ? 'zh_CN' : localStorage.getItem('mulu_language');
     if(sysmenu.length == 0 || mulu_language != localStorage.getItem('currentLanguage')){
-      this.publicservice.getMenu().subscribe((data)=>{
-        const colums = {
-          languageid: this.http.getLanguageID(),
-          roles: data
-        };
-        console.log("---colums--",colums)
-        const table = "menu_item";
-        // const method = "get_systemset_menu";
-        const method = "get_systemset_menu_all";
-        this.http.callRPC(table, method, colums).subscribe((result)=>{
-          console.log("---------------->>>>",result)
-          const baseData = result['result']['message'][0];
-          if (baseData != "T"){
-            var menu = this.dataTranslation(baseData);
-            localStorage.setItem(SYSMENU, JSON.stringify(menu));
-            // 按钮
-            this.RanderTable(menu);
-          }
-        })
+      this.publicservice.getMenu().subscribe((data:any[])=>{
+        if (data.length === 0){
+          // 表示token 过期，返回登录界面
+          this.router.navigate([loginurl]);
+        }else{
+          const colums = {
+            languageid: this.http.getLanguageID(),
+            roles: data
+          };
+          console.log("---colums--",colums)
+          const table = "menu_item";
+          // const method = "get_systemset_menu";
+          const method = "get_systemset_menu_all";
+          this.http.callRPC(table, method, colums).subscribe((result)=>{
+            console.log("---------------->>>>",result)
+            const baseData = result['result']['message'][0];
+            if (baseData != "T"){
+              var menu = this.dataTranslation(baseData);
+              localStorage.setItem(SYSMENU, JSON.stringify(menu));
+              // 按钮
+              this.RanderTable(menu);
+            }
+          })
+        }
+
       });
     }else{
       var menu = this.dataTranslation(sysmenu);

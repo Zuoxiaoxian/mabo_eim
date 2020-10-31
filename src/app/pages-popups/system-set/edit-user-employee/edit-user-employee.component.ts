@@ -247,7 +247,7 @@ export class EditUserEmployeeComponent implements OnInit {
             // publicmethod.toastr(UpSuccess);
             success(publicmethod)
             dialogRef.close(true);
-            // location.reload();
+            location.reload();
 
           }else{
             // publicmethod.toastr(UpDanger);

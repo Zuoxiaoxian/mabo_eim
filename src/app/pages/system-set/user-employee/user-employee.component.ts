@@ -67,6 +67,9 @@ export class UserEmployeeComponent implements OnInit {
 
   // 分页
   employee_data = [];
+
+  // isloding 加载agGrid
+  isloding = true;
   
 
   DelSuccess :any = {position: 'bottom-right', status: 'success', conent:"删除成功!"};
@@ -148,6 +151,11 @@ export class UserEmployeeComponent implements OnInit {
       // console.log("get_menu_role", result)
       var get_employee_limit = res['result']['message'][0]
       console.log("get_employee_limit", get_employee_limit);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件 和删除所需要的 plv8 函数 delete_employee
+      this.publicmethod.getcomponent(EditUserEmployeeComponent);
+      this.publicmethod.getmethod("delete_employee");
 
       var message = res["result"]["message"][0];
       if( message.code === 0){
@@ -523,7 +531,9 @@ export class UserEmployeeComponent implements OnInit {
         this.getsecurity_edit("groups", "get_groups", column).subscribe((goups:any[])=>{
           console.log("根据用户角色得到，用户对应的组:", goups, "res", res);
           this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} }).onClose.subscribe(
-            name=>{console.log("----编辑-----", name)}
+            name=>{
+              console.log("----编辑-----", name);
+            }
           );
         });
         // this.dialogService.open(EditUserEmployeeComponent, { context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res)}})

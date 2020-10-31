@@ -26,7 +26,7 @@ declare let layui;
   styleUrls: ['./user-employee-group.component.scss']
 })
 export class UserEmployeeGroupComponent implements OnInit {
-  @ViewChild("mytable") mytable: any;
+  @ViewChild("agGrid") agGrid: any;
 
 
   table_data = {
@@ -44,6 +44,8 @@ export class UserEmployeeGroupComponent implements OnInit {
   // 要删除、修改的行数据 
   rowdata;
 
+  // 加载table
+  isloding = false;
  
 
 
@@ -60,9 +62,11 @@ export class UserEmployeeGroupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // 初始化table
-    this.init_employee_group();
 
+    // ====================================agGrid
+      // 初始化table
+      this.getetabledata();
+    // ====================================agGrid
     
   }
 
@@ -89,22 +93,6 @@ export class UserEmployeeGroupComponent implements OnInit {
   }
 
 
-  // 初始化用户组表！
-  init_employee_group(){
-    this.getsecurity_edit("group_", "get_group", {}).subscribe(res=>{
-      var result =  res['result']['message'][0];
-      if (result){
-        result.forEach(r => {
-          r["active"] = r["active"] === 1 ? '是': '否';
-        });
-        console.log("初始化用户组表！", result)
-        this.table_data.source.load(result);
-      }else{
-        // 获取用户组失败！
-        this.publicmethod.toastr(this.GetDanger);
-      }
-    })
-  }
 
 
   // 得到buttons----------------------------------------------------------
@@ -227,23 +215,25 @@ export class UserEmployeeGroupComponent implements OnInit {
 
   // button 编辑用户组
   edit(){
-    var rowdata = this.rowdata;
-    console.log("=====this.rowdata",this.rowdata);
-    if (rowdata === undefined || rowdata["selected"].length === 0){
+    // var rowdata = this.rowdata;
+    // 得到选中的aggrid rowdatas
+    var rowdata = this.agGrid.getselectedrows();
+    console.log("=====this.rowdata",rowdata);
+    if ( rowdata.length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
       this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       // this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(this.rowdata), res: JSON.stringify(res)} })
-    }else if (rowdata["selected"].length > 1){
+    }else if (rowdata.length > 1){
       this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择一条要需要修改的的行数`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       
     }
     else{
-      var rowdata_ = rowdata["selected"][0]
+      var rowdata_ = rowdata[0]
       console.log("---------------------rowdata_===",rowdata_)
       rowdata_["active"] = rowdata_["active"] === "是" || rowdata_["active"] === 1? 1 :0;
       console.log("---------------------rowdata_===",rowdata_)
@@ -322,7 +312,7 @@ export class UserEmployeeGroupComponent implements OnInit {
 
   //  button导出未excel
   download(title){
-    this.mytable.download(title);
+    this.agGrid.download(title);
   }
 
   // 点击行执行
@@ -400,6 +390,75 @@ export class UserEmployeeGroupComponent implements OnInit {
   danger(publicservice){
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"删除失败!"});
   }
+
+
+  // =================================================agGrid
+
+  tableDatas = {
+    action: true,
+    columnDefs:[ // 列字段 多选：headerCheckboxSelection checkboxSelection , flex: 1 自动填充宽度
+      { field: 'group', headerName: '组名称', headerCheckboxSelection: true, checkboxSelection: true, autoHeight: true, fullWidth: true, minWidth: 50,resizable: true},
+      { field: 'group_name', headerName: '用户组英文名称',  resizable: true, flex: 1},
+      { field: 'createdon', headerName: '创建时间', resizable: true, flex: 1},
+      { field: 'createdby', headerName: '创建人', resizable: true, flex: 1},
+      { field: 'active', headerName: '是否启用', resizable: true, flex: 1},
+      // { field: 'options', headerName: '操作', resizable: true, flex: 1},
+    ],
+    rowData: [ // data
+      { name: 'Toyota', loginname: 'Celica', role_name: 35000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020"},
+      // { name: 'Ford', loginname: 'Mondeo', role_name: 32000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" },
+      // { name: 'Porsche', loginname: 'Boxter', role_name: 72000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" }
+    ]
+  };
+
+  private gridData = [];
+  
+  getetabledata(event?){
+    var offset;
+    var limit;
+    console.log("event------------------------------------------------", event);
+    if (event != undefined){
+      offset = event.offset;
+      limit = event.limit;
+    }else{
+      offset = 0;
+      limit = 50;
+    }
+    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    // 得到员工信息！
+    // this.http.callRPC('group_', 'get_group', {offset: offset, limit: limit}).subscribe((res)=>{
+    this.http.callRPC('group_', 'get_group', {}).subscribe((res)=>{
+      // console.log("get_menu_role", result)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("get_employee_limit", get_employee_limit);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      this.publicmethod.getcomponent(EditUserEmployeeGroupComponent);
+      this.publicmethod.getmethod("delete_group");
+
+
+      var message = res["result"]["message"][0];
+      if (message){
+        message.forEach(r => {
+          r["active"] = r["active"] === 1 ? '是': '否';
+        });
+        console.log("初始化用户组表！", message)
+      }
+      this.gridData.push(...message)
+      this.tableDatas.rowData = this.gridData;
+      this.agGrid.update_agGrid(this.tableDatas); // 告诉组件刷新！
+    })
+  }
+
+  // nzpageindexchange 页码改变的回调
+  nzpageindexchange(event){
+    console.log("页码改变的回调", event);
+    this.getetabledata(event);
+  }
+
+
+  // =================================================agGrid
 
 
 }

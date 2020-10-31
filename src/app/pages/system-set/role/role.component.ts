@@ -4,7 +4,7 @@ import { ROLE_SETTINGS, ROLE_TABLE } from '../table_setting';
 
 import { DatePipe } from '@angular/common';
 
-import { SYSROLEMENU, role_tree_data, SYSROLE, menu_button_list, role_action, MULU  } from '../../../appconfig';
+import { SYSROLEMENU, role_tree_data, SYSROLE, menu_button_list, role_action, MULU,loginurl } from '../../../appconfig';
 
 declare let layui;
 
@@ -599,10 +599,9 @@ export class RoleComponent implements OnInit {
           var roles_ = roles === undefined ? data: roles;
           var method_ = methods === undefined ? 'get_systemset_menu_all': methods;
           console.log("这是 系统设置的  角色  界面！", roles_, method_)
+          console.log("这是 系统设置的  角色  界面！=================data", data, )
 
-          // if (roles_.length === 0){
-          //   this.router.navigate([])
-          // }
+          
 
           const colums = {
             languageid: this.http.getLanguageID(),
@@ -972,63 +971,125 @@ export class RoleComponent implements OnInit {
         aniu_list.push(aniu)
       }
      });
-     var caidanList = this.integration_list_v2(caidan_list, aniu_list);
-     var muluList = this.integration_list_v2(mulu_list, caidanList);
-     
-    // 删除父亲id
-    var selectmenu_2 = [];
-    for (let index = 0; index < selectmenu_.length; index++) {
-      const elementid = selectmenu_[index]["menuitemid"];
-      for (let j = 0; j < muluList.length; j++) {
-        // const element = muluList[index];
-        // 根据 elementid 判断muluList[elementid]是否存在 children ，如果children存在，剔除！
-        if (muluList[j]["children"].length != 0 ){
-          // 判断是否有菜单
-          var caidans = muluList[j]["children"];
-          for (let c = 0; c < caidans.length; c++) {
-            if (caidans[c]["children"].length != 0){ //caidans[c]['id'] === elementid && 
-              var annius = caidans[c]["children"];
-              for (let a = 0; a < annius.length; a++) {
-                if (annius[a]['id'] === elementid){
-                  selectmenu_2.push(selectmenu_[index]);
-                  continue;
-                }
-                
-              }
-            }else{
-              if (caidans[c]['id'] === elementid){
-                selectmenu_2.push(selectmenu_[index]);
-                break;
-              }
-              // console.log("caidans +++++++++++++++++++++++++++++++++>", elementid, caidans[c])
-            }
-            
-          }
-        }else{
-          if (muluList[j]['id'] === elementid){
-            selectmenu_2.push(selectmenu_[index]);
-            break;
-          }
-          // console.log("item =============================>", elementid, muluList[j])
-          
-        }
-        
-      }
-      
-    }
 
-    console.log("_---------------------------------<<<<<<<<<<<<<<<,,,,,,,,selectmenu_2",selectmenu_2)
+
+    //  mulu_list 目录列表 caidan_list 菜单列表 aniu_list 按钮列表！
+    var res_caidan_list = this.unique(caidan_list, 'id');
+    var res_aniu_list = this.unique(aniu_list, 'id');
+    
+    // console.log("+++++++++++++++++++\n")
+    console.log("目录列表 ", mulu_list);
+    console.log("菜单列表: ", res_caidan_list);
+    console.log("按钮列表: ", res_aniu_list);
+    // console.log("+++++++++++++++++++\n");
+    
+    var caidanList = this.integration_list_v2(res_caidan_list, res_aniu_list);
+    //  console.log("caidanList 这是整合了菜单列表、按钮列表\n：", caidanList);
+    var muluList = this.integration_list_v2(mulu_list, caidanList);
+     console.log("muluList 这是整合了,目录列表、 菜单列表\n：", muluList);
+    
+    //  需要将 muluList去重根据id
+    var res_muluList = this.unique(muluList, 'id');
+    console.log("目录列表  muluList去重根据id: ", res_muluList);
+
+    var res_muluList_copy = this.handle_mulu_list(res_muluList);
+
+     console.log("res_muluList 最终的 treedata ", res_muluList);
 
 
 
      // 数据展示到树状结构中 
     //  this.showTreedata_v2(muluList, selectmenu_)
     
-    observe.next({treedata:muluList, selectmenu: selectmenu_});
+    observe.next({treedata:res_muluList_copy, selectmenu: selectmenu_});
+    // observe.next({treedata:muluList, selectmenu: selectmenu_});
+
     // observe.next({treedata:muluList, selectmenu: selectmenu_2});
 
    })
    
+  }
+
+  // 重新处理目录 mulu_list
+  handle_mulu_list(res_muluList){
+    console.log("最终的目录列表 res_muluList:    start", res_muluList,);
+    var parentid_exist = [];
+    res_muluList.forEach(mulu => {
+      console.log('mulu["parentid"]',mulu, mulu["id"] == 13)
+      if ( mulu["parentid"] !=0 && mulu["parentid"] != null ){
+        parentid_exist.push(mulu);
+      }
+    });
+    console.log("---------------parentid_exist-------------", parentid_exist)
+    res_muluList.forEach(mulu => {
+      parentid_exist.forEach(item=>{
+        if (mulu['id'] === item["parentid"]){
+          mulu["children"].push(item)
+        }
+      })
+    });
+    
+    var res_muluList_copy = [];
+    res_muluList.forEach(res_mulu  => {
+      if (res_mulu["type"] === 0){
+        var children = res_mulu["children"];
+        if (children.length === 0){
+          if (res_muluList_copy.indexOf(res_mulu) === -1){
+            res_muluList_copy.push(res_mulu)
+          }
+        }else{
+          children.forEach(c_item => {
+            res_muluList.forEach(item=>{
+              if(c_item["id"] === item["id"] ){
+                if (res_muluList_copy.indexOf(res_mulu) === -1){
+                  res_muluList_copy.push(res_mulu)
+                }
+              }else{
+                // 子id 不在，但是父id在如统计分析！
+                if (res_mulu["id"] != item["parentid"] && item["id"] === c_item["parentid"]){
+                  if (res_muluList_copy.indexOf(item) === -1 && item["parentid"]>0){}else{
+                    // console.log("子id 不在，但是父id在如统计分析！", item)
+                    res_muluList_copy.push(item)
+
+                  }
+                }
+              }
+  
+            })
+          });
+        }
+      }else{
+        if (res_muluList_copy.indexOf(res_mulu) === -1){
+          res_muluList_copy.push(res_mulu)
+        }
+      }
+
+    });
+    res_muluList_copy = this.unique(res_muluList_copy, 'id')
+
+    // 删除 res_muluList 的  parentid 不为 0 和 null的
+
+
+    // console.log("最终的目录列表 res_muluList:   end", res_muluList);
+    console.log("最终的目录列表 res_muluList_copy:   res_muluList_copy", res_muluList_copy);
+    return res_muluList_copy
+
+    
+  }
+
+
+  // 根据mulu  id 去重
+  unique(arr, field) {
+    const map = {};
+    const res = [];
+    for (let i = 0; i < arr.length; i++) {
+      if (!map[arr[i][field]]) {
+        map[arr[i][field]] = 1;
+        res.push(arr[i]);
+      }
+    }
+    
+    return res;
   }
 
   // 列表整合！
@@ -1040,6 +1101,9 @@ export class RoleComponent implements OnInit {
           // delete child.parentid;
           // delete parent.parentid;
           child_list.push(child)
+        }else if(child["parentid"] === 0 ){
+          // 属于菜单，但没有上级目录
+          parentList.push(child); // 在目录列表中，将 该菜单 添加进入！
         }
         parent["children"] = child_list
       });
@@ -1050,12 +1114,13 @@ export class RoleComponent implements OnInit {
   // 得到目录列表、菜单列表、按钮列表
   get_mulu_list_v2(item){
     var mulu: TREEV2 = {
+      type: item["type"],
       id:item["id"],
       parentid:item["parentid"],
       label: item["title"],
       checked: false,
       disabled: false,
-      children: null,
+      children: [],
     }
     return mulu
   }
@@ -1114,10 +1179,11 @@ export class RoleComponent implements OnInit {
 
 
 interface TREEV2 {
+  type: number, // 自定义判断是否是目录
   id: number,    // 节点唯一索引，对应数据库中id
   parentid: number,    // 父节点id
   label: string, // 节点标题
   checked: boolean,// 节点是否初始为选中状态， 默认false
   disabled: boolean, // 节点是否为禁止状态，默认为false
-  children: TREEV2[] | null, // 子节点，支持设定项同父节点
+  children: TREEV2[] | [], // 子节点，支持设定项同父节点
 }

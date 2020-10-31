@@ -13,18 +13,12 @@ import { PublicmethodService } from '../../../services/publicmethod/publicmethod
   styleUrls: ['./security-log.component.scss']
 })
 export class SecurityLogComponent implements OnInit {
-  @ViewChild("mytable") mytable: any;
+  @ViewChild("agGrid") agGrid: any;
 
   constructor(private http: HttpserviceService, private publicmethod: PublicmethodService) { }
 
 
-  // source:LocalDataSource
 
-  table_data = {
-    settings: SECURITY_TABLE,
-    // source: null,
-    source: new LocalDataSource(),
-  };
 
   // 前端要展示的button 主要是：增、删、改
   buttons;
@@ -32,28 +26,16 @@ export class SecurityLogComponent implements OnInit {
   // 前端要展示的buttons 主要是：搜索、导入导出
   buttons2;
 
-  // security_log_data 安全日志
-  security_log_data = [];
+
+  // 加载table
+  isloding = false;
 
   ngOnInit(): void {
-    
-    this.table_data.source["data"] = [
-      {active: 1,
-        application: "local",
-        employeeid: 1,
-        id: 1814,
-        info: "登录成功！",
-        logintime: "2020-09-22T07:05:11.259Z",
-        machinename: "mabo",
-        result: 1,
-        severity: null,
-        source: "172.18.0.4"}
-    ];
-    // 初始化 操作日志！
-    var limit = this.table_data.settings.pager.perPage; // 每一页展示多少条数据
-    this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:0,limit:10, numbers:0});
-    // this.getsecurity('sys_security_log', 'get_security_log', {});
 
+    // ====================================agGrid
+      // 初始化table
+      this.getetabledata();
+    // ====================================agGrid
     this.getbuttons();
   }
 
@@ -110,8 +92,6 @@ export class SecurityLogComponent implements OnInit {
       })
     }
   }
-
-
   action(actionmethod){
     // console.log("++++++++++++++++++++action(actionmethod)++++++++++++++++++++++++++++", actionmethod);
     var method = actionmethod.split(":")[1];
@@ -124,45 +104,75 @@ export class SecurityLogComponent implements OnInit {
         this.download('安全日志');
         break;
     }
-
   }
 
   //  button导出未excel
   download(title){
-    this.mytable.download(title);
-  }
-
-  // 分页
-  nzpageindexchange(event){
-    console.log("用户--分页：", event);
-    var offset = (event.current - 1) * event.nzPageSize; 
-    // console.log("offset: limit", offset, event.nzPageSize)
-    this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:offset, limit:event.nzPageSize});
-  }
-
-  pagechange(event){
-    console.log("用户--分页：", event);
-    this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    this.agGrid.download(title);
   }
 
 
-  // 请求得到 表sys_security_log中的数据！
-  getsecurity(table: string, method: string, colums: object){
-    this.http.callRPC(table, method, colums).subscribe((result)=>{
-      // 如何动态加载页数 
-      var result_data = result['result']['message'][0]; 
-      if (result_data[1] && result_data[1][0] != undefined){
-        // 表示初始化
-        this.mytable.change_count(result_data[1][0]["numbers"]);
-        this.security_log_data.push(...result_data[0])
-        this.table_data.source.load(this.security_log_data);
-      }else{
-        this.security_log_data.push(...result_data)
-        this.table_data.source.load(this.security_log_data);
-      }
-      console.log("分页：", this.security_log_data)
+
+
+
+
+
+  // =================================================agGrid
+
+  tableDatas = {
+    action: false,
+    columnDefs:[ // 列字段 多选：headerCheckboxSelection checkboxSelection , flex: 1 自动填充宽度
+      { field: 'application', headerName: '应用', headerCheckboxSelection: true, checkboxSelection: true, autoHeight: true, fullWidth: true, minWidth: 50,resizable: true},
+      { field: 'source', headerName: '访问IP',  resizable: true, flex: 1},
+      { field: 'machinename', headerName: '设备名称', resizable: true, flex: 1},
+      { field: 'info', headerName: '信息', resizable: true, flex: 1},
+      { field: 'logintime', headerName: '最近登录时间', resizable: true, flex: 1},
+    ],
+    rowData: [ // data
+      { name: 'Toyota', loginname: 'Celica', role_name: 35000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020"},
+      // { name: 'Ford', loginname: 'Mondeo', role_name: 32000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" },
+      // { name: 'Porsche', loginname: 'Boxter', role_name: 72000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" }
+    ]
+  };
+
+  private gridData = [];
+  
+  getetabledata(event?){
+    var offset;
+    var limit;
+    console.log("event------------------------------------------------", event);
+    if (event != undefined){
+      offset = event.offset;
+      limit = event.limit;
+    }else{
+      offset = 0;
+      limit = 50;
+    }
+    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    // 得到员工信息！
+    this.http.callRPC('sys_security_log', 'get_security_log_limit', {offset: offset, limit: limit}).subscribe((res)=>{
+      // console.log("get_menu_role", result)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("get_employee_limit", get_employee_limit);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      // this.publicmethod.getcomponent(EditUserEmployeeComponent);
+
+      var message = res["result"]["message"][0];
+      this.gridData.push(...message)
+      this.tableDatas.rowData = this.gridData;
+      this.agGrid.update_agGrid(this.tableDatas); // 告诉组件刷新！
     })
- 
   }
+
+  // nzpageindexchange 页码改变的回调
+  nzpageindexchange(event){
+    console.log("页码改变的回调", event);
+    this.getetabledata(event);
+  }
+
+
+  // =================================================agGrid
 
 }
