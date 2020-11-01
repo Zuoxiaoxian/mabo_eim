@@ -61,20 +61,47 @@ export class EditRoleComponent implements OnInit {
         role: function(value, item){
           console.log("验证、表单: employeeno",AddRole["role"]);
           console.log("验证、表单: value",value);
+          // sql注入和特殊字符 special_str
+          var special_sql = AddRole['special_sql']["special_sql"];
+          var special_str = AddRole['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "角色名称不能有特殊字符！"
+          }
           if (! new RegExp(AddRole["role"]).test(value)){
             if (value.length > 20){
               return "角色名称最大长度不超过20！"
             }
             return "角色名称不能有特殊字符或中文字符"
           }
+          
+
         },
         role_name: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = AddRole['special_sql']["special_sql"];
+          var special_str = AddRole['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "角色名称不能有特殊字符！"
+          }
           if (! new RegExp(AddRole["role_name"]).test(value)){
             if (value.length > 100){
               return "角色名称最大长度不超过100！"
             }
             return "角色名称必须为中文，且不能有特殊字符"
           }
+          
         },
 
       })

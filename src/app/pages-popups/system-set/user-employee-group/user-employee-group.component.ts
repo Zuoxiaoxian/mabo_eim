@@ -53,20 +53,48 @@ export class UserEmployeeGroupComponent implements OnInit {
           console.log("验证、表单: employeeno",EmployeeGroup["group_"]);
           console.log("验证、表单: value",value);
           console.log("验证、表单: item",item);
+          // sql注入和特殊字符 special_str
+          var special_sql = EmployeeGroup['special_sql']["special_sql"];
+          var special_str = EmployeeGroup['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "组名称不能有特殊字符！"
+          }
           if (! new RegExp(EmployeeGroup["group_"]).test(value)){
             if (value.length > 20){
-              return "账号最大长度不超过20！"
+              return "组名称最大长度不超过20！"
             }
-            return "账号不能有特殊字符或中文字符"
+            return "组名称不能有特殊字符或中文字符"
           }
+          
         },
         group_name: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = EmployeeGroup['special_sql']["special_sql"];
+          var special_str = EmployeeGroup['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "组名称不能有特殊字符！"
+          }
+          
           if (! new RegExp(EmployeeGroup["group_name"]).test(value)){
             if (value.length > 100){
-              return "用户名最大长度不超过100！"
+              return "组名称最大长度不超过100！"
             }
-            return "用户名不能有特殊字符"
+            return "组名称不能有特殊字符"
           }
+          
+          
         },
         
       })

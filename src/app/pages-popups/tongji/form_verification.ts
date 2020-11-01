@@ -20,6 +20,12 @@
 
 */
 
+// sql注入和特殊字符
+export const special_sql = {
+    special_str: /^[^`~!@$%&*?<>/\\|=+^{}\[\]\'\"【】‘’￥——、，。；：？《》！]*$/i,
+    special_sql: /(\band\b)|(\bor\b)|(\bDELETE\b)|(\bUPDATE\b)|(\bINSERT\b)|(\bEXEC\b)|(\bEXECUTE\b)|(\blike\b)|(\bselect\b)|(\bset\b)|(\bcreate\b)|(\btable\b)|(\bexec\b)|(\bdeclare\b)|(\bmaster\b)|(\bbackup\b)|(\bmid\b)|(\bcount\b)|(\badd\b)|(\balter\b)|(\bdrop\b)|(\bfrom\b)|(\btruncate\b)|(\bunion\b)|(\bjoin\b)|(\script\b)|(\balert\b)|(\blink\b)/gi,
+}
+
 // 1台架设备;2移动资产;3举升机  '设备状态，1在用；2封存；3停用；4闲置'
 
 export const Device =  {
@@ -38,5 +44,7 @@ export const Device =  {
     createdby: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
 
     createdon: "^[a-zA-Z0-9_@]{1,50}$",       //时间
+
+    special_sql: special_sql, // sql 注入
 
 }

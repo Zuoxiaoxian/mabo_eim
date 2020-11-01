@@ -139,16 +139,20 @@ export interface Group {
     export let PLV8_URL = "http://192.168.8.105/rpc/v1"
 
 
-
-
-
-
-
     // export let LOGIN_API = '/api/v1/auth/login';   
     // export let INFO_API = '/api/v1/auth/info';   
 
     // // plv8 url
     // export let PLV8_URL = "/rpc/v1"
+
+
+
+    // login  mydocker
+    // export let LOGIN_API = 'http://192.168.10.141/api/v1/auth/login';   
+    // export let INFO_API = 'http://192.168.10.141/api/v1/auth/info';   
+
+    // // plv8 url
+    // export let PLV8_URL = "http://192.168.10.141/rpc/v1"
 
 
 

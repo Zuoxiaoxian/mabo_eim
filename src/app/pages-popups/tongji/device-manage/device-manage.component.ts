@@ -62,39 +62,95 @@ export class DeviceManageComponent implements OnInit {
         devicename: function(value, item){
           console.log("验证、表单: employeeno",Device["devicename"]);
           console.log("验证、表单: value",value);
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "设备名称不能有特殊字符！"
+          }
+
           if (! new RegExp(Device["devicename"]).test(value)){
             if (value.length > 20){
               return "设备名称最大长度不超过20！"
             }
             return "设备名称不能有特殊字符"
           }
+         
+
         },
         // 设备编号 验证：deviceno character(100)
         deviceno: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "设备编号不能有特殊字符！"
+          }
           if (! new RegExp(Device["deviceno"]).test(value)){
             if (value.length > 100){
               return "设备编号最大长度不超过100！"
             }
             return "设备编号必须是数字、字母，且不能有特殊字符"
           }
+          
         },
         // 资产编号 验证：assetno character(50)
         assetno: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "资产编号不能有特殊字符！"
+          }
+
           if (! new RegExp(Device["assetno"]).test(value)){
             if (value.length > 50){
               return "资产编号最大长度不超过100！"
             }
             return "资产编号必须是数字、字母，且不能有特殊字符"
           }
+          
         },
-        // 出场编号 验证：factoryno character(50)
+        // 出厂编号 验证：factoryno character(50)
         factoryno: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "出厂编号不能有特殊字符！"
+          }
+
           if (! new RegExp(Device["factoryno"]).test(value)){
             if (value.length > 50){
-              return "出场编号最大长度不超过100！"
+              return "出厂编号最大长度不超过100！"
             }
-            return "出场编号必须是数字、字母，且不能有特殊字符"
+            return "出厂编号必须是数字、字母，且不能有特殊字符"
           }
+          
         },
         
         // 购置日期 验证：purchaseon character(50)
@@ -110,66 +166,158 @@ export class DeviceManageComponent implements OnInit {
 
         // 供应商 验证：supplier character(50)
         supplier: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "供应商不能有特殊字符！"
+          }
           if (! new RegExp(Device["supplier"]).test(value)){
             if (value.length > 50){
               return "供应商最大长度不超过50！"
             }
             return "供应商必须是中文、字母，且不能有特殊字符"
           }
+          
         },
         // 存放地点 验证：location character(50)
         location: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "存放地点不能有特殊字符！"
+          }
           if (! new RegExp(Device["location"]).test(value)){
             if (value.length > 50){
               return "存放地点最大长度不超过50！"
             }
             return "存放地点必须是数字、字母，且不能有特殊字符"
           }
+          
+
         },
         // 使用部门 验证：department character(50)
         department: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "使用部门不能有特殊字符！"
+          }
           if (! new RegExp(Device["department"]).test(value)){
             if (value.length > 50){
               return "使用部门最大长度不超过50！"
             }
             return "使用部门必须是中文、字母，且不能有特殊字符"
           }
+          
         },
         // 科室 验证：groups character(50)
         groups: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "科室不能有特殊字符！"
+          }
           if (! new RegExp(Device["groups"]).test(value)){
             if (value.length > 50){
               return "科室最大长度不超过50！"
             }
             return "科室必须是中文、字母，且不能有特殊字符"
           }
+          
         },
         // 归属人 验证：belonged character(50)
         belonged: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "归属人不能有特殊字符！"
+          }
           if (! new RegExp(Device["belonged"]).test(value)){
             if (value.length > 50){
               return "归属人最大长度不超过50！"
             }
             return "归属人必须是中文、字母，且不能有特殊字符"
           }
+          
         },
         // 设备状态 验证：devicestatus character(50)
         devicestatus: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "设备状态不能有特殊字符！"
+          }
           if (! new RegExp(Device["devicestatus"]).test(value)){
             if (value.length > 4){
               return "设备状态最大长度不超过4！"
             }
             return "设备状态必须是数字，且不能有特殊字符"
           }
+          
         },
         // 创建人 验证：createdby character(50)
         createdby: function(value, item){
+          // sql注入和特殊字符 special_str
+          var special_sql = Device['special_sql']["special_sql"];
+          var special_str = Device['special_sql']["special_str"];
+
+          var sql = special_sql.test(value);
+          var str = special_str.test(value);
+          if(sql){
+            return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+          }
+          if (! str){
+            return "创建人不能有特殊字符！"
+          }
           if (! new RegExp(Device["createdby"]).test(value)){
             if (value.length > 50){
               return "创建人最大长度不超过50！"
             }
             return "创建人必须是字母、中文，且不能有特殊字符"
           }
+          
         },
 
       })

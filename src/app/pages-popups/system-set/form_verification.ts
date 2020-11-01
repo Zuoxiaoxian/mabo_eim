@@ -4,18 +4,25 @@
 
 /*
 1、新增、编辑 用户
-    账号 验证：employeeno character(20)
-    用户名称 验证：name character(100)
-    登录名称 验证：loginname character(50)
+    员工编号 验证：employeeno character(20)
+    姓名 验证：name character(100)
+    域账号 验证：loginname character(50)
     邮箱 验证：email character(50)
 
 */
 
+// sql注入和特殊字符
+export const special_sql = {
+    special_str: /^[^`~!@$%&*?<>/\\|=+^{}\[\]\'\"【】‘’￥——、，。；：？《》！]*$/i,
+    special_sql: /(\band\b)|(\bor\b)|(\bDELETE\b)|(\bUPDATE\b)|(\bINSERT\b)|(\bEXEC\b)|(\bEXECUTE\b)|(\blike\b)|(\bselect\b)|(\bset\b)|(\bcreate\b)|(\btable\b)|(\bexec\b)|(\bdeclare\b)|(\bmaster\b)|(\bbackup\b)|(\bmid\b)|(\bcount\b)|(\badd\b)|(\balter\b)|(\bdrop\b)|(\bfrom\b)|(\btruncate\b)|(\bunion\b)|(\bjoin\b)|(\script\b)|(\balert\b)|(\blink\b)/gi,
+}
+
+
 export const AddEmployee =  {
-    employeeno: "^[a-zA-Z0-9_]{1,20}$",       // 数字、字母、_ 
+    employeeno: "^[a-zA-Z0-9]{1,20}$",       // 数字、字母、_ 
     name: "^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]{1,100}$",  // 数字、字母、中文
     loginname: "^[a-zA-Z0-9_@.]{1,50}$",       //数字、字母、_ 
-
+    special_sql: special_sql, // sql注入
 }
 
 /*
@@ -31,6 +38,8 @@ export const AddMenu =  {
 
     anniuname: "^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]{1,255}$", // 数字、字母、_ 、中文
     anniuname_en: "^[a-zA-Z0-9_ ]{1,255}$",  // 数字、字母、_组成的字符串
+
+    special_sql: special_sql, // sql注入
 }
 
 
@@ -41,6 +50,8 @@ export const AddMenu =  {
 export const AddRole =  {
     role_name: "^[\u4e00-\u9fa5\\s·]{1,255}$",       // 数字、字母、_ 、中文
     role: "^[a-zA-Z0-9_]{1,255}$",  // 数字、字母、_ 组成的字符串
+
+    special_sql: special_sql, // sql注入
 }
 
 /*
@@ -51,6 +62,8 @@ export const AddRole =  {
 export const EmployeeGroup =  {
     group_name: "^[a-zA-Z0-9_]{1,20}$",       // 数字、字母、_ 
     group_: "^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]{1,100}$",  // 数字、字母、中文
+
+    special_sql: special_sql, // sql注入
 }
 
 

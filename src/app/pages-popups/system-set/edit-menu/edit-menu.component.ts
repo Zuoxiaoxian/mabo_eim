@@ -129,6 +129,19 @@ export class EditMenuComponent implements OnInit {
             console.log("验证、表单: employeeno",AddMenu["muluname"]);
             console.log("验证、表单: value",value);
             console.log("验证、表单: item",item);
+            // sql注入和特殊字符 special_str
+            var special_sql = AddMenu['special_sql']["special_sql"];
+            var special_str = AddMenu['special_sql']["special_str"];
+
+            var sql = special_sql.test(value);
+            var str = special_str.test(value);
+            if(sql){
+              return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+            }
+            if (! str){
+              return "目录名称不能有特殊字符！"
+            }
+
             if (! new RegExp(AddMenu["muluname"]).test(value)){
               if (value.length > 20){
                 return "目录名称最大长度不超过20！"
@@ -137,6 +150,18 @@ export class EditMenuComponent implements OnInit {
             }
           },
           muluname_en: function(value, item){
+            // sql注入和特殊字符 special_str
+            var special_sql = AddMenu['special_sql']["special_sql"];
+            var special_str = AddMenu['special_sql']["special_str"];
+
+            var sql = special_sql.test(value);
+            var str = special_str.test(value);
+            if(sql){
+              return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+            }
+            if (! str){
+              return "目录名称不能有特殊字符！"
+            }
             if (! new RegExp(AddMenu["muluname_en"]).test(value)){
               if (value.length > 100){
                 return "目录名称最大长度不超过100！"
@@ -145,6 +170,18 @@ export class EditMenuComponent implements OnInit {
             }
           },
           caidanname: function(value, item){
+            // sql注入和特殊字符 special_str
+            var special_sql = AddMenu['special_sql']["special_sql"];
+            var special_str = AddMenu['special_sql']["special_str"];
+
+            var sql = special_sql.test(value);
+            var str = special_str.test(value);
+            if(sql){
+              return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+            }
+            if (! str){
+              return "菜单名称不能有特殊字符！"
+            }
             if (! new RegExp(AddMenu["caidanname"]).test(value)){
               if (value.length > 20){
                 return "菜单名称最大长度不超过20！"
@@ -153,6 +190,18 @@ export class EditMenuComponent implements OnInit {
             }
           },
           caidanname_en: function(value, item){
+            // sql注入和特殊字符 special_str
+            var special_sql = AddMenu['special_sql']["special_sql"];
+            var special_str = AddMenu['special_sql']["special_str"];
+
+            var sql = special_sql.test(value);
+            var str = special_str.test(value);
+            if(sql){
+              return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+            }
+            if (! str){
+              return "菜单名称不能有特殊字符！"
+            }
             if (! new RegExp(AddMenu["caidanname_en"]).test(value)){
               if (value.length > 100){
                 return "菜单名称最大长度不超过100！"
@@ -161,6 +210,18 @@ export class EditMenuComponent implements OnInit {
             }
           },
           anniuname: function(value, item){
+            // sql注入和特殊字符 special_str
+            var special_sql = AddMenu['special_sql']["special_sql"];
+            var special_str = AddMenu['special_sql']["special_str"];
+
+            var sql = special_sql.test(value);
+            var str = special_str.test(value);
+            if(sql){
+              return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+            }
+            if (! str){
+              return "按钮名称不能有特殊字符！"
+            }
             if (! new RegExp(AddMenu["anniuname"]).test(value)){
               if (value.length > 50){
                 return "按钮名称最大长度不超过50！"
@@ -169,7 +230,19 @@ export class EditMenuComponent implements OnInit {
             }
           },
           anniuname_en: function(value, item){
-            if (! new RegExp(AddMenu["anniuname_en"]).test(value)){
+              if (! new RegExp(AddMenu["anniuname_en"]).test(value)){
+                // sql注入和特殊字符 special_str
+              var special_sql = AddMenu['special_sql']["special_sql"];
+              var special_str = AddMenu['special_sql']["special_str"];
+
+              var sql = special_sql.test(value);
+              var str = special_str.test(value);
+              if(sql){
+                return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+              }
+              if (! str){
+                return "按钮名称不能有特殊字符！"
+              }
               if (value.length > 100){
                 return "按钮名称最大长度不超过50！"
               }
@@ -177,6 +250,8 @@ export class EditMenuComponent implements OnInit {
             }
           },
         })
+
+
         //监听提交 --- 目录
         form.on('submit(mulu)', function(data){
           // layer.alert(JSON.stringify(data.field), {
