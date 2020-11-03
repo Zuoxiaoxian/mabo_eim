@@ -126,11 +126,13 @@ export class EditRoleComponent implements OnInit {
         http.callRPC(table, method, colums).subscribe((result)=>{
           console.log("更新角色数据：", result)
           const status = result['result']['message'][0];
+          console.log("更新角色数据：status", status)
           if (status["code"] === 1){
+            localStorage.removeItem(SYSROLE);
+            dialogRef.close(true)
             success(publicservice)
             // SYSROLE
-            localStorage.removeItem(SYSROLE);
-            location.reload();
+            // location.reload();
           }else{
             danger(publicservice, status["message"])
           }
@@ -160,7 +162,7 @@ export class EditRoleComponent implements OnInit {
 
   // × 关闭diallog   及关闭弹框
   closedialog(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
   
   // 确定
@@ -170,7 +172,7 @@ export class EditRoleComponent implements OnInit {
   }
   // 取消
   cancel(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
 

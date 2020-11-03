@@ -116,10 +116,10 @@ export class UserEmployeeGroupComponent implements OnInit {
             // publicmethod
             // publicmethod.toastr(UpSuccess);
             success(publicmethod)
-            dialogRef.close();
-            setTimeout(() => {
-              location.reload();
-            }, 1000);
+            dialogRef.close(true);
+            // setTimeout(() => {
+            //   location.reload();
+            // }, 1000);
           }else{
             // publicmethod.toastr(UpDanger);
             danger(publicmethod)
@@ -133,12 +133,12 @@ export class UserEmployeeGroupComponent implements OnInit {
   
   // × 关闭diallog   及关闭弹框
   closedialog(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
   // 取消
   cancel(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
 

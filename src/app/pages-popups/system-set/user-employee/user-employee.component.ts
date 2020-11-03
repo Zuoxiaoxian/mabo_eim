@@ -282,14 +282,14 @@ export class UserEmployeeComponent implements OnInit {
             getsecurity("employee", "insert_employee", send_data_list, http).subscribe((res)=>{
               if (res === 1){
                 // 成功
-                dialogRef.close();
+                dialogRef.close(true);
                 // publicservice.toastr(SavSuccess);
                 success(publicservice)
                 // location.reload();
                 
-                setTimeout(() => {
-                  location.reload();
-                }, 1000);
+                // setTimeout(() => {
+                //   location.reload();
+                // }, 1000);
                 
               }else{
                 // 失败
@@ -315,12 +315,12 @@ export class UserEmployeeComponent implements OnInit {
 
   // × 关闭diallog   及关闭弹框
   closedialog(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
   // 取消
   cancel(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
 

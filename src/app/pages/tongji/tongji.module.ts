@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TongjiRoutingModule } from './tongji-routing.module';
 import { TongjiComponent } from './tongji.component';
 import { DeviceManageComponent } from './device-manage/device-manage.component';
-import { NbSelectModule, NbCardModule, NbButtonModule, NbInputModule, NbProgressBarModule, NbIconModule } from '@nebular/theme';
+import { NbSelectModule, NbCardModule, NbButtonModule, NbInputModule, NbProgressBarModule, NbIconModule, NbSpinnerModule } from '@nebular/theme';
 
 // import { MySelectComponent } from './components/my-select/my-select.component';
 // import { MySelectGroupComponent } from './components/my-select-group/my-select-group.component';
@@ -30,7 +30,6 @@ import { ManHourKpiReportComponent } from './man-hour-kpi-report/man-hour-kpi-re
 import { ManhourReportLinkFortableComponent } from './man-hour-kpi-report/manhour-report-link-fortable/manhour-report-link-fortable.component';
 import { KpiDetailComponent } from './kpi-detail/kpi-detail.component';
 import { StatusForTableComponent } from './device-manage/status-for-table/status-for-table.component';
-import { ActionsComponent } from './device-manage/actions/actions.component';
 // datetime 本地化标签 
 export class DefaultIntl extends OwlDateTimeIntl {
   /** A label for the cancel button */
@@ -60,13 +59,13 @@ export const MY_CUSTOM_FORMATS = {
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 
 import  { ComponentTModule } from './components/componentT.module'
-
+import { AgGridModule } from 'ag-grid-angular';
 @NgModule({
   declarations: [TongjiComponent, DeviceManageComponent, 
     // MySelectComponent, MySelectGroupComponent, MyTableNg2Component, DateRangeComponent,
     TestTaskManageComponent,  TaskProgressForTableComponent, 
     DeviceKpiReportComponent, KpireportLinkFortableComponent, ManHourKpiReportComponent,
-     ManhourReportLinkFortableComponent, KpiDetailComponent, StatusForTableComponent, ActionsComponent],
+     ManhourReportLinkFortableComponent, KpiDetailComponent, StatusForTableComponent,],
   imports: [
     CommonModule,
     TongjiRoutingModule,
@@ -78,6 +77,7 @@ import  { ComponentTModule } from './components/componentT.module'
     NbProgressBarModule,
     Ng2SmartTableModule,
     NbIconModule,
+    NbSpinnerModule,
 
     // 日期-时间
     OwlDateTimeModule,
@@ -85,8 +85,10 @@ import  { ComponentTModule } from './components/componentT.module'
     
     // 分页
     NzPaginationModule,
+    AgGridModule,
 
     ComponentTModule,
+
   ],
   providers:[
     {

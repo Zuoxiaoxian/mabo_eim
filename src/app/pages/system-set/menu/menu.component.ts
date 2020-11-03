@@ -39,6 +39,7 @@ export class MenuComponent implements OnInit {
   buttons;
   isactions;
 
+
   constructor(private http: HttpserviceService, private localstorageservice: LocalStorageService,
     private publicservice: PublicmethodService, private dialogService: NbDialogService,
     private toastrService: NbToastrService, private router: Router) { 
@@ -943,6 +944,8 @@ export class MenuComponent implements OnInit {
   danger(publicservice){
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"删除失败!"});
   }
+
+
 
   
   

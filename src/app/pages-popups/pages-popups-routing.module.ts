@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AndonComponent } from './andon-manage/andon/andon.component';
 
 import { PagesPopupsComponent } from './pages-popups.component'
 import { MenuComponent } from './system-set//menu/menu.component';
@@ -22,6 +23,10 @@ const routes: Routes = [
       {
         path:'role/edit',
         component: EditRoleComponent,
+      },
+      {
+        path:'andon',
+        component: AndonComponent,
       },
     ]
   }

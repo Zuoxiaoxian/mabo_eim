@@ -15,7 +15,23 @@ import { PublicmethodService } from '../../../services/publicmethod/publicmethod
 export class SecurityLogComponent implements OnInit {
   @ViewChild("agGrid") agGrid: any;
 
-  constructor(private http: HttpserviceService, private publicmethod: PublicmethodService) { }
+  constructor(private http: HttpserviceService, private publicmethod: PublicmethodService) { 
+
+    this.http.callRPC('sys_security_log', 'get_security_log_limit', {offset: 0, limit: 50}).subscribe((res)=>{
+      var get_employee_limit = res['result']['message'][0]
+      console.log("get_employee_limit", get_employee_limit);
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      // this.publicmethod.getcomponent(EditUserEmployeeComponent);
+      this.gridData = []
+      var message = res["result"]["message"][0];
+      this.gridData.push(...message)
+      this.tableDatas.rowData = this.gridData;
+      localStorage.setItem("system_log_agGrid", JSON.stringify(this.tableDatas))
+      
+    })
+
+  }
 
 
 
@@ -29,15 +45,36 @@ export class SecurityLogComponent implements OnInit {
 
   // 加载table
   isloding = false;
+  system_log_agGrid;
 
   ngOnInit(): void {
 
     // ====================================agGrid
       // 初始化table
-      this.getetabledata();
-    // ====================================agGrid
-    this.getbuttons();
-  }
+      // this.getetabledata();
+      this.system_log_agGrid = JSON.parse(localStorage.getItem("system_log_agGrid"));
+      // ====================================agGrid
+      this.getbuttons();
+    }
+    
+    ngAfterViewInit(){
+      console.log("&&&&&&&&&&&&&&&&&&&&&&&this.employee_agGrid&&&&&&&&&&&&&&&&", this.system_log_agGrid);
+      if (this.system_log_agGrid == null){
+        this.system_log_agGrid = JSON.parse(localStorage.getItem("employee_agGrid"))
+        this.getetabledata()
+      }else{
+        setTimeout(() => {
+        this.agGrid.init_agGrid(this.system_log_agGrid);
+      },);
+
+    }
+    
+  
+}
+
+ngOnDestory(){
+  localStorage.removeItem("system_log_agGrid");
+}
 
 
   // 得到buttons----------------------------------------------------------

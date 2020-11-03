@@ -10,10 +10,14 @@ import { NbIconModule, NbInputModule, NbSelectModule } from '@nebular/theme';
 
 
 import {Ng2SmartTableModule} from '@mykeels/ng2-smart-table';
+import { AgTableComponent } from './ag-table/ag-table.component';
+import { AgGridActionComponent } from './ag-table/ag-grid-action/ag-grid-action.component';
 
+import { AgGridModule } from 'ag-grid-angular';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 @NgModule({
   declarations: [
-    MySelectComponent, MySelectGroupComponent,MyTableNg2Component,
+    MySelectComponent, MySelectGroupComponent,MyTableNg2Component, AgTableComponent, AgGridActionComponent,
   ],
   imports: [
     CommonModule,
@@ -22,9 +26,11 @@ import {Ng2SmartTableModule} from '@mykeels/ng2-smart-table';
     NbInputModule,
     NbIconModule,
     Ng2SmartTableModule,
+    AgGridModule,
+    NzPaginationModule,
   ],
   exports: [
-    MySelectComponent, MySelectGroupComponent,MyTableNg2Component,
+    MySelectComponent, MySelectGroupComponent,MyTableNg2Component, AgTableComponent,
   ]
 })
 export class ComponentTModule { }

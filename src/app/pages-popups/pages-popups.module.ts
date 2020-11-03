@@ -21,13 +21,14 @@ import { DeviceManageComponent } from './tongji/device-manage/device-manage.comp
 
 // board
 import { PreinstallDialogComponent } from './system-set/preinstall-dialog/preinstall-dialog.component';
+import { AndonComponent } from './andon-manage/andon/andon.component';
 
 
 // DateComponent
 @NgModule({
   declarations: [PagesPopupsComponent, MenuComponent, EditMenuComponent, EditRoleComponent, RoleComponent, 
     MySelectComponent, UserEmployeeComponent, EditUserEmployeeComponent, EditUserEmployeeGroupComponent, 
-    UserEmployeeGroupComponent, EditDelTooltipComponent, DeviceManageComponent, PreinstallDialogComponent],
+    UserEmployeeGroupComponent, EditDelTooltipComponent, DeviceManageComponent, PreinstallDialogComponent, AndonComponent],
   imports: [
     CommonModule,
     PagesPopupsRoutingModule,

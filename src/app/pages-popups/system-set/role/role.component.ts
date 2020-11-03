@@ -95,13 +95,13 @@ export class RoleComponent implements OnInit {
         // 调用确认！
         var is_success = confirm(data.field, userinfo,http);
         if (is_success){
-          dialogRef.close();
+          dialogRef.close(true);
           // 刷新界面
           localStorage.removeItem(SYSROLE);
           success(publicservice);
-          setTimeout(() => {
-            location.reload();
-          }, 1000);
+          // setTimeout(() => {
+          //   location.reload();
+          // }, 1000);
           return false;
         }else{
           danger(publicservice);
@@ -120,7 +120,7 @@ export class RoleComponent implements OnInit {
 
    // × 关闭diallog   及关闭弹框
    closedialog(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
   
   // 确定
@@ -148,7 +148,7 @@ export class RoleComponent implements OnInit {
   }
   // 取消
   cancel(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
   // 展示状态

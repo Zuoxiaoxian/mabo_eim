@@ -28,20 +28,21 @@ export const special_sql = {
 
 // 1台架设备;2移动资产;3举升机  '设备状态，1在用；2封存；3停用；4闲置'
 
+
 export const Device =  {
-    devicename: "^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]{1,20}$",       // 数字、字母、中文
-    deviceno: "^[a-zA-Z0-9_]{1,100}$",  // 数字、字母
-    assetno: "^[a-zA-Z0-9]{1,50}$",       //数字、字母
-    factoryno: "^[a-zA-Z0-9]{1,50}$",       //数字、字母
+    devicename: "^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]{1,20}$",       // 可中文
+    deviceno: "[\u4e00-\u9fa5\\s·]{1,100}$",  // 数字、字母、下划线、短线、() 设备编号
+    assetno: "[\u4e00-\u9fa5\\s·]{1,50}$",       //数字、字母、数字、字母、下划线、短线、() 资产编号
+    factoryno: "[\u4e00-\u9fa5\\s·]{1,50}$",       //数字、字母、下划线、短线、() 设备编号  出厂编号 
     purchaseon: "^[a-zA-Z0-9_@]{1,50}$",       //时间
 
-    supplier: "^[a-zA-Z_\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
-    location: "^[a-zA-Z0-9_]{1,50}$",       //数字、. 、中文 
-    department: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
-    groups: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
-    belonged: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //数字、中文  
+    supplier: "^[a-zA-Z_\u4e00-\u9fa5\\s·]{1,50}$",       // 可中文
+    // location: "^[a-zA-Z0-9_]{1,50}$",       // 可中文
+    department: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       // 可中文
+    groups: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       // 可中文
+    belonged: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       // 可中文
     devicestatus: "^[1-4]{1,4}$",       //数字
-    createdby: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       //字母、中文 
+    createdby: "^[a-zA-Z\u4e00-\u9fa5\\s·]{1,50}$",       // 可中文
 
     createdon: "^[a-zA-Z0-9_@]{1,50}$",       //时间
 

@@ -47,7 +47,7 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
       this.change_component = currentcomponent
       
 
-      console.log("得到编辑的组件！", this.change_component);
+      // console.log("得到编辑的组件！", this.change_component);
     })
     
     // 接受plv8方法
@@ -71,7 +71,7 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
   // 调用父方法
   public device_info(item) {
     console.log("-----------------item-------------------", item)
-    console.log("-----------------this.params.node.data 点击的数据！-------------------", this.params.node.data);
+    console.log("-----------------this.params.node.-------------------", this.params.node.data);
     var rowData = this.params.node.data
     console.log("-----------------params-------------------", this.params)
     switch (item) {
@@ -131,32 +131,18 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
   }
 
   edit(rowData){
-    console.log("=============ag-grid-action============", rowData)
-    // 得到所有的角色--数据
-    this.getsecurity('employee', 'get_rolename', {}).subscribe((res)=>{
-      console.log("employee_result---role", res);
-      // 根据用户id得到用户组
-      // 根据用户角色得到，用户对应的组
-      var column = {
-        employeeid:  rowData["employeeid"] // 用户id
+    console.log("ag-grid-action============================", rowData, 'rowData\n');
+    var rowdata = this.option_table_before([rowData])
+    this.dialogService.open(this.change_component, {closeOnBackdropClick: false,context: { title: '编辑设备提示', content: `true`,  rowData: JSON.stringify(rowdata)} }).onClose.subscribe(name=>{
+      if (name){
+        // this.edditsuccess();
+        setTimeout(() => {
+          location.reload();
+        }, );
+      }else{
+        // this.edditdanger();
       }
-
-      this.getsecurity("groups", "get_groups", column).subscribe((goups:any[])=>{
-        console.log("根据用户角色得到，用户对应的组:", goups, "res", res);
-        this.dialogService.open(this.change_component, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} }).onClose.subscribe(name=>{
-          if(name){
-            console.log("-------table  icon  编辑", name)
-            setTimeout(() => {
-              location.reload();
-            }, );
-          }
-        })
-        // this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
-      });
-
     });
-    // this.dialogService.open(EditUserEmployeeComponent, { context: { rowdata: JSON.stringify(this.rowData)} })
-
 
   }
 
@@ -181,24 +167,13 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
             console.log(method,"==============================>", res);
             
             if (res === 1 || res["code"] == 1){
-              // switch (method) {
-              //   case "delete_role":
-              //     localStorage.removeItem("systemsetting_role");
-              //     localStorage.removeItem("role_agGrid");
-              //     break;
-              //   case "delete_employee":
-              //     localStorage.removeItem("employee_rolename");
-              //     localStorage.removeItem("employee_groupname");
-              //     localStorage.removeItem("employee_agGrid");
-              //     break;
-              // }
-              success(publicservice)
+           
+              // this.success()
               setTimeout(() => {
                 location.reload();
               }, );
             }else{
-              // publicservice.toastr(DellDanger);
-              danger(publicservice)
+              // this.danger()
             }
           });
         }
@@ -209,11 +184,18 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
   }
 
   // 展示状态
-  success(publicservice){
-    publicservice.showngxtoastr({position: 'toast-top-right', status: 'success', conent:"删除成功!"});
+  success(){
+    this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'success', conent:"删除成功!"});
   }
-  danger(publicservice){
-    publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"删除失败!"});
+  danger(){
+    this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"删除失败!"});
+  }
+  // 展示状态
+  edditsuccess(){
+    this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'success', conent:"修改成功!"});
+  }
+  edditdanger(){
+    this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"修改失败!"});
   }
 
   // 请求得到 表get_employee中的数据！
@@ -239,6 +221,87 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
     })
   }
 
+   // 编辑修改前，处理一下选中的table数据
+  option_table_before(datas){
+    var after_datas: OptionDeviceData[] =[];
+    var type;
+    var devicestatus;
+    datas.forEach(data => {
+      switch (data["type"]) {
+        case "台架设备":
+          type = 1;
+          break;
+          case "移动资产":
+            type = 2;
+            break;
+          case "举升机":
+            type = 3;
+          break;
+          default:
+            type = 402;
+          break;
+      };
+      switch (data["devicestatus"]) {
+        case "在用":
+          devicestatus = 1;
+          break;
+          case "封存":
+            devicestatus = 2;
+            break;
+          case "停用":
+            devicestatus = 3;
+          break;
+          case "闲置":
+            devicestatus = 4;
+            break;
+          default:
+            devicestatus = 402;
+          break;
+      }
+      var after_data: OptionDeviceData = {
+        id: data.id,
+        devicename:data.devicename,
+        deviceno:data.deviceno,
+        type:type,
+        active:data.active === "是"? 1: 0,
+        assetno:data.assetno,
+        factoryno:data.factoryno,
+        deviceid:data.deviceid,
+        purchaseon:data.purchaseon,
+        supplier:data.supplier,
+        location:data.location,
+        department:data.department,
+        groups:data.groups,
+        belonged:data.belonged,
+        devicestatus:devicestatus,
+        createdby:data.createdby,
+        createdon:data.createdon
+      }
+      after_datas.push(after_data)
+    });
+    return after_datas
+  }
 
 
+
+}
+// table 中每行数据类型！ 这是将table中的数据改回原始数据
+interface OptionDeviceData {
+  id: number,
+  devicename:string,
+  deviceno:string,
+  type:number,
+  active:number,
+  assetno:string,
+  factoryno:string,
+  deviceid:number,
+  purchaseon:string,
+  supplier:string,
+  location:string,
+  department:string,
+  groups:string,
+  belonged:string,
+  devicestatus:number,
+  createdby:string,
+  createdon:string
 }

@@ -29,10 +29,9 @@
         </div>
 
 
-
         <div class="row">
             <div class="col-md-12">
-                <ngx-ag-table #agGrid *ngIf="!isloding" [tableDatas]="tableDatas" (nzpageindexchange)="nzpageindexchange($event)"></ngx-ag-table>
+                <ngx-ag-table #ag_Grid   (nzpageindexchange)="nzpageindexchange($event)" ></ngx-ag-table>
             </div>
         </div>
     </nb-card-body>

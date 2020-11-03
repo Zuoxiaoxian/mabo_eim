@@ -68,19 +68,23 @@ export class DeviceManageComponent implements OnInit {
 
           var sql = special_sql.test(value);
           var str = special_str.test(value);
+         
           if(sql){
             return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
           }
           if (! str){
             return "设备名称不能有特殊字符！"
           }
-
-          if (! new RegExp(Device["devicename"]).test(value)){
-            if (value.length > 20){
-              return "设备名称最大长度不超过20！"
-            }
-            return "设备名称不能有特殊字符"
+          if (value.length > 20){
+            return "设备名称最大长度不超过20！"
           }
+
+          // if (! new RegExp(Device["devicename"]).test(value)){
+          //   if (value.length > 20){
+          //     return "设备名称最大长度不超过20！"
+          //   }
+          //   return "设备名称不能有特殊字符"
+          // }
          
 
         },
@@ -98,11 +102,11 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "设备编号不能有特殊字符！"
           }
-          if (! new RegExp(Device["deviceno"]).test(value)){
+          if (new RegExp(Device["deviceno"]).test(value)){
             if (value.length > 100){
               return "设备编号最大长度不超过100！"
             }
-            return "设备编号必须是数字、字母，且不能有特殊字符"
+            return "设备编号不能有中文！"
           }
           
         },
@@ -121,11 +125,11 @@ export class DeviceManageComponent implements OnInit {
             return "资产编号不能有特殊字符！"
           }
 
-          if (! new RegExp(Device["assetno"]).test(value)){
+          if (new RegExp(Device["assetno"]).test(value)){
             if (value.length > 50){
               return "资产编号最大长度不超过100！"
             }
-            return "资产编号必须是数字、字母，且不能有特殊字符"
+            return "资产编号不能有中文！"
           }
           
         },
@@ -144,11 +148,11 @@ export class DeviceManageComponent implements OnInit {
             return "出厂编号不能有特殊字符！"
           }
 
-          if (! new RegExp(Device["factoryno"]).test(value)){
+          if (new RegExp(Device["factoryno"]).test(value)){
             if (value.length > 50){
               return "出厂编号最大长度不超过100！"
             }
-            return "出厂编号必须是数字、字母，且不能有特殊字符"
+            return "出厂编号不能有中文！"
           }
           
         },
@@ -178,12 +182,16 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "供应商不能有特殊字符！"
           }
-          if (! new RegExp(Device["supplier"]).test(value)){
-            if (value.length > 50){
-              return "供应商最大长度不超过50！"
-            }
-            return "供应商必须是中文、字母，且不能有特殊字符"
+          if (value.length > 50){
+            return "供应商最大长度不超过50！"
           }
+
+          // if (! new RegExp(Device["supplier"]).test(value)){
+          //   if (value.length > 50){
+          //     return "供应商最大长度不超过50！"
+          //   }
+          //   return "供应商必须是中文、字母，且不能有特殊字符"
+          // }
           
         },
         // 存放地点 验证：location character(50)
@@ -200,12 +208,15 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "存放地点不能有特殊字符！"
           }
-          if (! new RegExp(Device["location"]).test(value)){
-            if (value.length > 50){
-              return "存放地点最大长度不超过50！"
-            }
-            return "存放地点必须是数字、字母，且不能有特殊字符"
+          if (value.length > 50){
+            return "存放地点最大长度不超过50！"
           }
+          // if (! new RegExp(Device["location"]).test(value)){
+          //   if (value.length > 50){
+          //     return "存放地点最大长度不超过50！"
+          //   }
+          //   return "存放地点必须是数字、字母，且不能有特殊字符"
+          // }
           
 
         },
@@ -223,12 +234,16 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "使用部门不能有特殊字符！"
           }
-          if (! new RegExp(Device["department"]).test(value)){
-            if (value.length > 50){
-              return "使用部门最大长度不超过50！"
-            }
-            return "使用部门必须是中文、字母，且不能有特殊字符"
+          if (value.length > 50){
+            return "使用部门最大长度不超过50！"
           }
+
+          // if (! new RegExp(Device["department"]).test(value)){
+          //   if (value.length > 50){
+          //     return "使用部门最大长度不超过50！"
+          //   }
+          //   return "使用部门必须是中文、字母，且不能有特殊字符"
+          // }
           
         },
         // 科室 验证：groups character(50)
@@ -245,12 +260,15 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "科室不能有特殊字符！"
           }
-          if (! new RegExp(Device["groups"]).test(value)){
-            if (value.length > 50){
-              return "科室最大长度不超过50！"
-            }
-            return "科室必须是中文、字母，且不能有特殊字符"
+          if (value.length > 50){
+            return "科室最大长度不超过50！"
           }
+          // if (! new RegExp(Device["groups"]).test(value)){
+          //   if (value.length > 50){
+          //     return "科室最大长度不超过50！"
+          //   }
+          //   return "科室必须是中文、字母，且不能有特殊字符"
+          // }
           
         },
         // 归属人 验证：belonged character(50)
@@ -267,12 +285,15 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "归属人不能有特殊字符！"
           }
-          if (! new RegExp(Device["belonged"]).test(value)){
-            if (value.length > 50){
-              return "归属人最大长度不超过50！"
-            }
-            return "归属人必须是中文、字母，且不能有特殊字符"
+          if (value.length > 50){
+            return "归属人最大长度不超过50！"
           }
+          // if (! new RegExp(Device["belonged"]).test(value)){
+          //   if (value.length > 50){
+          //     return "归属人最大长度不超过50！"
+          //   }
+          //   return "归属人必须是中文、字母，且不能有特殊字符"
+          // }
           
         },
         // 设备状态 验证：devicestatus character(50)
@@ -289,12 +310,15 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "设备状态不能有特殊字符！"
           }
-          if (! new RegExp(Device["devicestatus"]).test(value)){
-            if (value.length > 4){
-              return "设备状态最大长度不超过4！"
-            }
-            return "设备状态必须是数字，且不能有特殊字符"
+          if (value.length > 4){
+            return "设备状态最大长度不超过4！"
           }
+          // if (! new RegExp(Device["devicestatus"]).test(value)){
+          //   if (value.length > 4){
+          //     return "设备状态最大长度不超过4！"
+          //   }
+          //   return "设备状态必须是数字，且不能有特殊字符"
+          // }
           
         },
         // 创建人 验证：createdby character(50)
@@ -311,12 +335,15 @@ export class DeviceManageComponent implements OnInit {
           if (! str){
             return "创建人不能有特殊字符！"
           }
-          if (! new RegExp(Device["createdby"]).test(value)){
-            if (value.length > 50){
-              return "创建人最大长度不超过50！"
-            }
-            return "创建人必须是字母、中文，且不能有特殊字符"
+          if (value.length > 50){
+            return "创建人最大长度不超过50！"
           }
+          // if (! new RegExp(Device["createdby"]).test(value)){
+          //   if (value.length > 50){
+          //     return "创建人最大长度不超过50！"
+          //   }
+          //   return "创建人必须是字母、中文，且不能有特殊字符"
+          // }
           
         },
 
@@ -392,9 +419,9 @@ export class DeviceManageComponent implements OnInit {
           if (status === 1){
             success(publicservice)
             dialogRef.close(true);
-            setTimeout(() => {
-              location.reload();
-            }, 1000);
+            // setTimeout(() => {
+            //   location.reload();
+            // }, 1000);
           }else{
             danger(publicservice)
           }
@@ -415,12 +442,12 @@ export class DeviceManageComponent implements OnInit {
 
   // × 关闭diallog   及关闭弹框
   closedialog(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
   
   // 取消
   cancel(){
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
   // 展示状态

@@ -11,6 +11,7 @@ interface Data {
   rowData: any // 行数据
 }
 
+
 @Component({
   selector: 'ngx-ag-table',
   templateUrl: './ag-table.component.html',
@@ -229,42 +230,8 @@ export class AgTableComponent implements OnInit {
       console.log("导出数据>>>>>>>>", data)
       data.forEach(element => {
         var data_item = [];
-        var keys = [];
-        // 适用于用户管理
-        // var keys = ["name", "loginname", "role_name", "role", "active", "employeeno", "email", "phoneno", "pictureurl", "department", "lastsignondate"]
-        // 适用于用户组管理
-        // var keys = ["group", "group_name", "createdon", "createdby", "active"];
-        
-        // 适用于角色管理
-        // var keys = ["role_name", "role", "active", "createdby", "createdon", "lastupdatedby", "lastupdateon"];
-        
-        // 适用于安全日志
-        // var keys = ["application", "source", "machinename", "info", "logintime"];
-        
-        switch (title) {
-          case "用户管理":
-            keys = ["name", "loginname", "role_name", "groups_name", "active", "employeeno", "email", "phoneno", "pictureurl", "department", "lastsignondate"];
-            break;
-          case "用户组管理":
-            keys = ["group", "group_name", "createdon", "createdby", "active"]
-            break;
-          case "角色管理":
-            keys = ["role_name", "role", "active", "createdby", "createdon", "lastupdatedby", "lastupdateon"];
-            break;
-          case "安全日志":
-            keys = ["application", "source", "machinename", "info", "logintime"];
-            break;
-          default:
-            break;
-        }
-
-        if (keys != []){
-          console.log("key 部位null")
-          for (let k of keys){
-            data_item.push(element[k]);
-          }
-        }else{
-          for (let k in element){
+        for (let k in element){
+          if (k != "id"){
             data_item.push(element[k]);
           }
         }

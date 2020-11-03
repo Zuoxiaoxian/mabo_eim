@@ -28,8 +28,12 @@ export class DeviceManageComponent implements OnInit {
   @ViewChild("device_tpye") device_tpye:any;
   @ViewChild("asset_number") asset_number:any;
   @ViewChild("mytable") mytable:any;
+  @ViewChild("ag_Grid") agGrid:any;
 
-  constructor(private publicservice: PublicmethodService, private dialogService: NbDialogService, private http: HttpserviceService) { }
+  constructor(private publicservice: PublicmethodService, private dialogService: NbDialogService, private http: HttpserviceService) { 
+
+
+  }
 
 
   importdata: AOA = [[1,2], [3,4]];
@@ -95,6 +99,10 @@ export class DeviceManageComponent implements OnInit {
   // 每一页展示多少条数据
   nzPageSize;
 
+  // ======================agGrid
+  
+  isloding = false;
+  // ======================agGrid
   // plv8请求
   querst(table: string, method: string, colmun: Object){
     return new Observable((observe)=>{
@@ -125,6 +133,11 @@ export class DeviceManageComponent implements OnInit {
     this.getbuttons();
 
     this.inittable();
+
+    // ===============agGrid
+
+    this.getetabledata();
+    // ===============agGrid
   }
 
   ngAfterViewInit(){
@@ -133,6 +146,10 @@ export class DeviceManageComponent implements OnInit {
     // document.getElementsByClassName('devicename')['0'].style.overflow ='hidden'
     // var devicename = document.getElementsByClassName('devicename');
     // console.log('--devicename--', devicename)
+  }
+
+  ngOnDestory(){
+    localStorage.removeItem("device_manage_agGrid");
   }
 
 
@@ -270,13 +287,21 @@ export class DeviceManageComponent implements OnInit {
   // button add
   add(){
     console.log("button----add");
-    this.dialogService.open(Add_Edit_DeviceManageComponent, { closeOnBackdropClick: false,context: { title: '添加设备', content:  'false'}} )
+    this.dialogService.open(Add_Edit_DeviceManageComponent, { closeOnBackdropClick: false,context: { title: '添加设备', content:  'false'}} ).onClose.subscribe(name=>{
+      if (name){
+        this.isloding = true;
+        this.updatetabledata();
+      }
+    })
   }
 
   // button del  -- dev_delete_device
   del(){
     console.log("删除-设备管理", this.rowdata);
-    if (this.rowdata.length === 0){
+    var rowdata = this.agGrid.getselectedrows();
+    var rowdata_ = this.option_table_before(rowdata)
+
+    if (rowdata_.length === 0){
       // 未选中
       this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false, context: { title: '删除设备提示', content:   `请选择要需要删除的的行数！`}} ).onClose.subscribe(
         name=>{
@@ -284,25 +309,30 @@ export class DeviceManageComponent implements OnInit {
         }
       );
 
-    }else if (this.rowdata.length === 1){
+    }else if (rowdata_.length === 1){
       // 选中一条
       var table = 'device';
       var method = 'dev_delete_device';
-      var colums = this.rowdata[0];
+      var colums = rowdata_[0];
       this.http.callRPC(table, method, colums).subscribe((result)=>{
+        console.log("删除一条数据")
+        console.log("删除一条数据", result)
+        console.log("删除一条数据")
         const status = result['result']['message'][0];
         if (status === 1){
           this.delsuccess()
-          setTimeout(() => {
-            location.reload();
-          }, 1000);
+          this.isloding = true;
+          this.updatetabledata();
+          // setTimeout(() => {
+          //   location.reload();
+          // }, 1000);
         }else{
           this.deldanger()
         }
       })
     }else{
       // 选中多条
-      var rowData = this.rowdata;
+      var rowData = rowdata_;
       try {
         rowData.forEach(colums => {
           var table = 'device';
@@ -315,7 +345,9 @@ export class DeviceManageComponent implements OnInit {
             }
           })
         });
-        location.reload();
+        // location.reload();
+        this.isloding = true;
+        this.updatetabledata();
         this.delsuccess()
       }catch(err){
         this.deldanger()
@@ -329,7 +361,10 @@ export class DeviceManageComponent implements OnInit {
   // button deit
   edit(){
     console.log("编辑-设备管理", this.rowdata);
-    if (this.rowdata.length === 0){
+    var rowdata = this.agGrid.getselectedrows();
+    var rowdata_ = this.option_table_before(rowdata)
+    console.log("编辑-设备管理----agGrid-----rowdata",rowdata);
+    if (rowdata.length === 0){
       // 未选中
       this.dialogService.open(EditDelTooltipComponent, { context: { title: '编辑设备提示', content:   `请选择要需要编辑的的行数！`}} ).onClose.subscribe(
         name=>{
@@ -337,12 +372,17 @@ export class DeviceManageComponent implements OnInit {
         }
         );
         
-      }else if (this.rowdata.length === 1){
+      }else if (rowdata.length === 1){
         // 选中一条
-        console.log("选中一条", this.rowdata);
-      this.dialogService.open(Add_Edit_DeviceManageComponent, { closeOnBackdropClick: false, context: { title: '编辑设备提示', content:   `true`, rowData: JSON.stringify(this.rowdata)}} ).onClose.subscribe(
+        console.log("选中一条", rowdata);
+        console.log("编辑-设备管理----agGrid-----rowdata----处理后的",rowdata_);
+      this.dialogService.open(Add_Edit_DeviceManageComponent, { closeOnBackdropClick: false, context: { title: '编辑设备提示', content:   `true`, rowData: JSON.stringify(rowdata_)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
+          if (name){
+            this.isloding = true;
+            this.updatetabledata();
+          }
         }
       );
     }else{
@@ -377,6 +417,11 @@ export class DeviceManageComponent implements OnInit {
     var asset_number_data = this.asset_number.getselect();
     console.log("<------------搜索----------->", departmentselect_data, device_tpye_data,asset_number_data)
   }
+
+  // 导出文件
+  download(title){
+    this.agGrid.download(title);
+  };
 
   // ----------------------------导入---------------------------
   onFileChange(evt: any){
@@ -430,22 +475,21 @@ export class DeviceManageComponent implements OnInit {
     var datas = this.option_table_before(rowData)
     console.log("插入数据库之前 处理数据---->", datas);
     // 将导入的数据存入数据库
+    this.isloding = true
     this.dev_insert_device(datas);
 
-    // this.device_manage_table_data.source["data"] = rowData;
     // 将导入的数据展示在table中
-    // this.device_manage_table_data.source.load(rowData);
     var after_datas = this.show_table_before(rowData)
-    this.device_manage_table_data.source.load(after_datas);
+    this.gridData = [];
+    this.gridData.push(...after_datas)
+    this.tableDatas.rowData = this.gridData;
+    this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
 
   }
 
+ 
   // ----------------------------导入---------------------------
 
-  // 导出文件
-  download(title){
-    this.mytable.download(title);
-  };
 
 
   // 将导入的数据插入到数据库中
@@ -463,9 +507,10 @@ export class DeviceManageComponent implements OnInit {
           }
         })
       });
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
+      // setTimeout(() => {
+      //   location.reload();
+      // }, 1000);
+      this.isloding = false
       this.success()
     }catch(err){
       console.log("err: ", err)
@@ -633,6 +678,213 @@ export class DeviceManageComponent implements OnInit {
     // })
     // this.getsecurity('employee', 'get_employee_limit', {offset:0,limit:this.nzPageSize,numbers:0});
   }
+
+
+
+  // =================================================agGrid
+
+  tableDatas = {
+    action: true,
+    columnDefs:[ // 列字段 多选：headerCheckboxSelection checkboxSelection , flex: 1 自动填充宽度
+      { field: 'devicename', headerName: '设备名称', headerCheckboxSelection: true, checkboxSelection: true, autoHeight: true, fullWidth: true, minWidth: 50,resizable: true, pinned: 'left'},
+      { field: 'deviceno', headerName: '设备编号',  resizable: true, minWidth: 10},
+      { field: 'type', headerName: '设备类型', resizable: true},
+      { field: 'active', headerName: '是否启用', resizable: true},
+      { field: 'assetno', headerName: '资产编号', resizable: true, minWidth: 10},
+      
+      { field: 'factoryno', headerName: '出厂编号', resizable: true, minWidth: 10},
+      { field: 'deviceid', headerName: '设备编号', resizable: true, minWidth: 10},
+      { field: 'purchaseon', headerName: '购置日期', resizable: true, minWidth: 10},
+      { field: 'supplier', headerName: '供应商', resizable: true, flex: 1},
+      { field: 'location', headerName: '存放地点', resizable: true, minWidth: 10},
+      { field: 'department', headerName: '使用部门', resizable: true, minWidth: 10},
+      { field: 'groups', headerName: '科室', resizable: true, minWidth: 10},
+      { field: 'belonged', headerName: '归属人', resizable: true, minWidth: 10},
+
+      { field: 'devicestatus', headerName: '设备状态', resizable: true,minWidth: 50,
+        cellStyle: function(params){
+          var value = params.value;
+          console.log("===设备状态====", value)
+          
+          switch (value) {
+            case '停用':
+              return {
+                border: 'rgb(238, 240, 238) 1px solid',
+                background: 'rgb(199, 199, 199)',
+              }
+              break;
+            case '闲置':
+              return {
+                border: 'rgb(216, 236, 162) 1px solid',
+                background: 'rgb(171, 250, 92)',
+              }
+            
+              break;
+            case '封存':
+              return {
+                border: 'rgb(228, 144, 129) 1px solid',
+                background: 'rgb(247, 115, 39)',
+              }
+              break;
+            case '在用':
+              return {
+                border: 'green 1px solid',
+                background: 'rgb(48, 248, 48)'
+              }
+              break;
+            default:
+              return {
+                border: 'rgb(203, 238, 164) 1px solid',
+                background: 'rgb(203, 238, 164)',
+              }
+              break;
+          }
+        }
+      
+      },// =================
+
+      { field: 'createdby', headerName: '创建人', resizable: true},
+      { field: 'createdon', headerName: '创建时间', resizable: true},
+
+      // { field: 'options', headerName: '操作', resizable: true, flex: 1},
+    ],
+    rowData: [ // data
+      { name: 'Toyota', loginname: 'Celica', role_name: 35000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020"},
+      // { name: 'Ford', loginname: 'Mondeo', role_name: 32000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" },
+      // { name: 'Porsche', loginname: 'Boxter', role_name: 72000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" }
+    ]
+  };
+
+  private gridData = [];
+  
+  getetabledata(event?){
+    var offset;
+    var limit;
+    console.log("event------------------------------------------------", event);
+    if (event != undefined){
+      offset = event.offset;
+      limit = event.limit;
+    }else{
+      offset = 0;
+      limit = 50;
+    }
+    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    // 得到员工信息！
+    // this.http.callRPC('group_', 'get_group', {offset: offset, limit: limit}).subscribe((res)=>{
+    this.http.callRPC('device', 'dev_get_device', {}).subscribe((res)=>{
+      // console.log("get_menu_role", result)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("dev_get_device---------------------------->>>", get_employee_limit);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      this.publicservice.getcomponent(Add_Edit_DeviceManageComponent);
+      this.publicservice.getmethod("dev_delete_device");
+
+
+      var message = res["result"]["message"][0];
+      if (message){
+        message.forEach(r => {
+          r["active"] = r["active"] === 1 ? '是': '否';
+        });
+        console.log("初始化用户组表！", message)
+      }
+      var after_datas = this.show_table_before(message);
+      this.gridData = [];
+      this.gridData.push(...after_datas)
+      this.tableDatas.rowData = this.gridData;
+      this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
+    })
+  }
+
+  pageabledata(event?){
+    var offset;
+    var limit;
+    console.log("event------------------------------------------------", event);
+    if (event != undefined){
+      offset = event.offset;
+      limit = event.limit;
+    }else{
+      offset = 0;
+      limit = 50;
+    }
+    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    // 得到员工信息！
+    // this.http.callRPC('group_', 'get_group', {offset: offset, limit: limit}).subscribe((res)=>{
+    this.http.callRPC('device', 'dev_get_device', {}).subscribe((res)=>{
+      // console.log("get_menu_role", result)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("device---", get_employee_limit);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      this.publicservice.getcomponent(Add_Edit_DeviceManageComponent);
+      this.publicservice.getmethod("dev_delete_device");
+
+
+      var message = res["result"]["message"][0];
+      if (message){
+        message.forEach(r => {
+          r["active"] = r["active"] === 1 ? '是': '否';
+        });
+        console.log("初始化用户组表！", message)
+      }
+      var after_datas = this.show_table_before(message);
+      this.gridData.push(...after_datas)
+      this.tableDatas.rowData = this.gridData;
+      this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
+    })
+  }
+
+  updatetabledata(event?){
+    var offset;
+    var limit;
+    console.log("event------------------------------------------------", event, this.agGrid);
+    if (event != undefined){
+      offset = event.offset;
+      limit = event.limit;
+    }else{
+      offset = 0;
+      limit = 50;
+    }
+    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    // 得到员工信息！
+    this.http.callRPC('deveice', 'dev_get_device', {}).subscribe((res)=>{
+      console.log("updatetabledata\n\n", res)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("deveice", get_employee_limit, "this.agGrid",this.agGrid);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      this.publicservice.getcomponent(Add_Edit_DeviceManageComponent);
+      this.publicservice.getmethod("dev_delete_device");
+
+
+      var message = res["result"]["message"][0];
+      if (message){
+        message.forEach(r => {
+          r["active"] = r["active"] === 1 ? '是': '否';
+        });
+        console.log("初始化用户组表！", message)
+      }
+      this.gridData = [];
+      var after_datas = this.show_table_before(message);
+      this.gridData.push(...after_datas)
+      this.tableDatas.rowData = this.gridData;
+      this.agGrid.update_agGrid(this.tableDatas); // 告诉组件刷新！
+    })
+
+  }
+      
+
+  // nzpageindexchange 页码改变的回调
+  nzpageindexchange_ag(event){
+    console.log("页码改变的回调", event);
+    this.pageabledata(event);
+  }
+
+
+  // =================================================agGrid
 
 }
 

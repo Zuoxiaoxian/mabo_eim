@@ -42,9 +42,15 @@
                         <button nbButton [status]="button.class" size="small" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
                     </div>
                 </div>
-                <div class="smart-table-container">
+                <!-- <div class="smart-table-container">
                     <ngx-my-table-ng2 #mytable [datas]="device_manage_table_data" (outer)="runParent($event)" 
                     (nzpageindexchange)="nzpageindexchange($event)"></ngx-my-table-ng2>
+                </div> -->
+
+                <div class="row" [nbSpinner]="isloding" nbSpinnerStatus="basic">
+                    <div class="col-md-12">
+                        <ngx-ag-table #ag_Grid   (nzpageindexchange)="nzpageindexchange_ag($event)"></ngx-ag-table>
+                    </div>
                 </div>
             </nb-card-body>
         </nb-card>

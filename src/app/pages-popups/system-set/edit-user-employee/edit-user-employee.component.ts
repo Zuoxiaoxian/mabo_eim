@@ -290,8 +290,9 @@ export class EditUserEmployeeComponent implements OnInit {
             // publicmethod
             // publicmethod.toastr(UpSuccess);
             success(publicmethod)
+            localStorage.removeItem("employee_agGrid");
             dialogRef.close(true);
-            location.reload();
+            // location.reload();
 
           }else{
             // publicmethod.toastr(UpDanger);

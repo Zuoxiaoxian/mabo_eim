@@ -26,7 +26,7 @@ declare let layui;
   styleUrls: ['./user-employee-group.component.scss']
 })
 export class UserEmployeeGroupComponent implements OnInit {
-  @ViewChild("agGrid") agGrid: any;
+  @ViewChild("ag_Grid") agGrid: any;
 
 
   table_data = {
@@ -46,6 +46,7 @@ export class UserEmployeeGroupComponent implements OnInit {
 
   // 加载table
   isloding = false;
+  employee_group_agGrid;
  
 
 
@@ -58,17 +59,71 @@ export class UserEmployeeGroupComponent implements OnInit {
     // this.updatabutton_list();
     // 改界面具有的button
     this.getbuttons();
+
+    
+    
+    
+    // init data 
+    this.http.callRPC('group_', 'get_group', {}).subscribe((res)=>{
+      // console.log("get_menu_role", result)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("get_employee_limit", get_employee_limit);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      this.publicmethod.getcomponent(EditUserEmployeeGroupComponent);
+      this.publicmethod.getmethod("delete_group");
+
+      var message = res["result"]["message"][0];
+      if (message){
+        message.forEach(r => {
+          r["active"] = r["active"] === 1 ? '是': '否';
+        });
+        console.log("初始化用户组表！", message)
+      }
+      this.gridData.push(...message)
+      this.tableDatas.rowData = this.gridData;
+      localStorage.setItem("employee_group_agGrid", JSON.stringify(this.tableDatas))
+      // this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
+    })
+
     
   }
 
   ngOnInit(): void {
 
+    console.log("----初始化 用户组管理")
+
     // ====================================agGrid
       // 初始化table
-      this.getetabledata();
+      // this.getetabledata();
+
+      setTimeout(() => {
+        this.employee_group_agGrid = JSON.parse(localStorage.getItem("employee_group_agGrid"))
+        
+      }, );
+
     // ====================================agGrid
     
   }
+  ngAfterViewInit(){
+    // this.employee_group_agGrid = JSON.parse(localStorage.getItem("employee_group_agGrid"))
+    if (this.employee_group_agGrid == null){
+      this.pageabledata()
+    }else{
+      console.log("&&&&&&&&&&&&&&&&&&&&&&&this.employee_agGrid&&&&&&&&&&&&&&&&", this.employee_group_agGrid, this.agGrid);
+      setTimeout(() => {
+        this.agGrid.init_agGrid(this.employee_group_agGrid);
+      },);
+
+    }
+}
+
+ngOnDestory(){
+
+  localStorage.removeItem("employee_group_agGrid");
+}
+
 
   // 调用plv8函数！
   getsecurity_edit(table: string, method: string, colums: object){
@@ -210,7 +265,14 @@ export class UserEmployeeGroupComponent implements OnInit {
 
   // button 新增用户组
   add(){
-    this.dialogService.open(AddUserEmployeeGroupComponent, {closeOnBackdropClick: false,});
+    this.dialogService.open(AddUserEmployeeGroupComponent, {closeOnBackdropClick: false,}).onClose.subscribe(
+      name=>{
+        if (name){
+          this.isloding = true;
+          this.updatetabledata();
+        }
+      }
+    );
   }
 
   // button 编辑用户组
@@ -237,16 +299,23 @@ export class UserEmployeeGroupComponent implements OnInit {
       console.log("---------------------rowdata_===",rowdata_)
       rowdata_["active"] = rowdata_["active"] === "是" || rowdata_["active"] === 1? 1 :0;
       console.log("---------------------rowdata_===",rowdata_)
-      this.dialogService.open(EditUserEmployeeGroupComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowdata_)} })
+      this.dialogService.open(EditUserEmployeeGroupComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowdata_)} }).onClose.subscribe(name=>{
+        if (name){
+          // 更新table
+          console.log("更新用户组！", name)
+          this.isloding = true;
+          this.updatetabledata();
+        }
+      })
 
     }
   }
 
   // button删除用户组
   del(){
-    var rowdata = this.rowdata;
+    var rowdata = this.agGrid.getselectedrows();
 
-    if (rowdata === undefined || rowdata["selected"].length === 0){
+    if (rowdata.length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
       this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户组提示', content:   `请选择要需要删除的行！`}} ).onClose.subscribe(
@@ -254,7 +323,7 @@ export class UserEmployeeGroupComponent implements OnInit {
       );
       // this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(this.rowdata), res: JSON.stringify(res)} })
     }else {
-      var rowData = rowdata["selected"]
+      var rowData = rowdata
       var rownum = rowData.length > 1? "这些": "这条";
       var getsecurity_edit2 = this.getsecurity_edit2;
       var publicservice = this.publicmethod;
@@ -279,9 +348,12 @@ export class UserEmployeeGroupComponent implements OnInit {
                   }
                 });
               });
-              setTimeout(() => {
-                location.reload();
-              }, 1000);
+              this.isloding = true;
+              this.updatetabledata();
+
+              // setTimeout(() => {
+              //   location.reload();
+              // }, 1000);
               // publicservice.toastr(DelSuccess);
               success(publicservice)
             }catch(err){
@@ -340,17 +412,7 @@ export class UserEmployeeGroupComponent implements OnInit {
 
     }
   }
-  
-  
 
-  // 编辑
-  uprole(uprow){
-    console.log("编辑行执行：", uprow)
-  }
-  // 添加
-  addroleIcon(addrow){
-    console.log("添加行执行：", addrow)
-  }
 
 
   // 更新button_list！
@@ -447,9 +509,87 @@ export class UserEmployeeGroupComponent implements OnInit {
       }
       this.gridData.push(...message)
       this.tableDatas.rowData = this.gridData;
-      this.agGrid.update_agGrid(this.tableDatas); // 告诉组件刷新！
+      this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
     })
   }
+  pageabledata(event?){
+    var offset;
+    var limit;
+    console.log("event------------------------------------------------", event);
+    if (event != undefined){
+      offset = event.offset;
+      limit = event.limit;
+    }else{
+      offset = 0;
+      limit = 50;
+    }
+    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    // 得到员工信息！
+    // this.http.callRPC('group_', 'get_group', {offset: offset, limit: limit}).subscribe((res)=>{
+    this.http.callRPC('group_', 'get_group', {}).subscribe((res)=>{
+      // console.log("get_menu_role", result)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("get_employee_limit", get_employee_limit);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      this.publicmethod.getcomponent(EditUserEmployeeGroupComponent);
+      this.publicmethod.getmethod("delete_group");
+
+
+      var message = res["result"]["message"][0];
+      if (message){
+        message.forEach(r => {
+          r["active"] = r["active"] === 1 ? '是': '否';
+        });
+        console.log("初始化用户组表！", message)
+      }
+      this.gridData = [];
+      this.gridData.push(...message)
+      this.tableDatas.rowData = this.gridData;
+      this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
+    })
+  }
+
+  updatetabledata(event?){
+    var offset;
+    var limit;
+    console.log("event------------------------------------------------", event, this.agGrid);
+    if (event != undefined){
+      offset = event.offset;
+      limit = event.limit;
+    }else{
+      offset = 0;
+      limit = 50;
+    }
+    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
+    // 得到员工信息！
+    this.http.callRPC('group_', 'get_group', {}).subscribe((res)=>{
+      console.log("updatetabledata\n\n", res)
+      var get_employee_limit = res['result']['message'][0]
+      console.log("get_employee_limit", get_employee_limit, "this.agGrid",this.agGrid);
+
+      this.isloding = false;
+      // 发布组件，编辑用户的组件
+      this.publicmethod.getcomponent(EditUserEmployeeGroupComponent);
+      this.publicmethod.getmethod("delete_group");
+
+
+      var message = res["result"]["message"][0];
+      if (message){
+        message.forEach(r => {
+          r["active"] = r["active"] === 1 ? '是': '否';
+        });
+        console.log("初始化用户组表！", message)
+      }
+      this.gridData = [];
+      this.gridData.push(...message)
+      this.tableDatas.rowData = this.gridData;
+      this.agGrid.update_agGrid(this.tableDatas); // 告诉组件刷新！
+    })
+
+  }
+      
 
   // nzpageindexchange 页码改变的回调
   nzpageindexchange(event){
