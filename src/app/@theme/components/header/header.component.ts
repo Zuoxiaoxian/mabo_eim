@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../setup/auth/auth.service';
 import { Router } from '@angular/router';
 import { LocalStorageService } from '../../../services/local-storage/local-storage.service';
-import { localstorage, adminlocalstorage, ssotoken, loginurl, adminloginurl, USERINFO, MULU, SYSMENU, SYSMENUEDIT, SSOUSERINFO, SYSROLE, SYSROLEMENU,menu_button_list,employee_action, LOGIN_INFO, ECHARTS_RESIZE } from '../../../appconfig'; 
+import { localstorage, adminlocalstorage, ssotoken, loginurl, USERINFO, MULU, SYSMENU, SYSMENUEDIT, SSOUSERINFO, SYSROLE, SYSROLEMENU,menu_button_list,employee_action, LOGIN_INFO, ECHARTS_RESIZE } from '../../../appconfig'; 
 import { UserInfoService } from '../../../services/user-info/user-info.service';
 
 import { HttpHeaders,HttpClient,  } from '@angular/common/http';
@@ -224,7 +224,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         // // menu_button_list,employee_action
         localStorage.removeItem(menu_button_list);
         localStorage.removeItem(employee_action);
-        this.router.navigate([adminloginurl]);
+        this.router.navigate(['/']);
       }else{
         // 这里是SSO登录需要调用 接口注销 token
         var ticket = this.localStorageService.get(ssotoken)? this.localStorageService.get(ssotoken): false;

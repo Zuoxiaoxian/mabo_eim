@@ -277,7 +277,7 @@ export class UserLoginComponent implements OnInit {
       this.httpserviceService.callRPC(table, method, colums).subscribe((result)=>{
         console.log("将数据存入数据库中，返回的数据", result);
         const status = result['result']['message'][0];
-        if (status === 1){
+        if (status["code"] === 1){
           // 表示入库成功！调用登录接口得到token, 
           // console.log("请求登录！")
           var headers = {headers: new HttpHeaders({"Content-Type": "application/json"})};

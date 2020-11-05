@@ -144,6 +144,7 @@ export class AgTableComponent implements OnInit {
 
   // 页码改变的回调
   pageIndexChange(event) {
+    
     // 页面跳转
     this.gridApi.paginationGoToPage(event - 1);
 
@@ -165,10 +166,18 @@ export class AgTableComponent implements OnInit {
 
   // 每页条数改变的回调
   pageSizeChange(event) {
+    console.log("ag-table.component.ts==pageSizeChange", event)
     console.warn("pageSizeChange 每页条数改变的回调>>", event);
     // 更新每页展示条数
     this.setPageCount = event;
     this.gridApi.paginationSetPageSize(Number(event));
+  }
+
+  // onPageSizeChanged()
+  onPageSizeChanged(){
+    this.setPageCount = this.paginationPageSize
+    console.log("----------------\nonPageSizeChanged---\n", this.paginationPageSize)
+    this.gridApi.paginationSetPageSize(Number(this.paginationPageSize));
   }
 
   // 选中行数

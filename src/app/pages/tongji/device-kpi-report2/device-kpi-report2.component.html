@@ -44,6 +44,20 @@
             </div>
         </div>
 
+        <!-- tree input -->
+        <div class="row">
+            <div class="col-md-2 my-select">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="padding-right: 0px; padding-left: 0px;">设备名称</label>
+                    <div class="layui-input-block" style="margin-left: 88px;">
+                        <input type="text" name="anniunparentname" required="" lay-verify="required" placeholder="请选择设备" readonly=""  autocomplete="off" class="layui-input">
+                        <div class="eleTree ele5" lay-filter="data5"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-10 "></div>
+        </div>
 
         <router-outlet></router-outlet>
     </nb-card-body>

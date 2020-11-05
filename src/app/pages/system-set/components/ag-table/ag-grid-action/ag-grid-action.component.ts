@@ -47,7 +47,7 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
       this.change_component = currentcomponent
       
 
-      console.log("得到编辑的组件！", this.change_component);
+      // console.log("得到编辑的组件！", this.change_component);
     })
     
     // 接受plv8方法
@@ -133,28 +133,41 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
   edit(rowData){
     console.log("=============ag-grid-action============", rowData)
     // 得到所有的角色--数据
-    this.getsecurity('employee', 'get_rolename', {}).subscribe((res)=>{
-      console.log("employee_result---role", res);
-      // 根据用户id得到用户组
-      // 根据用户角色得到，用户对应的组
-      var column = {
-        employeeid:  rowData["employeeid"] // 用户id
-      }
-
-      this.getsecurity("groups", "get_groups", column).subscribe((goups:any[])=>{
-        console.log("根据用户角色得到，用户对应的组:", goups, "res", res);
-        this.dialogService.open(this.change_component, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} }).onClose.subscribe(name=>{
-          if(name){
-            console.log("-------table  icon  编辑", name)
-            setTimeout(() => {
-              location.reload();
-            }, );
-          }
-        })
-        // this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
+    var method = this.plv8; 
+    console.log("edit--------------------------edit>>>>>>>>>method",method);
+      this.getsecurity('employee', 'get_rolename', {}).subscribe((res)=>{
+        console.log("employee_result---role", res);
+        // 根据用户id得到用户组
+        // 根据用户角色得到，用户对应的组
+        var column = {
+          employeeid:  rowData["employeeid"] // 用户id
+        }
+        if (method === "delete_employee" || method === "delete_role"){
+          this.getsecurity("groups", "get_groups", column).subscribe((goups:any[])=>{
+            console.log("根据用户角色得到，用户对应的组:", goups, "res", res);
+            this.dialogService.open(this.change_component, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} }).onClose.subscribe(name=>{
+              if(name){
+                console.log("-------table  icon  编辑", name)
+                setTimeout(() => {
+                  location.reload();
+                }, );
+              }
+            })
+            // this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
+          });
+        }else{
+          this.dialogService.open(this.change_component, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res)} }).onClose.subscribe(name=>{
+            if(name){
+              console.log("-------table  icon  编辑", name)
+              setTimeout(() => {
+                location.reload();
+              }, );
+            }
+          })
+        };
+        
+  
       });
-
-    });
     // this.dialogService.open(EditUserEmployeeComponent, { context: { rowdata: JSON.stringify(this.rowData)} })
 
 

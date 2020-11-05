@@ -5,7 +5,7 @@ import { DeviceKpiReport2RoutingModule } from './device-kpi-report2-routing.modu
 import { DeviceKpiReport2Component } from './device-kpi-report2.component';
 import { KpiTableComponent } from './kpi-table/kpi-table.component';
 import { KpiDetailComponent } from './kpi-detail/kpi-detail.component';
-import { NbButtonModule, NbCardModule, NbIconModule, NbSelectModule } from '@nebular/theme';
+import { NbButtonModule, NbCardModule, NbIconModule, NbSelectModule,NbSpinnerModule } from '@nebular/theme';
 
 import { ComponentTModule} from '../components/componentT.module'
 
@@ -24,6 +24,7 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     NbSelectModule,
     NbIconModule,
+    NbSpinnerModule,
 
     ComponentTModule
 

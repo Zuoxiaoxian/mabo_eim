@@ -29,13 +29,39 @@
 >
 </ag-grid-angular>
 <br>
-<nz-pagination [(nzPageIndex)]="current" [nzTotal]="totalPageNumbers"
+<!-- <nz-pagination [(nzPageIndex)]="current" [nzTotal]="totalPageNumbers"
                    nzShowSizeChanger
                    nzShowQuickJumper
                    (nzPageIndexChange)="pageIndexChange($event)"
                    (nzPageSizeChange)="pageSizeChange($event)"
                    [nzShowTotal]="totalTemplate"
     >
-</nz-pagination>
+</nz-pagination> -->
+
+<div class="row">
+    <div class="col-md-10" style="text-align: right;">
+        <nz-pagination [(nzPageIndex)]="current" [nzTotal]="totalPageNumbers"
+                    [nzPageSize] = "setPageCount"
+                    (nzPageIndexChange)="pageIndexChange($event)"
+                   nzShowQuickJumper
+                   [nzShowTotal]="totalTemplate"
+                   
+        >
+        </nz-pagination>
+    </div>
+
+    <div class="col-md-2">
+        <div class="select_page">
+            <nb-select placeholder="10条/页" size="small" [(selected)]="paginationPageSize"  (selectedChange)="onPageSizeChanged()">
+                <nb-option value="10" >10条/页</nb-option>
+                <nb-option value="20">20条/页</nb-option>
+                <nb-option value="30">30条/页</nb-option>
+                <nb-option value="40">40条/页</nb-option>
+                <nb-option value="50">50条/页</nb-option>
+            </nb-select>
+
+        </div>
+    </div>
+</div>
 
 <ng-template #totalTemplate let-total>共 {{ totalPageNumbers }} 条, 已选{{selectedRows.length}}条</ng-template>

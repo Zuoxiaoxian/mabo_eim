@@ -5,6 +5,8 @@ import { AgGridActionComponent } from './ag-grid-action/ag-grid-action.component
 
 import * as XLSX from 'xlsx';
 
+declare let $;
+
 interface Data {
   action: boolean,
   columnDefs: any, // 列字段
@@ -22,17 +24,18 @@ export class AgTableComponent implements OnInit {
 
   @ViewChild('agGrid') agGrid: AgGridAngular;   // 实例在组件可访问
   @Output() private nzpageindexchange = new EventEmitter<any>(); // 分页
-  @Output() private clickrow = new EventEmitter<any>(); // 分页
+  @Output() private clickrow = new EventEmitter<any>(); // 传递给父组件 点击的含数据
 
 
   gridApi;
   gridColumnApi;
-  paginationPageSize; // 每页多少条数
+  paginationPageSize = 10; // 每页多少条数
   paginationNumberFormatter;   // 设置每页展示条数
   suppressScrollOnNewData = true; // 更改时网格不要滚动到顶部
   suppressPaginationPanel = true; // 隐藏用于导航的默认ag-Grid控件 即隐藏自带的分页组件
   suppressRowClickSelection = false; // true 则单击行时将不会发生行选择 仅在需要复选框选择时使用
 
+  
   
 
   rowSelection; // 选中行
@@ -43,6 +46,8 @@ export class AgTableComponent implements OnInit {
   totalPageNumbers=10;  // 总数据条数
   setPageCount = 10;     // 默认每页10条数据
   private requestPageCount = 5; // 每次请求的数目
+
+  
 
   selectedRows = [];     // 行选择数据
 
@@ -62,15 +67,12 @@ export class AgTableComponent implements OnInit {
   ngOnInit(): void {
     // this.gridOptions();
     console.log("agGrid========================", this.agGrid)
+    
   }
   
 
+  // kpi_detail
   ngAfterViewInit(){
-
-    
-    // setTimeout(() => {
-    // }, 1000);
-    
   }
   
   // ---------------
@@ -79,7 +81,8 @@ export class AgTableComponent implements OnInit {
     this.rowData =  employee_agGrid["rowData"]; // 行数据
     this.action =  employee_agGrid["action"]; // 是否操作
 
-    this.paginationPageSize = 10;
+
+    // this.paginationPageSize = 10;
     this.rowSelection = 'multiple';
 
     
@@ -109,18 +112,25 @@ export class AgTableComponent implements OnInit {
       //   countryCellRenderer: this.tableDatas.action_action
       // }
     }
+
+    // 详细  设备报表kpi详情
+    
+
     // this.rowData = this.tableDatas.rowData;
     console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     console.log("^^^^^^^^^^^^^^this.rowData^^^^^^^^^^^^^^",this.rowData)
     console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
     this.totalPageNumbers = this.rowData.length
     // this.columnDefs = this.columnDefs;
-    console.log("------------------->>>>>>>>>>>>>>>>>>>>",this.columnDefs)
+    console.log("------------------->>>>>>>>>>>>>>>>>>>>",this.columnDefs,"this.totalPageNumbers",this.totalPageNumbers)
 
     console.log("tableDatas===================", this.tableDatas)
   };
 
   
+
+  // 渲染 详情
+  KpiDetailRender(){}
 
 
   // 分页！
@@ -140,7 +150,7 @@ export class AgTableComponent implements OnInit {
   // 点击行数据
   onRowClicked(event) {
     console.log("点击行数据",event);
-    this.clickrow.emit(event)
+    this.clickrow.emit(event.data)
   }
 
   // 页码改变的回调
@@ -176,6 +186,14 @@ export class AgTableComponent implements OnInit {
   onSelectionChanged(event) {
     this.selectedRows = this.gridApi.getSelectedRows();
     console.warn(this.selectedRows);
+  }
+
+  // onPageSizeChanged2()
+  onPageSizeChanged2(){
+    // 更新每页展示条数
+    this.setPageCount = this.paginationPageSize;
+    console.log("----------------\nonPageSizeChanged---\n", this.paginationPageSize,"更新每页展示条数", this.setPageCount, "总条数",this.totalPageNumbers)
+    this.gridApi.paginationSetPageSize(Number(this.paginationPageSize));
   }
 
   // 父组件调用，得到选中的数据

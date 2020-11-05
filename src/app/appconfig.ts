@@ -80,8 +80,7 @@ export const afterloginurl: string = '/pages';
 // 登录的界面
 export const loginurl: string = '/';
 
-// admin login 登录的界面
-export const adminloginurl: string = '/setup/adminlogin';
+
 
 
 // map地图初始 point

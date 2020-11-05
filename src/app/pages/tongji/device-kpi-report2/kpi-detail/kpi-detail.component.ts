@@ -60,11 +60,12 @@ export class KpiDetailComponent implements OnInit {
     this.querst("", "dev_get_device_columnar", {start: "2020-10-1", end: "2020-11-21"}).subscribe(res=>{
       // 得到 x 轴！
       var resdatas = res['result']['message'][0];
+      console.log("左侧第一个：", resdatas)
       var xData = [];
       var running = [];
       var stop = [];
       var warning = [];
-      var placeout = [];
+      var placeon = [];
 
       var afterdata = {};
       resdatas.forEach(resdata => {
@@ -72,15 +73,15 @@ export class KpiDetailComponent implements OnInit {
         running.push(resdata["running"]);
         stop.push(resdata["stop"]);
         warning.push(resdata["warning"]);
-        placeout.push(resdata["placeout"]);
+        placeon.push(resdata["placeon"]);
       });
       afterdata["xData"] = xData;
       afterdata["running"] = running;
       afterdata["stop"] = stop;
       afterdata["warning"] = warning;
-      afterdata["placeout"] = placeout;
+      afterdata["placeon"] = placeon;
 
-      // console.log("得到左侧第一个数据： ", afterdata);
+      console.log("得到左侧第一个数据： ", afterdata);
       kpi_detail.left_one('.left-one', afterdata);
     });
   };
@@ -91,6 +92,7 @@ export class KpiDetailComponent implements OnInit {
     this.querst("", "dev_get_device_pie", {start: "2020-10-1", end: "2020-11-21"}).subscribe(res=>{
       // 得到 x 轴！
       var resdatas = res['result']['message'][0][0];
+      
       var afterdatas = [];
       for(let k in resdatas){
         var afterdata = {};
@@ -105,7 +107,7 @@ export class KpiDetailComponent implements OnInit {
           case "warning":
             key = "故障"
             break;
-          case "placeout":
+          case "placeon":
             key = "非占位"
             break;
         }

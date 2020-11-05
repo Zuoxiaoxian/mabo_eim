@@ -1,5 +1,4 @@
-// 私密接口：
-// http://localhost:4200/setup/admin
+
 
 
 import { Component, OnInit } from '@angular/core';

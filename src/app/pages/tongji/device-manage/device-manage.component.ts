@@ -17,6 +17,9 @@ import { NbDialogService } from '@nebular/theme';
 import { HttpserviceService } from '../../../services/http/httpservice.service';
 import { Observable } from 'rxjs';
 
+
+// 引入 设备管理 表单的验证
+import { Device } from '../../../pages-popups/tongji/form_verification';
 @Component({
   selector: 'ngx-device-manage',
   templateUrl: './device-manage.component.html',
@@ -315,9 +318,7 @@ export class DeviceManageComponent implements OnInit {
       var method = 'dev_delete_device';
       var colums = rowdata_[0];
       this.http.callRPC(table, method, colums).subscribe((result)=>{
-        console.log("删除一条数据")
-        console.log("删除一条数据", result)
-        console.log("删除一条数据")
+        
         const status = result['result']['message'][0];
         if (status === 1){
           this.delsuccess()
@@ -449,41 +450,69 @@ export class DeviceManageComponent implements OnInit {
 
   // 将sheet_json转换为smart-table 数据格式！ 
   analysis_sheet_to_json_to_ng2(importdata){
+    console.log("这是导入的Excel的原始数据！", importdata, "\n")
     var rowData_list = importdata.slice(1,importdata.length);
-    console.log("rowData_list---->", rowData_list)
-    var columns = this.device_manage_table_data.settings['columns'];
-    var columnsList = [];
-    for (let k in columns){
-      columnsList.push(k);
-    };
-    console.log("columnsList----->", columnsList);
+    var excel_title = importdata.slice(0,1)[0];
+    console.log("rowData_list----excel 除了表头的数据>", rowData_list)
+    console.log("excel_title---- excel的表头>", excel_title)
+    var ag_Grid_columns = this.tableDatas.columnDefs.slice(0, excel_title.length);
+    console.log("ag_Grid_columns--------->ag_Grid_columns 的表头", ag_Grid_columns, "\n")
 
-    var rowData = []; // rowData 就是table需要的source
-    rowData_list.forEach(element => {
-      var item = {};
-      if(element.length != 0){
-        for (let index = 0; index < element.length; index++) {
-          item[columnsList[index]] = element[index];
-        }
-        rowData.push(item);
+    var agGridTitle = [];
+    var noexist_title = [];
+    for (let index = 0; index < ag_Grid_columns.length; index++) {
+      const agitem = ag_Grid_columns[index];
+      const exitem = excel_title[index];
+
+      if (agitem.headerName === exitem){
+        agGridTitle.push(agitem.field);
+      }else{
+        console.log("字段不一致", "agTitle != exetitle", agitem.headerName, '!=', exitem);
+        noexist_title.push(agitem.headerName)
       }
-      
-    });
-    console.log("rowData---->", rowData);
-    
-    // 插入数据库之前 处理数据
-    var datas = this.option_table_before(rowData)
-    console.log("插入数据库之前 处理数据---->", datas);
-    // 将导入的数据存入数据库
-    this.isloding = true
-    this.dev_insert_device(datas);
+    }
+    console.log("agGridTitle----->", agGridTitle);
+    console.log("noexist_title----->", noexist_title);
 
-    // 将导入的数据展示在table中
-    var after_datas = this.show_table_before(rowData)
-    this.gridData = [];
-    this.gridData.push(...after_datas)
-    this.tableDatas.rowData = this.gridData;
-    this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
+    if (noexist_title.length >0 ){
+      this.importdanger(noexist_title);
+    }else{
+      var rowData = []; // rowData 就是table需要的source
+      rowData_list.forEach(element => {  // rowData_list excel 除了第一列字段，其它的数据！
+        var item = {};
+        if(element.length != 0){
+          for (let index = 0; index < element.length; index++) {
+            item[agGridTitle[index]] = element[index];  
+          }
+          rowData.push(item);
+        }
+      });
+  
+      console.log("rowData---->", rowData); // 对rowData数据 进行验证！
+      var verify_err = [];
+      var verify_after = this.verify_rowdatas(rowData, verify_err);  // 验证后的数据 得到的是验证的 错误信息！
+      console.log("----------------------------------------------------------验证后的数据 err", verify_after);
+      if (verify_after.length > 0){
+        this.verify_import(verify_after);
+      }else{
+        // 插入数据库之前 处理数据
+        var datas = this.option_table_before(rowData)
+        console.log("插入数据库之前 处理数据---->", datas);
+        // 将导入的数据存入数据库
+        // this.isloding = true
+        // this.dev_insert_device(datas);
+    
+        // 将导入的数据展示在table中
+        var after_datas = this.show_table_before(rowData)
+        this.gridData = [];
+        this.gridData.push(...after_datas)
+        this.tableDatas.rowData = this.gridData;
+        this.agGrid.init_agGrid(this.tableDatas); // 告诉组件刷新！
+
+      }
+    }
+
+
 
   }
 
@@ -522,67 +551,71 @@ export class DeviceManageComponent implements OnInit {
 
   // 在展示表格前，处理一下数据
   show_table_before(datas){
-    console.log("datas---->", datas)
-    console.log("datas[0]---->", datas[0].devicename)
-    var after_datas: DeviceData[] =[];
-    var type;
-    var devicestatus;
-    datas.forEach(data => {
-      switch (data["type"]) {
-        case 1:
-          type = "台架设备";
-          break;
-          case 2:
-            type = "移动资产";
+    if (datas.length >0){
+      console.log("datas---->", datas)
+      console.log("datas[0]---->", datas[0].devicename)
+      var after_datas: DeviceData[] =[];
+      var type;
+      var devicestatus;
+      datas.forEach(data => {
+        switch (data["type"]) {
+          case 1:
+            type = "台架设备";
             break;
-          case 3:
-            type = "举升机";
-          break;
-          case 402:
-            type = "其它设备";
-          break;
-      };
-      switch (data["devicestatus"]) {
-        case 1:
-          devicestatus = "在用";
-          break;
-          case 2:
-            devicestatus = "封存";
+            case 2:
+              type = "移动资产";
+              break;
+            case 3:
+              type = "举升机";
             break;
-          case 3:
-            devicestatus = "停用";
-          break;
-          case 4:
-            devicestatus = "闲置";
-          break;
-          case 402:
-            devicestatus = "其它";
-          break;
-      }
-      var after_data: DeviceData = {
-        id: data.id,
-        devicename:data.devicename,
-        deviceno:data.deviceno,
-        type:type,
-        active:data.active === 1? "是": "否",
-        assetno:data.assetno,
-        factoryno:data.factoryno,
-        deviceid:data.deviceid,
-        purchaseon:data.purchaseon,
-        supplier:data.supplier,
-        location:data.location,
-        department:data.department,
-        groups:data.groups,
-        belonged:data.belonged,
-        devicestatus:devicestatus,
-        createdby:data.createdby,
-        createdon:data.createdon
-      }
-      after_datas.push(after_data)
-    });
+            case 402:
+              type = "其它设备";
+            break;
+        };
+        switch (data["devicestatus"]) {
+          case 1:
+            devicestatus = "在用";
+            break;
+            case 2:
+              devicestatus = "封存";
+              break;
+            case 3:
+              devicestatus = "停用";
+            break;
+            case 4:
+              devicestatus = "闲置";
+            break;
+            case 402:
+              devicestatus = "其它";
+            break;
+        }
+        var after_data: DeviceData = {
+          id: data.id,
+          devicename:data.devicename,
+          deviceno:data.deviceno,
+          type:type,
+          active:data.active,
+          assetno:data.assetno,
+          factoryno:data.factoryno,
+          deviceid:data.deviceid,
+          purchaseon:data.purchaseon,
+          supplier:data.supplier,
+          location:data.location,
+          department:data.department,
+          groups:data.groups,
+          belonged:data.belonged,
+          devicestatus:devicestatus,
+          createdby:data.createdby,
+          createdon:data.createdon
+        }
+        after_datas.push(after_data)
+      });
+      return after_datas
+
+    }
     
     
-    return after_datas
+    return datas
   };
 
   // 编辑修改前，处理一下选中的table数据
@@ -646,12 +679,245 @@ export class DeviceManageComponent implements OnInit {
     return after_datas
   }
 
+  // 验证每一行数据！ 验证excel导入的数据！
+  verify_rowdatas(rowDatas, verify_err){
+    rowDatas.forEach(rowdata => {
+
+      var active = rowdata["active"];
+      var assetno = rowdata["assetno"];
+      var belonged = rowdata["belonged"];
+      var createdby = rowdata["createdby"];
+
+      // var createdon = rowdata["createdon"];
+
+      var department = rowdata["department"];
+      var deviceid = rowdata["deviceid"];
+      var devicename = rowdata["devicename"];
+      var deviceno = rowdata["deviceno"];
+      var devicestatus = rowdata["devicestatus"];
+      var factoryno = rowdata["factoryno"];
+      var groups = rowdata["groups"];
+      var location = rowdata["location"];
+
+      // var purchaseon = rowdata["purchaseon"];
+
+      var supplier = rowdata["supplier"];
+      var type = rowdata["type"];
+
+      // 验证！ devicename
+      var verify_devicename = this.verify_devicename(devicename);
+      if (verify_devicename != 1){
+        verify_err.push({err: verify_devicename})
+      }
+      // 验证！ deviceno
+      var verify_deviceno = this.verify_deviceno(deviceno);
+      if (verify_deviceno != 1){
+        verify_err.push({err: verify_deviceno})
+      }
+      // 验证！ assetno
+      var verify_assetno = this.verify_assetno(assetno);
+      if (verify_assetno != 1){
+        verify_err.push({err: verify_assetno})
+      }
+      // 验证！ factoryno
+      var verify_factoryno = this.verify_factoryno(factoryno);
+      if (verify_factoryno != 1){
+        verify_err.push({err: verify_factoryno})
+      }
+      // 验证！ supplier
+      var verify_supplier = this.verify_supplier(supplier);
+      if (verify_supplier != 1){
+        verify_err.push({err: verify_supplier})
+      }
+      // 验证！ location
+      var verify_location = this.verify_location(location);
+      if (verify_location != 1){
+        verify_err.push({err: verify_location})
+      }
+      // 验证！ department
+      var verify_department = this.verify_department(department);
+      if (verify_department != 1){
+        verify_err.push({err: verify_department})
+      }
+      // 验证！ groups
+      var verify_groups = this.verify_groups(groups);
+      if (verify_groups != 1){
+        verify_err.push({err: verify_groups})
+      }
+      // 验证！ belonged
+      var verify_belonged= this.verify_belonged(belonged);
+      if (verify_belonged != 1){
+        verify_err.push({err: verify_belonged})
+      }
+      // 验证！ createdby
+      var verify_createdby= this.verify_createdby(createdby);
+      if (verify_createdby != 1){
+        verify_err.push({err: verify_createdby})
+      }
+    });
+    return verify_err;
+  };
+
+  // 验证 sql 注入、 特殊字符！
+  verify_sql_str(data, title){
+    var special_sql = Device['special_sql']["special_sql"];
+    var special_str = Device['special_sql']["special_str"];
+    var sql = special_sql.test(data);
+    var str = special_str.test(data);
+    if(sql){
+      return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+    }
+    if (!str){
+      return title + "不能有特殊字符！"
+    }
+    return 1
+  }
+
+  // 验证 devicename 设备名称
+  verify_devicename(devicename){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(devicename, '设备名称');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (devicename.length > 20){
+      return "设备名称最大长度不超过20！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 deviceno 设备编号 
+  verify_deviceno(deviceno){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(deviceno, '设备编号');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (new RegExp(Device["deviceno"]).test(deviceno)){
+      if (deviceno.length > 100){
+        return "设备编号最大长度不超过100！"
+      }
+      return "设备编号不能有中文！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 assetno 资产编号
+  verify_assetno(assetno){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(assetno, '资产编号');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (new RegExp(Device["assetno"]).test(assetno)){
+      if (assetno.length > 50){
+        return "资产编号最大长度不超过100！"
+      }
+      return "资产编号不能有中文！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 factoryno 出厂编号
+  verify_factoryno(factoryno){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(factoryno, '出厂编号');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (new RegExp(Device["factoryno"]).test(factoryno)){
+      if (factoryno.length > 50){
+        return "出厂编号最大长度不超过100！"
+      }
+      return "出厂编号不能有中文！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 supplier 供应商
+  verify_supplier(supplier){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(supplier, '供应商');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (supplier.length > 50){
+      return "供应商最大长度不超过50！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 location 存放地点
+  verify_location(location){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(location, '存放地点');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (location.length > 50){
+      return "存放地点最大长度不超过50！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 department 使用部门
+  verify_department(department){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(department, '使用部门');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (department.length > 50){
+      return "使用部门最大长度不超过50！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 groups 科室
+  verify_groups(groups){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(groups, '科室');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (groups.length > 50){
+      return "科室最大长度不超过50！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 belonged 归属人
+  verify_belonged(belonged){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(belonged, '归属人');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (belonged.length > 50){
+      return "归属人最大长度不超过50！"
+    }
+    return 1 // 返回1，表示 通过验证！ 
+  }
+  // 验证 createdby 创建人
+  verify_createdby(createdby){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(createdby, '创建人');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (createdby.length > 50){
+      return "创建人最大长度不超过50！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+
+
+
+
   // 展示状态
   success(){
     this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'success', conent:"导入成功!"});
   }
   danger(){
     this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"导入失败!"});
+  }
+  importdanger(data){
+    this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"缺少："+data.join(",")});
+  }
+  verify_import(data){
+    this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"验证不通过："+JSON.stringify(data)});
   }
   delsuccess(){
     this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'success', conent:"删除成功!"});
@@ -687,13 +953,13 @@ export class DeviceManageComponent implements OnInit {
     action: true,
     columnDefs:[ // 列字段 多选：headerCheckboxSelection checkboxSelection , flex: 1 自动填充宽度
       { field: 'devicename', headerName: '设备名称', headerCheckboxSelection: true, checkboxSelection: true, autoHeight: true, fullWidth: true, minWidth: 50,resizable: true, pinned: 'left'},
-      { field: 'deviceno', headerName: '设备编号',  resizable: true, minWidth: 10},
+      { field: 'deviceno', headerName: 'EIM设备编号',  resizable: true, minWidth: 10},
       { field: 'type', headerName: '设备类型', resizable: true},
       { field: 'active', headerName: '是否启用', resizable: true},
       { field: 'assetno', headerName: '资产编号', resizable: true, minWidth: 10},
       
       { field: 'factoryno', headerName: '出厂编号', resizable: true, minWidth: 10},
-      { field: 'deviceid', headerName: '设备编号', resizable: true, minWidth: 10},
+      { field: 'deviceid', headerName: '设备编号', resizable: true, minWidth: 10}, // 自定义设备编号！
       { field: 'purchaseon', headerName: '购置日期', resizable: true, minWidth: 10},
       { field: 'supplier', headerName: '供应商', resizable: true, flex: 1},
       { field: 'location', headerName: '存放地点', resizable: true, minWidth: 10},
@@ -770,8 +1036,7 @@ export class DeviceManageComponent implements OnInit {
     }
     // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
     // 得到员工信息！
-    // this.http.callRPC('group_', 'get_group', {offset: offset, limit: limit}).subscribe((res)=>{
-    this.http.callRPC('device', 'dev_get_device', {}).subscribe((res)=>{
+    this.http.callRPC('device', 'dev_get_device_limit', {offset: offset, limit: limit}).subscribe((res)=>{
       // console.log("get_menu_role", result)
       var get_employee_limit = res['result']['message'][0]
       console.log("dev_get_device---------------------------->>>", get_employee_limit);
@@ -810,8 +1075,7 @@ export class DeviceManageComponent implements OnInit {
     }
     // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
     // 得到员工信息！
-    // this.http.callRPC('group_', 'get_group', {offset: offset, limit: limit}).subscribe((res)=>{
-    this.http.callRPC('device', 'dev_get_device', {}).subscribe((res)=>{
+    this.http.callRPC('device', 'dev_get_device_limit', {offset: offset, limit: limit}).subscribe((res)=>{
       // console.log("get_menu_role", result)
       var get_employee_limit = res['result']['message'][0]
       console.log("device---", get_employee_limit);
@@ -849,7 +1113,7 @@ export class DeviceManageComponent implements OnInit {
     }
     // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
     // 得到员工信息！
-    this.http.callRPC('deveice', 'dev_get_device', {}).subscribe((res)=>{
+    this.http.callRPC('deveice', 'dev_get_device_limit', {offset: offset, limit: limit}).subscribe((res)=>{
       console.log("updatetabledata\n\n", res)
       var get_employee_limit = res['result']['message'][0]
       console.log("deveice", get_employee_limit, "this.agGrid",this.agGrid);

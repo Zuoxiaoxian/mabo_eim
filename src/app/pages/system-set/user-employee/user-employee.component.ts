@@ -15,6 +15,7 @@ import { PublicmethodService } from '../../../services/publicmethod/publicmethod
 import { SYSMENU,menu_button_list,employee_action } from '../../../appconfig';
 import { Observable } from 'rxjs';
 
+import { AddEmployee } from '../../../pages-popups/system-set/form_verification';
 
 declare let $;
 declare let layui;
@@ -252,10 +253,10 @@ export class UserEmployeeComponent implements OnInit {
     columnDefs:[ // 列字段 多选：headerCheckboxSelection checkboxSelection
       { field: 'name', headerName: '姓名', headerCheckboxSelection: true, checkboxSelection: true, autoHeight: true, fullWidth: true, minWidth: 50,},
       { field: 'loginname', headerName: '域账号',  },
-      { field: 'role_name', headerName: '角色名称', },
+      { field: 'role_name', headerName: '角色', },
       { field: 'groups_name', headerName: '用户组', },
       { field: 'active', headerName: '是否启用', },
-      { field: 'employeeno', headerName: '编号', },
+      { field: 'employeeno', headerName: '员工编号', },
       { field: 'email', headerName: '邮箱', },
       { field: 'phoneno', headerName: '手机号', },
       { field: 'pictureurl', headerName: '头像地址', },
@@ -1101,49 +1102,79 @@ export class UserEmployeeComponent implements OnInit {
   analysis_sheet_to_json_to_ng2(importdata){
     var rowData_list = importdata.slice(1,importdata.length);
     console.log("导入-----rowData_list---->", rowData_list)
-    var columns = this.tableDatas.columnDefs;
-    var columnsList = [];
-    for (let k of columns){ // columns 不是 dict 用 of 不要用in
-      if (k["field"] != "action"){ // 去掉操作
-        columnsList.push(k["field"]);
+
+    var excel_title = importdata.slice(0,1)[0];
+    console.log("rowData_list----excel 除了表头的数据>", rowData_list)
+    console.log("excel_title---- excel的表头>", excel_title)
+    var ag_Grid_columns = this.tableDatas.columnDefs.slice(0, excel_title.length);
+    console.log("ag_Grid_columns--------->ag_Grid_columns 的表头", ag_Grid_columns, "\n")
+    var agGridTitle = [];
+    var noexist_title = [];
+    for (let index = 0; index < ag_Grid_columns.length; index++) {
+      const agitem = ag_Grid_columns[index];
+      const exitem = excel_title[index];
+
+      if (agitem.headerName === exitem){
+        agGridTitle.push(agitem.field);
+      }else{
+        console.log("字段不一致", "agTitle != exetitle", agitem.headerName, '!=', exitem);
+        noexist_title.push(agitem.headerName)
       }
-    };
-    console.log("columnsList----->", columnsList);
-
-    var rowData = []; // rowData 就是table需要的source
-    rowData_list.forEach(element => {
-      var item = {};
-      if(element.length != 0){
-        for (let index = 0; index < element.length; index++) {
-          item[columnsList[index]] = element[index];
-        }
-        rowData.push(item);
-      }
-      
-    });
-    console.log("rowData---->", rowData);
-    
-    try{
-      // 插入数据库之前 处理数据
-      var datas = this.option_table_before(rowData)
-      console.log("插入数据库之前 处理数据---->", datas);
-      // 将导入的数据存入数据库
-      this.dev_insert_device(datas);
-
-      // 将 rowData 显示到 agGrid中
-      this.tableDatas.rowData = rowData
-      this.agGrid.update_agGrid(this.tableDatas)
-      // this.gridData = [];
-      // this.gridData.push(...rowData)
-      // this.tableDatas.rowData = this.gridData;
-
-      // 将导入的数据展示在table中
-      // var after_datas = this.show_table_before(rowData)
-      // this.table_data.source.load(rowData);
-
-    }catch(err){
-      alert(String(err))
     }
+
+    console.log("agGridTitle----->", agGridTitle);
+    console.log("noexist_title----->", noexist_title);
+
+    if (noexist_title.length > 0){
+      this.importdanger(noexist_title);
+    }else{
+      var rowData = []; // rowData 就是table需要的source
+      rowData_list.forEach(element => {
+        var item = {};
+        if(element.length != 0){
+          for (let index = 0; index < element.length; index++) {
+            item[agGridTitle[index]] = element[index];
+          }
+          rowData.push(item);
+        }
+        
+      });
+      console.log("rowData---->", rowData);
+      var verify_err = [];
+      var verify_after = this.verify_rowdatas(rowData, verify_err);  // 验证后的数据 得到的是验证的 错误信息！
+      console.log("----------------------------------------------------------验证后的数据 err", verify_after);
+      
+      if (verify_after.length > 0){
+        this.verify_import(verify_after);
+      }else{
+        try{
+          // 插入数据库之前 处理数据
+          var datas = this.option_table_before(rowData)
+          console.log("插入数据库之前 处理数据---->", datas);
+          // 将导入的数据存入数据库
+          this.dev_insert_device(datas);
+    
+          // 将 rowData 显示到 agGrid中
+          this.tableDatas.rowData = rowData
+          this.agGrid.update_agGrid(this.tableDatas)
+          // this.gridData = [];
+          // this.gridData.push(...rowData)
+          // this.tableDatas.rowData = this.gridData;
+    
+          // 将导入的数据展示在table中
+          // var after_datas = this.show_table_before(rowData)
+          // this.table_data.source.load(rowData);
+    
+        }catch(err){
+          alert(String(err))
+        }
+      }
+
+
+    }
+
+
+
   }
 
   // ----------------------------导入---------------------------
@@ -1169,7 +1200,7 @@ export class UserEmployeeComponent implements OnInit {
       this.importsuccess()
     }catch(err){
       console.log("err: ", err)
-      this.importdanger()
+      // this.importdanger()
     }
 
     
@@ -1252,6 +1283,154 @@ export class UserEmployeeComponent implements OnInit {
 
   }
 
+  
+  // 验证每一行数据！ 验证excel导入的数据！
+  verify_rowdatas(rowDatas, verify_err){
+    rowDatas.forEach(rowdata => {
+
+      var employeeno = rowdata["employeeno"];
+      var name = rowdata["name"];
+      var loginname = rowdata["loginname"];
+      var email = rowdata["email"];
+      var role_name = rowdata["role_name"];
+      var groups_name = rowdata["groups_name"];
+
+      // 验证！ employeeno 员工编号
+      var verify_employeeno = this.verify_employeeno(employeeno);
+      if (verify_employeeno != 1){
+        verify_err.push({err: verify_employeeno})
+      }
+      // 验证！ name 姓名
+      var verify_name = this.verify_name(name);
+      if (verify_name != 1){
+        verify_err.push({err: verify_name})
+      }
+      // 验证！ loginname 域账号
+      var verify_loginname = this.verify_loginname(loginname);
+      if (verify_loginname != 1){
+        verify_err.push({err: verify_loginname})
+      }
+      // 验证！ email 邮箱
+      var verify_email = this.verify_email(email);
+      if (verify_email != 1){
+        verify_err.push({err: verify_email})
+      }
+
+      // 验证！ role_name 角色名称
+      var verify_role_name = this.verify_role_name(role_name);
+      if (verify_role_name != 1){
+        verify_err.push({err: verify_role_name})
+      }
+      // 验证！ groups_name 用户组
+      var verify_groups_name = this.verify_groups_name(groups_name);
+      if (verify_groups_name != 1){
+        verify_err.push({err: verify_groups_name})
+      }
+
+      
+    });
+    return verify_err;
+  };
+
+  // 验证 sql 注入、 特殊字符！
+  verify_sql_str(data, title){
+    var special_sql = AddEmployee['special_sql']["special_sql"];
+    var special_str = AddEmployee['special_sql']["special_str"];
+    var sql = special_sql.test(data);
+    var str = special_str.test(data);
+    if(sql){
+      return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
+    }
+    if (!str){
+      return title + "不能有特殊字符！"
+    }
+    return 1
+  }
+
+  // 验证 employeeno 员工编号
+  verify_employeeno(employeeno){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(employeeno, '员工编号');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (employeeno.length > 20){
+      return "员工编号最大长度不超过20！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 name 姓名
+  verify_name(name){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(name, '姓名');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (name.length > 100){
+      return "姓名最大长度不超过100！"
+    }
+
+    return 1 // 返回1，表示 通过验证！
+  }
+  // 验证 loginname 域账号
+  verify_loginname(loginname){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(loginname, '域账号');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (loginname.length > 50){
+      return "域账号最大长度不超过100！"
+    }
+
+    return 1 // 返回1，表示 通过验证！
+  }
+
+  // 验证 email 邮箱
+  verify_email(email){
+    // sql注入和特殊字符 special_str
+    var rex = /^[a-z0-9._%-]+@([a-z0-9-]+\.)+[a-z]{2,4}$|^1[3|4|5|7|8]\d{9}$/;
+    if (!rex.test(email)){
+      return "邮箱格式不匹配！"
+    }
+    if (email.length > 50){
+      return "邮箱最大长度不超过100！"
+    }
+
+    return 1 // 返回1，表示 通过验证！
+  }
+
+  // 验证 role_name 角色名称
+  verify_role_name(role_name){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(role_name, '角色名称');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (role_name.length > 50){
+      return "角色名称最大长度不超过100！"
+    }
+
+    return 1 // 返回1，表示 通过验证！
+  }
+
+  // 验证 groups_name 用户组
+  verify_groups_name(groups_name){
+    // sql注入和特殊字符 special_str
+    var verify_sql_str = this.verify_sql_str(groups_name, '用户组');
+    if (verify_sql_str != 1){
+      return verify_sql_str
+    }
+    if (groups_name.length > 50){
+      return "用户组最大长度不超过50！"
+    }
+    return 1 // 返回1，表示 通过验证！
+  }
+
+ 
+
+
+
 
 // 展示状态
 success(publicservice){
@@ -1264,8 +1443,12 @@ danger(publicservice){
 importsuccess(){
   this.publicmethod.showngxtoastr({position: 'toast-top-right', status: 'success', conent:"导入成功!"});
 }
-importdanger(){
-  this.publicmethod.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"导入失败!"});
+importdanger(data){
+  this.publicmethod.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"缺少："+data.join(",")});
+}
+// 验证失败
+verify_import(data){
+  this.publicmethod.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"验证不通过："+JSON.stringify(data)});
 }
 
 }

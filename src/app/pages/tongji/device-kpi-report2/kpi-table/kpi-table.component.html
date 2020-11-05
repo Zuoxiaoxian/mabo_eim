@@ -1,1 +1,6 @@
-<ngx-my-table-ng2 #mytable  [datas]="device_kpi_report_table_data"></ngx-my-table-ng2>
+
+<div class="row" [nbSpinner]="isloding" nbSpinnerStatus="basic">
+    <div class="col-md-12">
+        <ngx-ag-table #ag_Grid   (nzpageindexchange)="nzpageindexchange_ag($event)" (clickrow)="clickrow($event)"></ngx-ag-table>
+    </div>
+</div>

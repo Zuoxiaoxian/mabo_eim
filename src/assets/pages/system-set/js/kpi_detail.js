@@ -152,7 +152,7 @@ let kpi_detail = {
                             }
                         }
                     },
-                    "data": afterdata.placeout
+                    "data": afterdata.placeon
                 },
                 {
                     // "name": "warning",

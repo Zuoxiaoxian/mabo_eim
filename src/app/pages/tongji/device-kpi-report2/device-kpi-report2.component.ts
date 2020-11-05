@@ -8,6 +8,7 @@ declare let layui;
 declare let $;
 
 import { DeviceKpiReport2Service } from './device-kpi-report2-service';
+import { HttpserviceService } from '../../../services/http/httpservice.service';
 @Component({
   selector: 'ngx-device-kpi-report2',
   templateUrl: './device-kpi-report2.component.html',
@@ -43,6 +44,7 @@ export class DeviceKpiReport2Component implements OnInit, OnDestroy {
     ]
   }
 
+
   // 下拉框---资产编号
   assetsnumber = {
     placeholder: "请选择资产编号",
@@ -73,16 +75,30 @@ export class DeviceKpiReport2Component implements OnInit, OnDestroy {
   // 日期范围
   date_ranges = "device_kpi_date_range"
 
-  constructor( private router: Router, private publicservice: PublicmethodService, private deviceservice: DeviceKpiReport2Service) { }
+  // tree_input_data 树状选择下拉框 
+  dev_get_device_department;
+
+  constructor( private router: Router, private publicservice: PublicmethodService, private deviceservice: DeviceKpiReport2Service, private http: HttpserviceService) { 
+    
+
+  }
 
   ngOnInit(): void {
     this.getbuttons();
     this.initdate();
+
+    // 得到树状data、并渲染：get_tree_input_data()
+    this.get_tree_input_data();
+    
+
+
+
   }
 
   ngOnDestroy(){
     // 删除 man-hour-kpi-report2-buttons
     localStorage.removeItem("device-kpi-report2-buttons");
+    localStorage.removeItem("kpi_for_detail");
   }
 
   // 初始化日期范围
@@ -259,11 +275,262 @@ export class DeviceKpiReport2Component implements OnInit, OnDestroy {
 
   };
 
+  // 初始化 tree input
+  input_tree(treedata){
+    var that = this;
+    console.log("**********初始化 tree input********", treedata, that)
+    //  加载 eleTree 模块
+    layui.config({
+      base: "./assets/pages/system-set/layui/module/"
+    }).extend({
+        eleTree3: "eleTree/eleTree"
+    });
+
+    layui.use(['layer', 'form', 'eleTree',], function(){
+      var layer = layui.layer
+      ,form = layui.form
+      var eleTree = layui.eleTree
+      // =================
+      var el5;
+      var $ele5 = $(".ele5")
+      // 鼠标移入事件！
+      $("[name='anniunparentname']").mouseenter(function (e) {
+        e.stopPropagation();
+        if(!el5){
+            el5=eleTree.render({
+                elem: '.ele5',
+                data: treedata,
+                // url: "../eleTree/tree.json",
+                defaultExpandAll: false, // 是否默认展开所有节点
+                expandOnClickNode: false,
+                highlightCurrent: true, // 是否高亮当前选中节点
+            });
+        }
+        $ele5.show();
+        // $(".ele5").toggle();
+
+        
+        
+
+      });
+      $(".col-md-2").mouseleave(function(e){
+        // console.log("鼠标移出====================");
+        
+        $(".ele5").hide();
+
+      })
+      // input被选中事件
+      eleTree.on("nodeClick(data5)",function(d) {
+          $("[name='anniunparentname']").val(d.data.currentData.label)
+          // console.log(d.data);    // 点击节点对应的数据
+          // console.log("当前选择的数据的id", d.data.currentData.id, d.data.currentData.label);    // 点击节点对应的数据
+          // console.log("------------>选择的数据的 id",d.data.currentData.id)
+          // 判断是否是父节点，根据 d.data.currentData.children 的长度是否 > 0 
+          if (d.data.currentData.children.length > 0){
+            // 表示为部门！
+            var children = d.data.currentData.children;
+            console.log("children: \t", children);
+            that.send_selected_data(children);
+          }else{
+            // 部门下的子节点！
+            var currentData = d.data.currentData;
+            that.send_selected_data([currentData]);
+            console.log("currentData: \t", currentData)
+          }
+          // console.log(d.isChecked);   // input是否被选中
+          // console.log(d.node);    // 点击的dom节点
+          // console.log(this);      // input对应的dom
+          $(".ele5").hide();
+      }) 
+      $(document).on("click",function() {
+          $(".ele5").hide();
+      })
+
+      // =================
+    });
+  }
 
 
+  // 得到 tree input 的数据！
+  get_tree_input_data(){
+    // 得到设备信息！ 树状选择框--需要
+    var colmun = {
+    }
+    this.http.callRPC('device', 'dev_get_device_department', colmun).subscribe((res)=>{
+      // console.log("get_menu_role", result)
+      this.dev_get_device_department = res['result']['message'][0]
+      if (this.dev_get_device_department.code === 1){
+        var treedata = this.dev_get_device_department.message;
+        console.log("dev_get_device_department---------------------------->>>", treedata);
+        var handled_treedata = this.handle_treedata_befare(treedata); // 将数据处理成 tree data 需要的格式！
+        // tree input             
+        this.input_tree(handled_treedata);
+      }else{
+        // 没有得到 tree data
+      }
+    })
+  }
 
+  // 将原始数据处理成 tree data 需要的数据！
+  handle_treedata_befare(treedata:any[]){
+    var item = {}
+    var obj_list = [];
+    var exit_td_obj_ch_list = [];
+    for (let index = 0; index < treedata.length; index++) {
+      const tditem = treedata[index];
 
+      if (!item[tditem["department"]]){
+        item[tditem["department"]] = 1;
+        var td_obj_ch: TREEV2 = {
+          id: tditem.id,    // 节点唯一索引，
+          parentid: index,    // 父节点id
+          label: tditem.devicename, // 节点标题
+          checked: false,// 节点是否初始为选中状态， 默认false
+          disabled: false, // 节点是否为禁止状态，默认为false
+          children: [],
+          deviceno: tditem.deviceno,
+          deviceid: tditem.deviceid,
+          parent_label: tditem.department
+        }
+        var td_obj:TREEV2 = {
+          id: index,    // 节点唯一索引，
+          parentid: null,    // 父节点id
+          label: tditem.department, // 节点标题
+          checked: false,// 节点是否初始为选中状态， 默认false
+          disabled: false, // 节点是否为禁止状态，默认为false
+          children: [
+            td_obj_ch,
+          ], // 子节点，支持设定项同父节点
+          deviceno: null,
+          deviceid: null,
+          parent_label: null
+        }
+        obj_list.push(td_obj)
+      }else{
+        // 表明 是 部门（父节点），需要添加子节点
+        var td_obj_ch: TREEV2 = {
+          id: tditem.id,    // 节点唯一索引，
+          parentid: index,    // 父节点id
+          label: tditem.devicename, // 节点标题
+          checked: false,// 节点是否初始为选中状态， 默认false
+          disabled: false, // 节点是否为禁止状态，默认为false
+          children: [],
+          deviceno: tditem.deviceno,
+          deviceid: tditem.deviceid,
+          parent_label: tditem.department
+        }
+        exit_td_obj_ch_list.push(td_obj_ch);
+      }
+    }
+    console.log("----------------->>>>> 部门\t不\t重复的", obj_list);
+    console.log("\n\n\n----------------->>>>> 部门重复的", exit_td_obj_ch_list);
+    obj_list.forEach(obj=>{ // 部门节点 + 部门下的子节点
+      exit_td_obj_ch_list.forEach(exit_obj=>{  // 部门下的子节点
+        if (obj.label === exit_obj.parent_label ){
+          exit_obj.parentid = obj.id;
+          obj.children.push(exit_obj);
+        }
+      })
+    })
+    console.log("----------------->>>>> 部门\t不\t重复的=====处理后的！  ", obj_list);
+    return obj_list;
+  }
 
+  // 调用子组件 kpi-table 将 根据选择的input的值传递过去！
+  send_selected_data(data){
+    // data 为发送给子组件的数据！  这tm是路由，不是子组件！
+    console.log("---------------------------")
+    console.log("--------------发送给子组件的数据-------------", data)
+    console.log("---------------------------")
+  }
 
 
 }
+
+interface TREEV2 {
+  id: number,    // 节点唯一索引，对应数据库中id
+  parentid: number | null,    // 父节点id
+  label: string, // 节点标题
+  checked: boolean,// 节点是否初始为选中状态， 默认false
+  disabled: boolean, // 节点是否为禁止状态，默认为false
+  children: TREEV2[] | [], // 子节点，支持设定项同父节点
+  deviceno: string | null, // 设备编号
+  deviceid: string | null, // 设备id
+  parent_label: string | null // 父节点 label
+
+}
+
+// 树状结构 实例！
+var data =  [
+  {
+      "id": 1,
+      "label": "安徽省",
+      "children": [
+          {
+              "id": 2,
+              "label": "马鞍山市",
+              "disabled": true,
+              "children": [
+                  {
+                      "id": 3,
+                      "label": "和县"
+                  },
+                  {
+                      "id": 4,
+                      "label": "花山区",
+                      "checked": true
+                  }
+              ]
+          },
+          {
+              "id": 22,
+              "label": "淮北市",
+              "children": [
+                  {
+                      "id": 23,
+                      "label": "濉溪县"
+                  },
+                  {
+                      "id": 24,
+                      "label": "相山区",
+                      "checked": true
+                  }
+              ]
+          }
+      ]
+  },
+  {
+      "id": 5,
+      "label": "河南省",
+      "children": [
+          {
+              "id": 6,
+              "label": "郑州市"
+          }
+      ]
+  },
+  {
+      "id": 10,
+      "label": "江苏省",
+      "children": [
+          {
+              "id": 11,
+              "label": "苏州市"
+          },
+          {
+              "id": 12,
+              "label": "南京市",
+              "children": [
+                  {
+                      "id": 13,
+                      "label": "姑苏区"
+                  },
+                  {
+                      "id": 14,
+                      "label": "相城区"
+                  }
+              ]
+          }
+      ]
+  }
+]

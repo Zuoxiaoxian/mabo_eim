@@ -60,3 +60,30 @@ div{
         
     }
 }
+
+
+// 按钮上级目录
+.anniu_select{
+    // display: block;
+    width: 100%;
+    padding-left: 10px;
+    height: 38px;
+    line-height: 38px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #fff;
+    border-radius: 2px;
+    border-color: #e6e6e6;
+}
+
+.ele5{
+    height: auto;
+    width: 250%;
+    // width: 100%;
+    display: none;
+    position: absolute;
+    top:100%;
+    background-color: rgb(251, 251, 251);
+    border:1px solid rgba(137, 135, 135, 0);
+    z-index: 100;
+}
