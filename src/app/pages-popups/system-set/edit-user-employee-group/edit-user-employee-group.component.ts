@@ -38,6 +38,7 @@ export class EditUserEmployeeGroupComponent implements OnInit {
     console.log("this.rowdata ", this.rowdata);
     var rowdata = JSON.parse(this.rowdata);
     // rowdata['active'] = rowdata['active'] === "是"? true: false;
+    // rowdata["active"] = rowdata["active"] === 1? '是': '否';
     rowdata['active'] = rowdata['active'] === 1? true: false;
     console.log("layuiform ", rowdata);
     // 得到all角色---
@@ -83,12 +84,12 @@ export class EditUserEmployeeGroupComponent implements OnInit {
           if (! str){
             return "组名称不能有特殊字符！"
           }
-          if (! new RegExp(EmployeeGroup["group_"]).test(value)){
-            if (value.length > 20){
-              return "组名称最大长度不超过20！"
-            }
-            return "组名称不能有特殊字符或中文字符"
+          if (value.length > 20){
+            return "组名称最大长度不超过20！"
           }
+          // if (! new RegExp(EmployeeGroup["group_"]).test(value)){
+          //   return "组名称不能有特殊字符或中文字符"
+          // }
           
         },
         group_name: function(value, item){
@@ -105,12 +106,12 @@ export class EditUserEmployeeGroupComponent implements OnInit {
             return "组名称不能有特殊字符！"
           }
           
-          if (! new RegExp(EmployeeGroup["group_name"]).test(value)){
-            if (value.length > 100){
-              return "组名称最大长度不超过100！"
-            }
-            return "组名称不能有特殊字符"
+          if (value.length > 100){
+            return "组名称最大长度不超过100！"
           }
+          // if (! new RegExp(EmployeeGroup["group_name"]).test(value)){
+          //   return "组名称不能有特殊字符"
+          // }
           
           
         },
@@ -129,10 +130,15 @@ export class EditUserEmployeeGroupComponent implements OnInit {
         // send_data["active"] = send_data["active"] === undefined? 1: 0;
         send_data["active"] = send_data["active"] === "on"? 1: 0;
         send_data["groupid"] = rowdata["groupid"];
+        send_data["id"] = rowdata["id"];
+        
+        send_data["createdon"] = rowdata["createdon"];
+        send_data["createdby"] = rowdata["createdby"];
 
         console.log("提交修改的",  send_data, data1, data1["active"]) //被执行事件的元素DOM对象，一般为button对象
         // console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
         // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+
 
         // 更新修改的数据！ update_employee
         getsecurity("groups", "update_group",send_data,http).subscribe((res)=>{
@@ -141,14 +147,9 @@ export class EditUserEmployeeGroupComponent implements OnInit {
             // publicmethod
             // publicmethod.toastr(UpSuccess);
             success(publicmethod);
-            dialogRef.close(true);
-            // setTimeout(() => {
-            //   location.reload();
-            // }, 1000);
+            dialogRef.close(send_data);
 
           }else{
-            // UpDanger["conent"] = res
-            // publicmethod.toastr(UpDanger);
             danger(publicmethod)
           }
         })

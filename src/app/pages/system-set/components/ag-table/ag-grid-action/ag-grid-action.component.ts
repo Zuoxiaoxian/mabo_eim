@@ -58,8 +58,12 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
 
   }
 
-  agInit(params: any) {
+  agInit(params: any): void {
     this.params = params;
+  }
+
+  refresh(): boolean {
+    return false;
   }
 
   ngOnInit(): void {
@@ -88,9 +92,7 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
     
   }
 
-  refresh(): boolean {
-    return false;
-  }
+
 
   ngAfterViewInit(){
     this.isactive();
@@ -131,7 +133,8 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
   }
 
   edit(rowData){
-    console.log("=============ag-grid-action============", rowData)
+    console.log("=============ag-grid-action============", rowData);
+    
     // 得到所有的角色--数据
     var method = this.plv8; 
     console.log("edit--------------------------edit>>>>>>>>>method",method);
@@ -149,18 +152,22 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
               if(name){
                 console.log("-------table  icon  编辑", name)
                 setTimeout(() => {
-                  location.reload();
+                  // location.reload();
+                  this.exeagGrid_method({value: name, action: "edit"});
                 }, );
               }
             })
             // this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} })
           });
         }else{
+          // 用户组 编辑
+          rowData["active"] = rowData["active"] === "是" || rowData["active"] === 1|| rowData["active"] === true? 1 :0;
           this.dialogService.open(this.change_component, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res)} }).onClose.subscribe(name=>{
             if(name){
               console.log("-------table  icon  编辑", name)
               setTimeout(() => {
-                location.reload();
+                // location.reload();
+                this.exeagGrid_method({value: name, action: "edit"});
               }, );
             }
           })
@@ -173,6 +180,15 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
 
   }
 
+  // =============================================调用 agGrid中的方法
+  exeagGrid_method(rowData){
+    this.params.context.componentParent.methodFromParent(rowData);
+
+  }
+
+
+  // =============================================调用 agGrid中的方法
+
   remove(rowData){
     var http = this.http;
     var rowData = rowData;
@@ -184,9 +200,9 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
     var success = this.success;
     var danger = this.danger;
 
-    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户提示', content:   `确定要删除本条吗？`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+    this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `确定要删除本条数据吗？`, rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
       name=>{
-        console.log("----name-----", name);
+        console.log("----name-----", name, rowData);
         if (name){
           // 在这里执行删除 用户！
           var method = this.plv8; // delete_employee
@@ -194,20 +210,10 @@ export class AgGridActionComponent implements OnInit, ICellRendererAngularComp {
             console.log(method,"==============================>", res);
             
             if (res === 1 || res["code"] == 1){
-              // switch (method) {
-              //   case "delete_role":
-              //     localStorage.removeItem("systemsetting_role");
-              //     localStorage.removeItem("role_agGrid");
-              //     break;
-              //   case "delete_employee":
-              //     localStorage.removeItem("employee_rolename");
-              //     localStorage.removeItem("employee_groupname");
-              //     localStorage.removeItem("employee_agGrid");
-              //     break;
-              // }
               success(publicservice)
               setTimeout(() => {
-                location.reload();
+                // location.reload();
+                this.exeagGrid_method({value: rowData, action: "remove"});
               }, );
             }else{
               // publicservice.toastr(DellDanger);

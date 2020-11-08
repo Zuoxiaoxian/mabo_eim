@@ -1,45 +1,15 @@
-<!-- 
-    这是layui的 树状表格，感觉数据结构有些复杂！
-<button type="button" class="layui-btn layui-btn-primary layui-btn-sm get-checked">获取选中</button>
-<button type="button" class="layui-btn layui-btn-primary layui-btn-sm refresh">刷新（新增）</button>
-<button type="button" class="layui-btn layui-btn-primary layui-btn-sm open-all">全部展开</button>
-<button type="button" class="layui-btn layui-btn-primary layui-btn-sm close-all">全部关闭</button>
-<button type="button" class="layui-btn layui-btn-primary layui-btn-sm change-icon">随机更换小图标</button>
-
-<table class="layui-table layui-form" id="tree-table" lay-size="sm"></table> 
-
--->
-<!-- <div id="test1" class="demo-tree-more"></div> -->
-
-<!-- <div class="row" style="margin-bottom: 20px;">
-    <div class="col-md-3">
-        <button nbButton status="info" size="small" (click)="addrole()">
-            <nb-icon icon="plus-outline"></nb-icon>
-            新增
-        </button>
-    </div>
-    <div class="col-md-3">
-
-    </div>
-    <div class="col-md-3">
-
-    </div>
-    <div class="col-md-3">
-
-    </div>
-</div> -->
-
 
 <nb-card>
     <nb-card-body >
         <div class="row" style="margin-bottom: 20px; ">
-            <div class="example-items-rows" style="padding: 0 15px;">
+            
+            <div class="col-md-7">
+            </div>
+            <div class="example-items-rows" style="padding: 0 15px;margin-top: 5px; ">
                 <label for=""  style="margin-right: 20px;" >账号</label>
                 <input nbInput shape="rectangle" placeholder="Rectangle" status="success" type="text" id="employeenumber">
             </div>
-            <div class="col-md-6">
-            </div>
-            <div class="example-items-rows" style="text-align: right;margin-right: 27px; margin-top: 5px;margin-left: 15px;" *ngFor="let button of buttons2">
+            <div class="example-items-rows" style="text-align: right;margin-left: 27px; margin-top: 5px;margin-left: 15px;" *ngFor="let button of buttons2">
                 <button nbButton [status]="button.class" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
             </div>
         </div>
@@ -62,14 +32,6 @@
                 角色列表
             </nb-card-header>
             <nb-card-body [nbSpinner]="isloding" nbSpinnerStatus="basic">
-                <!-- <div class="row">
-                    <div class="col-md-12">
-                        <ngx-my-table-ng2 #mytable  [datas]="table_data"  
-                        (outer)="runParent($event)" (delrole)="delrole($event)" 
-                        (uprole)="uprole($event)" (addrole)="addroleIcon($event)"
-                        ></ngx-my-table-ng2>
-                    </div>
-                </div> -->
 
                 <div class="row">
                     <div class="col-md-12">

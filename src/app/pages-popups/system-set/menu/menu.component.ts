@@ -183,12 +183,12 @@ export class MenuComponent implements OnInit {
             return "目录名称不能有特殊字符！"
           }
 
-          if (! new RegExp(AddMenu["muluname"]).test(value)){
-            if (value.length > 20){
-              return "目录名称最大长度不超过20！"
-            }
-            return "目录名称不能有特殊字符！"
+          if (value.length > 20){
+            return "目录名称最大长度不超过20！"
           }
+          // if (! new RegExp(AddMenu["muluname"]).test(value)){
+          //   return "目录名称不能有特殊字符！"
+          // }
         },
         muluname_en: function(value, item){
           // sql注入和特殊字符 special_str
@@ -203,12 +203,12 @@ export class MenuComponent implements OnInit {
           if (! str){
             return "目录名称不能有特殊字符！"
           }
-          if (! new RegExp(AddMenu["muluname_en"]).test(value)){
-            if (value.length > 100){
-              return "目录名称最大长度不超过100！"
-            }
-            return "目录名称不能有特殊字符，且必须是字母、数字"
+          if (value.length > 100){
+            return "目录名称最大长度不超过100！"
           }
+          // if (! new RegExp(AddMenu["muluname_en"]).test(value)){
+          //   return "目录名称不能有特殊字符，且必须是字母、数字"
+          // }
         },
         caidanname: function(value, item){
           // sql注入和特殊字符 special_str
@@ -223,12 +223,12 @@ export class MenuComponent implements OnInit {
           if (! str){
             return "菜单名称不能有特殊字符！"
           }
-          if (! new RegExp(AddMenu["caidanname"]).test(value)){
-            if (value.length > 20){
-              return "菜单名称最大长度不超过20！"
-            }
-            return "菜单名称不能有特殊字符"
+          if (value.length > 20){
+            return "菜单名称最大长度不超过20！"
           }
+          // if (! new RegExp(AddMenu["caidanname"]).test(value)){
+          //   return "菜单名称不能有特殊字符"
+          // }
         },
         caidanname_en: function(value, item){
           // sql注入和特殊字符 special_str
@@ -243,12 +243,12 @@ export class MenuComponent implements OnInit {
           if (! str){
             return "菜单名称不能有特殊字符！"
           }
-          if (! new RegExp(AddMenu["caidanname_en"]).test(value)){
-            if (value.length > 100){
-              return "菜单名称最大长度不超过100！"
-            }
-            return "菜单名称不能有特殊字符，且必须是字母、数字"
+          if (value.length > 100){
+            return "菜单名称最大长度不超过100！"
           }
+          // if (! new RegExp(AddMenu["caidanname_en"]).test(value)){
+          //   return "菜单名称不能有特殊字符，且必须是字母、数字"
+          // }
         },
         anniuname: function(value, item){
           // sql注入和特殊字符 special_str
@@ -263,12 +263,12 @@ export class MenuComponent implements OnInit {
           if (! str){
             return "按钮名称不能有特殊字符！"
           }
-          if (! new RegExp(AddMenu["anniuname"]).test(value)){
-            if (value.length > 50){
-              return "按钮名称最大长度不超过50！"
-            }
-            return "按钮名称不能有特殊字符"
+          if (value.length > 50){
+            return "按钮名称最大长度不超过50！"
           }
+          // if (! new RegExp(AddMenu["anniuname"]).test(value)){
+          //   return "按钮名称不能有特殊字符"
+          // }
         },
         anniuname_en: function(value, item){
             if (! new RegExp(AddMenu["anniuname_en"]).test(value)){
@@ -476,19 +476,7 @@ export class MenuComponent implements OnInit {
         
 
         }
-        // if ($anniupermissionValue.val().search("add") != -1){
-        //   item['icon'] = 'plus-outline';
-        // }else if ($anniupermissionValue.val().search("del") != -1){
-        //   item['icon'] = 'minus-outline';
-        // }else if ($anniupermissionValue.val().search("edit") != -1){
-        //   item['icon'] = 'edit-outline';
-        // }else if($anniupermissionValue.val().search("query") != -1){
-        //   item["icon"] = "search-outline"
-        // }else if ($anniupermissionValue.val().search("import") != -1){
-        //   item["icon"] = "cloud-upload-outline"
-        // }else if ($anniupermissionValue.val().search("download") != -1){
-        //   item["icon"] = "cloud-download-outline"
-        // }
+
 
         // 根据上级目录 定制权限！
         item["permissionValue"] = "menu:" + $anniupermissionValue.val();

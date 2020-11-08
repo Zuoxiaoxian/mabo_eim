@@ -1,4 +1,4 @@
-<nb-card >
+<nb-card class="setting_employee">
     <nb-card-header>
         <div class="row">
             <div class="col-md-10" style="text-align: left;"> 添加用户</div>
@@ -28,15 +28,6 @@
                 </div>
 
 
-                <!-- <div class="layui-inline">
-                    <label class="layui-form-label mylabel mulu_title">是否禁用</label>
-                    <div class="layui-input-block">
-                      <select id="active" name="active" lay-verify="required" class="caidantype">
-                        <option value=1>是</option>
-                        <option value=0>否</option>
-                      </select>
-                    </div>
-                </div> -->
 
             </div>
             
@@ -65,20 +56,7 @@
               
             </div>
 
-            <!-- <div class="layui-form-item">
-              <div class="layui-inline">
-                <label class="layui-form-label mylabel mulu_title">电话号码</label>
-                <div class="layui-input-block">
-                  <input type="text" name="phoneno"  lay-verify="required|phone" placeholder="电话号码" autocomplete="off" class="layui-input">
-                </div>
-              </div>
-              <div class="layui-inline">
-                <label class="layui-form-label mylabel ">部门</label>
-                <div class="layui-input-block">
-                  <input type="text" name="department"  placeholder="部门" autocomplete="off" class="layui-input">
-                </div>
-              </div>
-            </div> -->
+
 
             <div class="layui-form-item" >
               <label class="layui-form-label">角色</label>
@@ -94,21 +72,11 @@
 
             </div>
 
-        
-            
 
-            <!-- <div class="layui-form-item">
-              <label class="layui-form-label">用户组</label>
-              <input type="checkbox" name="huanbao" title="环保试验室">
-                <input type="checkbox" name="huanjing" title="环境试验室" checked="">
-                <input type="checkbox" name="jiegou" title="结构试验室">
-                <input type="checkbox" name="lihua" title="理化试验室">
-                <input type="checkbox" name="xinnengyuan" title="新能源试验室">
-            </div> -->
 
             
             <div class="layui-form-item">
-                <div class="layui-row">
+                <div class="layui-row" style="text-align: end;">
                     <div class="layui-inline">
                       <div class="layui-input-inline">
                       </div>
@@ -118,14 +86,10 @@
                           <!-- (click)="confirm()" -->
                           <button class="layui-btn layui-btn-primary" (click)="cancel()">取消</button>
                         
+                          <button type="submit" class="layui-btn" lay-submit="" lay-filter="employee" >确定</button>
                       </div>
                     </div>
-                    <div class="layui-inline">
-                      <div class="layui-input-inline">
-                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="employee" >确定</button>
-                      </div>
-    
-                    </div>
+
                 </div>
             </div>
             

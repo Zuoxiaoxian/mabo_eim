@@ -137,7 +137,6 @@ export class PagesComponent {
           });
 
         }else{
-
           this.router.navigate([loginurl]);
         }
   

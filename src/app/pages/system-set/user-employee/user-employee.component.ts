@@ -258,14 +258,13 @@ export class UserEmployeeComponent implements OnInit {
       { field: 'active', headerName: '是否启用', },
       { field: 'employeeno', headerName: '员工编号', },
       { field: 'email', headerName: '邮箱', },
-      { field: 'phoneno', headerName: '手机号', },
-      { field: 'pictureurl', headerName: '头像地址', },
+
       { field: 'department', headerName: '部门', },
       { field: 'lastsignondate', headerName: '最后登录时间', },
       
     ],
     rowData: [ // data
-      { name: 'Toyota', loginname: 'Celica', role_name: 35000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020"},
+      // { name: 'Toyota', loginname: 'Celica', role_name: 35000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020"},
       // { name: 'Ford', loginname: 'Mondeo', role_name: 32000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" },
       // { name: 'Porsche', loginname: 'Boxter', role_name: 72000, groups_name: 'add', active: 1, employeeno: "123", email:"123@qq.com", phoneno: "17344996821",pictureurl: null,department: "ZJX", lastsignondate:"2020" }
     ]
@@ -538,40 +537,24 @@ export class UserEmployeeComponent implements OnInit {
 
 
   updategetemployee(event?){
-    var offset;
-    var limit;
-    console.log("event------------------------------------------------", event, this.agGrid);
-    if (event != undefined){
-      offset = event.offset;
-      limit = event.limit;
-    }else{
-      offset = 0;
-      limit = 50;
-    }
-    // 得到员工信息！
-    this.http.callRPC('emeployee', 'get_employee_limit', {offset: offset, limit: limit}).subscribe((res)=>{
-      // console.log("get_menu_role", result)
+    // this.agGrid.methodFromParent(event);
+    // 根据要修改的 员工id 得到修改后的员工信息！
+    var empid = event.value[0].employeeid;
+    var column = {employeeid: empid};
+    console.log("-----------------column---------------\n", column)
+    this.http.callRPC('emeployee', 'get_employee_withid', column).subscribe(res=>{
       var get_employee_limit = res['result']['message'][0]
-      console.log("updategetemployee====================更新后得到的数据", get_employee_limit);
-
-      this.isloding = false;
-      // 发布组件，编辑用户的组件 和删除所需要的 plv8 函数 delete_employee
-      this.publicmethod.getcomponent(EditUserEmployeeComponent);
-      this.publicmethod.getmethod("delete_employee");
-
-      var message = res["result"]["message"][0];
-      if( message.code === 0){
+      console.log("get_employee_limit", get_employee_limit);
+      var get_employee_limit = res["result"]["message"][0];
+      if( get_employee_limit.code === 0){
         // 表示token过期了，跳转到 / 
       }
       // 处理data
-      var result_data = message.message.reverse();
-      if (result_data[0] && result_data[0][0]["numbers"]){
-        var other_result_data = result_data.splice(1, result_data.length);
-      }else{
-        var other_result_data = result_data;
-      }
+      var result_data = get_employee_limit.message.reverse();
+      console.log("----result_data----", result_data)
+ 
       var other_result_data_after = [];
-      other_result_data.forEach(result => {
+      result_data.forEach(result => {
         other_result_data_after = other_result_data_after.concat(result);
       });
       console.log("-------other_result_data_after-----------",other_result_data_after);
@@ -632,17 +615,18 @@ export class UserEmployeeComponent implements OnInit {
       unique_group_role(unique_result, "groups_name");
       unique_group_role(unique_result, "role_name");
 
-      console.log("*******************UPDATE********************************")
-      console.log("*******************unique_result****************", unique_result)
-      this.gridData = []
-      this.gridData.push(...unique_result)
-      this.tableDatas.rowData = this.gridData;
-      // this.agGrid.initgeidOption(this.tableDatas);
-      console.log("*******************this.tableDatas****************", this.tableDatas);
-      localStorage.setItem("employee_agGrid", JSON.stringify(this.tableDatas))
-      this.agGrid.update_agGrid(this.tableDatas);
+      // this.gridData = [];
+      // this.gridData.push(...unique_result)
+      // this.tableDatas.rowData = this.gridData;
+      // this.agGrid.init_agGrid(this.tableDatas);
+      event.value = unique_result[0]
+      console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+      console.log("&&&    这是修改后的数据                 &", unique_result)
+      console.log("&&&    这是修改后的数据                 &", unique_result[0])
+      console.log("&&&    event                 &", event)
+      console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+      this.agGrid.methodFromParent(event);
       
-      console.log("*******************UPDATE********************************")
       function unique(arr, field) { // 根据employeeid去重
         const map = {};
         const res = [];
@@ -669,8 +653,25 @@ export class UserEmployeeComponent implements OnInit {
           element[fild] = arr_list.join(";")
         });
       }
-
     })
+
+    // 初始化的table数据！
+    var rowdatas = this.tableDatas.rowData;
+    rowdatas.forEach(rowdata=>{
+      if (rowdata.employeeid === event.value[0].employeeid){
+        rowdata.name = event.value[0].name;
+        rowdata.loginname = event.value[0].loginname;
+        // 角色？用户组 employee_rolename  employee_groupname
+
+        rowdata.active = event.value[0].active;
+        rowdata.employeeno = event.value[0].employeeno;
+        rowdata.email = event.value[0].email;
+        rowdata.department = event.value[0].department;
+      }
+    })
+    console.log("原来的rowdatas>>>>>>>>>>>>>>>>", rowdatas);
+
+    console.log("updategetemployee>>>>>>>>>>>>>>>>", event);
   }
 
 
@@ -921,14 +922,14 @@ export class UserEmployeeComponent implements OnInit {
     if (rowdata.length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据  EditDelTooltipComponent
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户提示', content: "请选择要需要修改的的行数！"}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content: "请选择一行数据！"}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
 
       
     }else if (rowdata.length > 1){
       console.log("button按钮执行222！ 编辑", rowdata);
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户提示', content:   `请选择一条要需要修改的的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
     }else{
@@ -947,13 +948,15 @@ export class UserEmployeeComponent implements OnInit {
           this.dialogService.open(EditUserEmployeeComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res), goups: JSON.stringify(goups)} }).onClose.subscribe(
             name=>{
               console.log("----编辑-----", name);
-              // 更新table
-              this.isloding = true
-              this.updategetemployee();
+              if (name){
+                // 更新table
+                this.isloding = true
+                // this.updategetemployee();
+                this.updategetemployee({value: name, action: "edit"});
+              };
             }
           );
         });
-        // this.dialogService.open(EditUserEmployeeComponent, { context: { rowdata: JSON.stringify(rowData), res: JSON.stringify(res)}})
       });
 
     }
@@ -971,7 +974,7 @@ export class UserEmployeeComponent implements OnInit {
     if ( rowdata.length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户提示', content:   `请选择要需要删除的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
 
@@ -981,7 +984,7 @@ export class UserEmployeeComponent implements OnInit {
       var rowData = rowdata;
       var text = rowData.length > 1 ? "这些": "这条";
       console.log("-------------------->>>>>>>>>>>>",rowData)
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户提示', content:   `确定要删除${text}数据吗？`, rowData: JSON.stringify(rowData)} } ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `确定要删除${text}数据吗？`, rowData: JSON.stringify(rowData)} } ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           if (name){

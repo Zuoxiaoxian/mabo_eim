@@ -54,12 +54,10 @@ export class RoleComponent implements OnInit {
           if (! str){
             return "角色名称不能有特殊字符！"
           }
-          if (! new RegExp(AddRole["role"]).test(value)){
-            if (value.length > 20){
-              return "角色名称最大长度不超过20！"
-            }
-            return "角色名称不能有特殊字符或中文字符"
+          if (value.length > 20){
+            return "角色名称(en)最大长度不超过20！"
           }
+
           
 
         },
@@ -76,12 +74,10 @@ export class RoleComponent implements OnInit {
           if (! str){
             return "角色名称不能有特殊字符！"
           }
-          if (! new RegExp(AddRole["role_name"]).test(value)){
-            if (value.length > 100){
-              return "角色名称最大长度不超过100！"
-            }
-            return "角色名称必须为中文，且不能有特殊字符"
+          if (value.length > 100){
+            return "角色名称最大长度不超过100！"
           }
+     
           
         },
 

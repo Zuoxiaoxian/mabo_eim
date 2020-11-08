@@ -1,4 +1,4 @@
-<nb-card style="width: 870px;" size="large" [nbSpinner]="loading"
+<nb-card style="width: 800px; overflow-y: auto;" size="large" [nbSpinner]="loading"
     nbSpinnerStatus="danger"
     nbSpinnerSize="large"
     nbSpinnerMessage=""
@@ -114,24 +114,19 @@
                     </div>
                 </div>
 
-                <div class="layui-form-item">
+                <div class="layui-form-item" style="text-align: end;">
                   <div class="layui-inline">
                     <div class="layui-input-inline">
                     </div>
                   </div>
-                  <div class="layui-inline">
+                  <div class="layui-inline" style="text-align: end;">
                     <div class="layui-input-inline">
                       <button class="layui-btn layui-btn-primary" (click)="cancel()">取消</button>
                       
-                    </div>
-                  </div>
-                  <div class="layui-inline">
-                    <div class="layui-input-inline">
-                      <!-- (click)="confirm()" -->
                       <button type="submit" class="layui-btn" lay-submit="" lay-filter="mulu" >确定</button>
                     </div>
-  
                   </div>
+                  
                 </div>
 
               </form>
@@ -225,23 +220,18 @@
 
 
                 <!-- 菜单按钮 -->
-                <div class="layui-form-item">
+                <div class="layui-form-item"style="text-align: end;">
                   <div class="layui-inline">
                     <div class="layui-input-inline">
                     </div>
                   </div>
-                  <div class="layui-inline">
+                  <div class="layui-inline" style="text-align: end;">
                     <div class="layui-input-inline">
                       <button class="layui-btn layui-btn-primary" (click)="cancel()">取消</button>
-                    </div>
-                  </div>
-                  <div class="layui-inline">
-                    <div class="layui-input-inline">
-                      <!-- (click)="confirm()" -->
                       <button type="submit" class="layui-btn" lay-submit="" lay-filter="caidan" >确定</button>
                     </div>
-  
                   </div>
+
                 </div>
 
               </form>
@@ -265,30 +255,6 @@
                     </div>
                   </div>
                 </div>
-
-
-                
-
-
-                <!-- <div class="layui-inline">
-                  <label class="layui-form-label mylabel">是否可见</label>
-                  <div class="layui-input-block">
-                    <select name="visible" lay-filter="aihao">
-                      <option value=0>不可见</option>
-                      <option value=1>可见</option>
-                    </select>
-                  </div>
-                </div> -->
-
-
-<!-- 
-                <div class="layui-inline">
-                  <label class="layui-form-label mylabel">是否禁用</label>
-                  <div class="layui-input-block">
-                    <input type="checkbox" name="visible" lay-skin="switch" lay-filter="filter" lay-text="是|否" checked>
-                  </div>
-                </div> -->
-
 
 
                 <div class="layui-form-item">
@@ -349,23 +315,18 @@
 
 
                 <!-- button按钮 -->
-                <div class="layui-form-item">
+                <div class="layui-form-item"style="text-align: end;">
                   <div class="layui-inline">
                     <div class="layui-input-inline">
                     </div>
                   </div>
-                  <div class="layui-inline">
+                  <div class="layui-inline"style="text-align: end;">
                     <div class="layui-input-inline">
                       <button class="layui-btn layui-btn-primary" (click)="cancel()">取消</button>
-                    </div>
-                  </div>
-                  <div class="layui-inline">
-                    <div class="layui-input-inline">
-                      <!-- (click)="confirm()" -->
                       <button type="submit" class="layui-btn" lay-submit="" lay-filter="anniu" >确定</button>
                     </div>
-  
                   </div>
+                  
                 </div>
 
               </form>

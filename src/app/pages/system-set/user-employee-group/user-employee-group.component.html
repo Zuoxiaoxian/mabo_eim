@@ -5,14 +5,15 @@
 
     <nb-card-body>
         <div class="row" style="margin-bottom: 20px; ">
-            <div class="example-items-rows" style="margin-left: 15px;">
+            
+            <div class="col-md-7">
+        
+            </div>
+            <div class="example-items-rows" style=" margin-top: 5px; ">
                 <label for=""  style="margin-right: 20px;" >账号</label>
                 <input nbInput shape="rectangle" placeholder="Rectangle" status="success" type="text" id="employeenumber">
             </div>
-            <div class="col-md-6">
-        
-            </div>
-            <div class="example-items-rows" style="text-align: right;margin-right: 27px; margin-top: 5px;margin-left: 15px;" *ngFor="let button of buttons2">
+            <div class="example-items-rows" style="text-align: right;margin-left: 27px; margin-top: 5px;" *ngFor="let button of buttons2">
                 <button nbButton [status]="button.class" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
             </div>
 
@@ -24,18 +25,11 @@
             </div>
         </div>
 
-        <!-- <div class="row">
-            <div class="col-md-12">
-                <ngx-my-table-ng2 #mytable  [datas]="table_data" 
-                (outer)="runParent($event)"
-                (uprole)="uprole($event)" (addrole)="addroleIcon($event)"
-                ></ngx-my-table-ng2>
-            </div>
-        </div> -->
+
 
         <div class="row">
             <div class="col-md-12">
-                <ngx-ag-table #ag_Grid   (nzpageindexchange)="nzpageindexchange($event)"></ngx-ag-table>
+                <ngx-ag-table #ag_Grid   (nzpageindexchange)="nzpageindexchange($event)" ></ngx-ag-table>
             </div>
         </div>
 

@@ -7,13 +7,15 @@
 
     <nb-card-body>
         <div class="row" style="margin-bottom: 20px; padding: 0 15px;">
-            <div class="example-items-rows">
+            
+            <div class="col-md-7">
+            </div>
+            
+            <div class="example-items-rows" style=" margin-top: 5px; ">
                 <label for="" style="margin-right: 20px;">账号</label>
                 <input nbInput shape="rectangle" placeholder="Rectangle" status="success" type="text" id="employeenumber">
             </div>
-            <div class="col-md-6">
-            </div>
-            <div class="example-items-rows my-button" style="text-align: right;margin-right: 27px; margin-top: 5px; " *ngFor="let button of buttons2">
+            <div class="example-items-rows my-button" style="text-align: right;margin-left: 27px;margin-top: 5px; " *ngFor="let button of buttons2">
                 <button nbButton [status]="button.class" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
                 <input type="file" class="import" id="import" (change)="onFileChange($event)" multiple="false" >
             </div>

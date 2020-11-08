@@ -48,7 +48,7 @@ export const AddMenu =  {
 */
 
 export const AddRole =  {
-    role_name: "^[\u4e00-\u9fa5\\s·]{1,255}$",       // 数字、字母、_ 、中文
+    role_name: "^[a-zA-Z_\u4e00-\u9fa5\\s·]{1,255}$",       // 数字、字母、_ 、中文
     role: "^[a-zA-Z0-9_]{1,255}$",  // 数字、字母、_ 组成的字符串
 
     special_sql: special_sql, // sql注入

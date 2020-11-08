@@ -1,4 +1,4 @@
-<nb-card style="z-index: 1080;">
+<nb-card style="z-index: 1080;" class="setting_employee">
     <nb-card-header> 
         <div class="row">
             <div class="col-md-10" style="text-align: left;"> 编辑用户</div>
@@ -57,20 +57,7 @@
               
             </div>
 
-            <!-- <div class="layui-form-item">
-              <div class="layui-inline">
-                <label class="layui-form-label mylabel mulu_title">电话号码</label>
-                <div class="layui-input-block">
-                  <input type="text" name="phoneno" lay-verify="required|phone"  placeholder="电话号码" autocomplete="off" class="layui-input">
-                </div>
-              </div>
-              <div class="layui-inline">
-                <label class="layui-form-label mylabel">部门</label>
-                <div class="layui-input-block">
-                  <input type="text" name="department"  placeholder="部门" autocomplete="off" class="layui-input">
-                </div>
-              </div>
-            </div> -->
+
 
 
             <div class="layui-form-item" >
@@ -91,24 +78,21 @@
 
             
             <div class="layui-form-item">
-                <div class="layui-row">
+                <div class="layui-row" style="text-align: end;">
                     <div class="layui-inline">
                       <div class="layui-input-inline">
                       </div>
                     </div>
+
+
                     <div class="layui-inline">
                       <div class="layui-input-inline">
                           <!-- (click)="confirm()" -->
                           <button class="layui-btn layui-btn-primary" (click)="cancel()">取消</button>
+                          <button type="submit" class="layui-btn" lay-submit="" lay-filter="employee" >确定</button>
                       </div>
                     </div>
-                    <div class="layui-inline">
-                      <div class="layui-input-inline">
-                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="employee" >确定</button>
-                        
-                      </div>
-    
-                    </div>
+                    
                 </div>
             </div>
             

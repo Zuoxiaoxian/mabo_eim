@@ -142,12 +142,12 @@ export class EditMenuComponent implements OnInit {
               return "目录名称不能有特殊字符！"
             }
 
-            if (! new RegExp(AddMenu["muluname"]).test(value)){
-              if (value.length > 20){
-                return "目录名称最大长度不超过20！"
-              }
-              return "目录名称不能有特殊字符！"
+            if (value.length > 20){
+              return "目录名称最大长度不超过20！"
             }
+            // if (! new RegExp(AddMenu["muluname"]).test(value)){
+            //   return "目录名称不能有特殊字符！"
+            // }
           },
           muluname_en: function(value, item){
             // sql注入和特殊字符 special_str
@@ -162,12 +162,12 @@ export class EditMenuComponent implements OnInit {
             if (! str){
               return "目录名称不能有特殊字符！"
             }
-            if (! new RegExp(AddMenu["muluname_en"]).test(value)){
-              if (value.length > 100){
-                return "目录名称最大长度不超过100！"
-              }
-              return "目录名称不能有特殊字符，且必须是字母、数字"
+            if (value.length > 100){
+              return "目录名称最大长度不超过100！"
             }
+            // if (! new RegExp(AddMenu["muluname_en"]).test(value)){
+            //   return "目录名称不能有特殊字符，且必须是字母、数字"
+            // }
           },
           caidanname: function(value, item){
             // sql注入和特殊字符 special_str
@@ -182,12 +182,12 @@ export class EditMenuComponent implements OnInit {
             if (! str){
               return "菜单名称不能有特殊字符！"
             }
-            if (! new RegExp(AddMenu["caidanname"]).test(value)){
-              if (value.length > 20){
-                return "菜单名称最大长度不超过20！"
-              }
-              return "菜单名称不能有特殊字符"
+            if (value.length > 20){
+              return "菜单名称最大长度不超过20！"
             }
+            // if (! new RegExp(AddMenu["caidanname"]).test(value)){
+            //   return "菜单名称不能有特殊字符"
+            // }
           },
           caidanname_en: function(value, item){
             // sql注入和特殊字符 special_str
@@ -202,12 +202,12 @@ export class EditMenuComponent implements OnInit {
             if (! str){
               return "菜单名称不能有特殊字符！"
             }
-            if (! new RegExp(AddMenu["caidanname_en"]).test(value)){
-              if (value.length > 100){
-                return "菜单名称最大长度不超过100！"
-              }
-              return "菜单名称不能有特殊字符，且必须是字母、数字"
+            if (value.length > 100){
+              return "菜单名称最大长度不超过100！"
             }
+            // if (! new RegExp(AddMenu["caidanname_en"]).test(value)){
+            //   return "菜单名称不能有特殊字符，且必须是字母、数字"
+            // }
           },
           anniuname: function(value, item){
             // sql注入和特殊字符 special_str
@@ -222,12 +222,12 @@ export class EditMenuComponent implements OnInit {
             if (! str){
               return "按钮名称不能有特殊字符！"
             }
-            if (! new RegExp(AddMenu["anniuname"]).test(value)){
-              if (value.length > 50){
-                return "按钮名称最大长度不超过50！"
-              }
-              return "按钮名称不能有特殊字符"
+            if (value.length > 50){
+              return "按钮名称最大长度不超过50！"
             }
+            // if (! new RegExp(AddMenu["anniuname"]).test(value)){
+            //   return "按钮名称不能有特殊字符"
+            // }
           },
           anniuname_en: function(value, item){
               if (! new RegExp(AddMenu["anniuname_en"]).test(value)){
@@ -286,6 +286,7 @@ export class EditMenuComponent implements OnInit {
           data.field["icon"] = systemsetting["icon"];
           data.field["username"] = username;
           data.field["textid"] = textid;
+          data.field["permission"] = "menu:" + data.field["permission"]
           // data.field["visible"] = data.field["visible"] == 1? 'on': 'off';
           confirm2(data.field, upmenu, dialogRef,publicservice, UpSuccess, UpDanger,httpservice, show);
           return false;
@@ -475,7 +476,8 @@ export class EditMenuComponent implements OnInit {
     item["redirecturl"] = formdata["link"];
     item["name"] = formdata["title"];
     item["name_en"] = formdata["title_en"];
-    item["permission"] = "menu:" + formdata["permission"];
+    item["permission"] = formdata["permission"];
+    // item["permission"] = "menu:" + formdata["permission"];
     item["parentid"] = formdata["parentid"]?Number(formdata["parentid"]):null;
     item["orderindex"] = formdata["orderindex"];
     item["type"] = formdata["type"];

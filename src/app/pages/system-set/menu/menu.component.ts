@@ -165,28 +165,7 @@ export class MenuComponent implements OnInit {
 
   }
 
-  // action(actionmethod){
-  //   console.log("++++++++++++++++++++ menu  action(actionmethod)++++++++++++++++++++++++++++", actionmethod)
-  //   if (actionmethod.search("add") != -1){
-  //     // 更新buttons_list
-  //     this.updatabutton_list();
-  //     setTimeout(() => {
-  //       this.addmenu()
-  //     }, 1000);
-  //   }else if (actionmethod.search('del') != -1){
-  //     // 更新buttons_list
-  //     this.updatabutton_list();
-  //     setTimeout(() => {
-  //       this.delmenu();
-  //     }, 1000);
-  //   }else{
-  //     // 更新buttons_list
-  //     this.updatabutton_list();
-  //     setTimeout(() => {
-  //       this.editmenu();
-  //     }, 1000);
-  //   }
-  // }
+
 
  
   // 新增菜单函数
@@ -195,69 +174,11 @@ export class MenuComponent implements OnInit {
     var $table = $('#menuTable');
     console.log("根据id得到行数据  ",$table.bootstrapTable('getData'));
     open();
-    /*
-    layui.use(['layer','element','element'], function(){
-      var element = layui.element;
-      var layer = layui.layer;
-
-      layer.open({
-        title: '添加菜单',
-        type: 2, 
-        area: ['600px', '60%'],
-        content: ['/popus/menu/add', 'no'],
-        btn: ['确定', "取消"],
-            success:function (layero, index) { // 层弹出后回调
-              // console.log(layero, index, "PPPPPPPPPPPPPPPPP");
-            },
-            yes: function(index, layero){
-              var body = layer.getChildFrame('body', index);
-              // console.log($(body.find("#addmulu")), mulu_caidan,$(body.find("#addmulu")).prop("checked")) //得到iframe页的body内容  mulu 
-              var is_no_mulu = $(body.find("#addmulu")).prop("checked");
-              // 得到表单数据
-              var item = {};
-              if (is_no_mulu){
-                // var muluname = $("input[name='muluname']").val();
-                var icon = $(body.find("input[name='icon']")).val();
-                var title = $(body.find("input[name='title']")).val();
-                var parenttitle = $(body.find("input[name='parenttitle']")).val();
-                var link = $(body.find("input[name='link']")).val();
-                var orderindex = $(body.find("input[name='orderindex']")).val();
-                var type = 0
-                item["icon"] = icon;
-                item["title"] = title;
-                item["link"] = link;
-                item["orderindex"] = orderindex;
-                item["parenttitle"] = parenttitle;
-                item["type"] = type;
-
-              }else{
-                var icon = $(body.find("input[name='caidanicon']")).val();
-                var title = $(body.find("input[name='caidantitle']")).val();
-                var link = $(body.find("input[name='caidanlink']")).val();
-                var orderindex = $(body.find("input[name='caidanorderindex']")).val();
-                var type = 1
-                // var permissionValue = $(body.find("input[name='permissionValue']")).val();
-                var parentid = body.find("#caidanparenttitle option:selected").val();
-                item["icon"] = icon;
-                item["title"] = title;
-                item["link"] = link;
-                item["orderindex"] = orderindex;
-                item["type"] = type;
-                item["parentid"] = parentid
-              }
-              console.log("===========Item===========", item)
-              
-
-              layer.close(index); //如果设定了yes回调，需进行手工关闭
-            }
-      })
-    });
-    */
+    
     // 弹出函数
     function open() {
       // dialogService.open(dialog, { context: 'this is some additional data passed to dialog' });
       dialogService.open(MenuComponent2, {closeOnBackdropClick: false,})
-      // .onClose.subscribe(name => name && this.names.push(name));
     }
   }
 
@@ -277,7 +198,7 @@ export class MenuComponent implements OnInit {
       var http = this.http;
       console.log("要删除的行数据！", rowmenu);
       
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除菜单提示', content:   `确定要删除${row.title}吗？`,rowData: JSON.stringify(row)}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `确定要删除${row.title}吗？`,rowData: JSON.stringify(row)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           if (name){
@@ -294,7 +215,7 @@ export class MenuComponent implements OnInit {
     }else{
       // 提示选择行数据
 
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除菜单提示', content:   `请选择要删除的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           
@@ -340,7 +261,7 @@ export class MenuComponent implements OnInit {
       this.open();
     }else{
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { context: { title: '修改菜单提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
         }
@@ -375,7 +296,6 @@ export class MenuComponent implements OnInit {
     
     $(function() {
         $table.bootstrapTable({
-            //   url: 'assets/pages/system-set/bootstrap-table/data.json',
             idField: 'id',
             data:data,
             dataTpye: 'jsonp',
@@ -501,30 +421,18 @@ export class MenuComponent implements OnInit {
 
                 
             },
-            // rowStyle:rowStyle,//通过自定义函数设置行样式,
-            
-            onClickRow: function(row, $element){
-              // console.log("点击行得到行数据", row,row["ck"]);
-              
-
-              // console.log("点击行得到行数据", $table.bootstrapTable('getOptions'));
-              // $element.attr("color", "rgb(98,160,252,.34)")
-              // $element.attr("style", "color: red");
-              
-            },
-            
-            classes: "table table-bordered  table-hover table-primary:hover",
+            // classes: "table table-bordered  table-hover table-primary:hover",
         })
-        // $table.on('click', 'tr', function(row,){
-        //   console.log("&&&&&&&&&&&&&&&", row)
-        //   $(this).attr("style", "color: red");
-        // })
+        
     })
       
 
+    // 样式！
+    $("#menuTable").children("tbody").children("tr").children("td").attr("style", "padding: 0px 12px; text-align: center;");
+    $("#menuTable tbody tr td:nth-child(2)").attr("style", "")
     function typeFormatter(value, row, index) {
     if (value === 1) {
-        return '菜单'
+        return '<span class="label label-success">菜单</span>'
     }
     if (value === 0) {
         return '<span class="label label-success">目录</span>'
@@ -556,45 +464,12 @@ export class MenuComponent implements OnInit {
     return '<span class="label label-default">锁定</span>'
     }
 
-    // 通过自定义设置行样式！
-    function rowStyle(row, index){
-      var classes = {
-        'active':{
-          "background-color": "rgb(98,160,252,.34)",
-          "color": 'none'
-        },
-        'defalult': {
-          "background-color": "rgb(98,160,252,.64)",
-          "color": 'none'
-        },
-        'success': {
-          "background-color": "rgb(255,255,255,.34)",
-          "color": 'none'
-        }, 
-
-      };
-      if (row["id"] % 2 === 0 ) {
-          return {
-            css: classes["defalult"]
-          };
-      }
-      return {css:classes["success"]};
-
-
-    }
-
-    // 行属性
-    // <button class="buedit edit-edit" (click)="edit()">
-    //         <a class="edit action"  ><i class="nb-edit" style="font-size: 35px;"></i></a>
-    //     </button>
 
     // 操作
     function actionFormatter(value, row, index) {
-      // return '<div class="row"><div class="col-md-6" style="text-align: center;"><button class="btn btn-info edit">编辑</button></div><div class="col-md-6" style="text-align: center;"><button class="btn btn-warning">删除</button></div></div>'
       var edit_class = "buedit edit-edit edit";
       var del_class = "buremove edit-edit remove ";
       // disable_edit
-      console.log("-------------------isactions=======================isactions-------------------", isactions);
       
       if (isactions["edit"]){}else{
         edit_class = "disable_edit edit-edit";
@@ -603,6 +478,7 @@ export class MenuComponent implements OnInit {
       if(isactions["del"]){}else{
         del_class = "disable_remove remove-remove";
       }
+
       return [
         `<button class="${edit_class}">`,
         '<a class="btn " href="javascript:void(0)" title="编辑" style="color:#464545">',
@@ -748,61 +624,7 @@ export class MenuComponent implements OnInit {
 
   }
 
-  // // 得到菜单data
-  // getsysmenu_withuser(){
-  //   // 请求判断是否正确并得到token
-  //   var data = JSON.stringify({
-  //     "jsonrpc": "2.0",
-  //     "method": "getsysmenu_withuser",
-  //     "params": {},
-  //     "id": "1"
-  //   });
-
-  //   this.http.post(url, data, this.headers).subscribe((res)=>{
-  //     console.log("****************************这是目录: ", res);
-      
-  //     var mulu = res['msg']['mulu'];
-  //     var caidan = res['msg']['caidan'];
-      
-  //     // 菜单
-  //     var caidan_lsit = [];
-  //     caidan.forEach(element => {
-  //       var dict_item = {};
-  //       dict_item["ck"] = null;
-  //       dict_item["id"] = element['menu_id'];
-  //       dict_item["pid"] = Number(element['parent_id']);
-  //       // 得到上级菜单名称
-  //       mulu.forEach(m => {
-  //         if (Number(element['parent_id']) == m['menu_id'])
-  //         dict_item["parentname"] = m['name'];
-          
-  //       });
-  //       dict_item["name"] = element['name'];
-  //       dict_item["menuurl"] = element['url'];
-  //       dict_item["permissionValue"] = element['perms'];
-  //       dict_item["status"] = element['type']; // type
-  //       caidan_lsit.push(dict_item);
-  //     });
-
-  //     // 目录
-  //     var mulu_lsit = [];
-  //     mulu.forEach(element => {
-  //       var dict_item = {};
-  //       dict_item["ck"] = null;
-  //       dict_item["id"] = element['menu_id'];
-  //       dict_item["pid"] = Number(element['parent_id']);
-  //       dict_item["name"] = element['name'];
-  //       dict_item["menuurl"] = element['url'];
-  //       dict_item["permissionValue"] = element['perms'];
-  //       dict_item["status"] = element['type'];
-  //       mulu_lsit.push(dict_item)
-  //     });
-      
-  //     var data = caidan_lsit.concat(mulu_lsit)
-  //     this.RanderTable(data);
-  //   })
-
-  // }
+  
 
   ngOnDestory(){
     // 销毁table
@@ -847,13 +669,7 @@ export class MenuComponent implements OnInit {
       console.log("------menu--目录：", sysmenu);
       this.RanderTable(menu);
     }
-    var data = [
-      { id: 1, link: "pages/home", title: "首页", icon: "-", parentid: 0 },
-      { id: 2, link: "pages/home1", title: "首页1", icon: "-", parentid: 1 },
-      { id: 3, link: "pages/home2", title: "首页2", icon: "-", parentid: 1 },
-      { id: 4, link: "pages/home3", title: "首页3", icon: "-", parentid: 1 },
-    ]
-    // this.RanderTable(data);
+    
   }
 
   dataTranslation(baseMenu) {

@@ -126,12 +126,12 @@ export class EditUserEmployeeComponent implements OnInit {
           if (!str){
             return "员工编号不能有特殊字符！"
           }
-          if (! new RegExp(AddEmployee["employeeno"]).test(value)){
-            if (value.length > 20){
-              return "员工编号最大长度不超过20！"
-            }
-            return "员工编号只能输入数字、字母、下划线！"
+          if (value.length > 20){
+            return "员工编号最大长度不超过20！"
           }
+          // if (! new RegExp(AddEmployee["employeeno"]).test(value)){
+          //   return "员工编号只能输入数字、字母、下划线！"
+          // }
           
         },
         // 姓名
@@ -148,12 +148,12 @@ export class EditUserEmployeeComponent implements OnInit {
           if (! str){
             return "不能有特殊字符！"
           }
-          if (! new RegExp(AddEmployee["name"]).test(value)){
-            if (value.length > 100){
-              return "姓名最大长度不超过100！"
-            }
-            return "姓名不能有特殊字符！"
+          if (value.length > 100){
+            return "姓名最大长度不超过100！"
           }
+          // if (! new RegExp(AddEmployee["name"]).test(value)){
+          //   return "姓名不能有特殊字符！"
+          // }
           
         },
         // 域账号
@@ -170,12 +170,12 @@ export class EditUserEmployeeComponent implements OnInit {
           if (! str){
             return "域账号不能有特殊字符！"
           }
-          if (! new RegExp(AddEmployee["loginname"]).test(value)){
-            if (value.length > 50){
-              return "域账号最大长度不超过50！"
-            }
-            return "域账号不能有特殊字符"
+          if (value.length > 50){
+            return "域账号最大长度不超过50！"
           }
+          // if (! new RegExp(AddEmployee["loginname"]).test(value)){
+          //   return "域账号不能有特殊字符"
+          // }
           
         }
       })
@@ -230,6 +230,9 @@ export class EditUserEmployeeComponent implements OnInit {
         send_data["phoneno"] = data.field["phoneno"];
         send_data["employeeno"] = data.field["employeeno"];
         send_data["loginname"] = data.field["loginname"];
+        
+
+
 
         
         send_data_list.push(send_data);
@@ -291,7 +294,7 @@ export class EditUserEmployeeComponent implements OnInit {
             // publicmethod.toastr(UpSuccess);
             success(publicmethod)
             localStorage.removeItem("employee_agGrid");
-            dialogRef.close(true);
+            dialogRef.close(send_data_list);
             // location.reload();
 
           }else{

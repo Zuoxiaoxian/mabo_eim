@@ -3,7 +3,11 @@ import { AgGridAngular } from 'ag-grid-angular';
 
 import { AgGridActionComponent } from './ag-grid-action/ag-grid-action.component';
 
+import { EditDelTooltipComponent } from '../../../../pages-popups/prompt-diallog/edit-del-tooltip/edit-del-tooltip.component';
+
 import * as XLSX from 'xlsx';
+import { NbDialogService } from '@nebular/theme';
+
 
 interface Data {
   action: boolean,
@@ -32,6 +36,10 @@ export class AgTableComponent implements OnInit {
   suppressPaginationPanel = true; // 隐藏用于导航的默认ag-Grid控件 即隐藏自带的分页组件
   suppressRowClickSelection = false; // true 则单击行时将不会发生行选择 仅在需要复选框选择时使用
 
+  context; // 和渲染的组件 数据交互！
+
+  getRowNodeId; // 得到rowNodeId
+  defaultColDef;
   
 
   rowSelection; // 选中行
@@ -51,7 +59,7 @@ export class AgTableComponent implements OnInit {
   rowData; // 行数据
   action; // 是否操作
 
-  constructor() { 
+  constructor(private dialogService: NbDialogService) { 
   }
   
   // action = { field: 'action', headerName: '操作', cellRendererFramework: AgGridActionComponent, pinned: 'right'};
@@ -77,6 +85,20 @@ export class AgTableComponent implements OnInit {
     this.columnDefs =  employee_agGrid["columnDefs"]// 列字段
     this.rowData =  employee_agGrid["rowData"]; // 行数据
     this.action =  employee_agGrid["action"]; // 是否操作
+
+    this.defaultColDef = { // 默认的列设置
+      // flex: 1,
+      editable: true,
+      // sortable: true,
+      // filter: true,
+    };
+    this.getRowNodeId = function(data){
+      return data.id
+    };
+
+    this.context = { componentParent: this };
+
+    
 
     this.paginationPageSize = 10;
     this.rowSelection = 'multiple';
@@ -127,20 +149,14 @@ export class AgTableComponent implements OnInit {
     console.warn("onPaginationChanged>>", event);
   }
 
-  // onGridReady
-  onGridReady(params) {
-    console.warn("params>>", params);
-
-    console.warn(params);
-    this.gridApi = params.api;
-    this.gridColumnApi = params.columnApi;
-  }
+  
 
   // 点击行数据
   onRowClicked(event) {
     console.log("点击行数据",event);
     this.clickrow.emit(event)
   }
+  
 
   // 页码改变的回调
   pageIndexChange(event) {
@@ -219,6 +235,7 @@ export class AgTableComponent implements OnInit {
 
   // 导出功能
   download(title){
+    // 修改为导出的是，选中的行数据！ this.selectedRows = this.gridApi.getSelectedRows();
     this.filename = title + ".xlsx";
     console.log("csv名称----", this.filename);
     console.log("this.columnDefs----", this.columnDefs);
@@ -226,7 +243,7 @@ export class AgTableComponent implements OnInit {
     var table_header = [];
     var table_data = [];
     
-    if (this.rowData.length != 0){
+    if (this.selectedRows.length != 0){
       for (let k of columns){ // columns []
         if(k["field"] != "action"){ // 去掉 操作(options)选项
           table_header.push(k['headerName']);
@@ -234,8 +251,10 @@ export class AgTableComponent implements OnInit {
       }
       console.log("table_header----", table_header);
       table_data.push(table_header);
-      var data = this.rowData;
-      console.log("导出数据>>>>>>>>", data)
+      // var data = this.rowData;
+      var data = this.selectedRows;
+
+      
       data.forEach(element => {
         var data_item = [];
         var keys = [];
@@ -252,7 +271,7 @@ export class AgTableComponent implements OnInit {
         
         switch (title) {
           case "用户管理":
-            keys = ["name", "loginname", "role_name", "groups_name", "active", "employeeno", "email", "phoneno", "pictureurl", "department", "lastsignondate"];
+            keys = ["name", "loginname", "role_name", "groups_name", "active", "employeeno", "email", "department", "lastsignondate"];
             break;
           case "用户组管理":
             keys = ["group", "group_name", "createdon", "createdby", "active"]
@@ -268,7 +287,6 @@ export class AgTableComponent implements OnInit {
         }
 
         if (keys != []){
-          console.log("key 部位null")
           for (let k of keys){
             data_item.push(element[k]);
           }
@@ -281,28 +299,25 @@ export class AgTableComponent implements OnInit {
 
         table_data.push(data_item);
       });
+      this.export(table_data);
       
     }else{
-      var data = this.rowData;
-      
-      for (let k in columns){
-        if(k != "options"){ // 去掉 操作(options)选项
-          table_header.push(columns[k]['title']);
+      for (let k of columns){ // columns []
+        if(k["field"] != "action"){ // 去掉 操作(options)选项
+          table_header.push(k['headerName']);
         }
       }
       table_data.push(table_header);
-      data.forEach(element => {
-        var data_item = [];
-        for (let d in element){
-          data_item.push(element[d]);
+      // 没有选择导出的数据
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择要导出的数据！\n 确定 则继续导出`,rowData: JSON.stringify(true)}} ).onClose.subscribe(
+        name=>{
+          if(name){
+            this.export(table_data);
+          }
+  
         }
-        table_data.push(data_item);
-      })
+      );
     }
-    console.log("table_data=====", table_data);
-    this.export(table_data);
-
-
   }
 
   // -----------------------将data写入workbook中-----------------------------
@@ -346,4 +361,107 @@ export class AgTableComponent implements OnInit {
     console.log("初始化-------父组件调用！ 填充表格=======", employee_agGrid)
     this.gridOptions(employee_agGrid);
   }
+
+  // onGridReady
+  onGridReady(params) {
+    console.warn("params>>", params);
+
+    console.warn(params);
+    this.gridApi = params.api;
+    this.gridColumnApi = params.columnApi;
+  }
+
+  // ============================== 渲染组件调用的方法 这是ag-grid中的 操作！
+  methodFromParent(rowdata){
+    // {value: name, action: "edit"}
+    var action = rowdata.action;
+    var value = rowdata.value;
+    switch (action) {
+      case "edit":
+       
+        // true 表示编辑、删除成功
+        // var rowNode  = this.gridApi.getRowNode(String(cell.id));
+        // rowNode.setData(cell); // Cannot read property 'setData' of undefined 未能解决
+        this.rowData.forEach(row => {
+          // 用户组管理
+          if (row.id === value.id){
+            alert(22)
+            var row_index = this.rowData.indexOf(row);
+            value.active = value.active === 1 || value.active === true|| value.active === "是"? "是": "否";
+            this.rowData[row_index] = value
+          }
+          // 用户管理
+          if (row.employeeid === value.employeeid){
+            var row_index = this.rowData.indexOf(row);
+            console.log("------------------------------")
+            console.log("--------------row, value, row_index----------------", row, value,row_index)
+            console.log("------------------------------")
+            // value.active = value.active === 1 || value.active === true|| value.active === "是"? "是": "否";
+            // this.rowData[row_index] = value
+          }
+        });
+    
+        this.gridApi.setRowData(this.rowData)
+        // 调用父组件方法，告诉父组件 编辑、删除成功
+        // this.children_call_for_updata_table(cell);
+        
+        break;
+      case "remove":
+        this.rowData.forEach(row => {
+          if (row.id === value.id){
+            var row_index = this.rowData.indexOf(row);
+            this.rowData.splice(row_index, 1)
+          }
+        });
+        this.gridApi.setRowData(this.rowData)
+        break;
+      case "add":
+        console.log("--------------》》》》》》》》》》》》》》》》》》》》》》》",action, value);
+        // value.active = value.active === 1?"是":"否";
+        this.rowData = value
+        this.gridApi.setRowData(this.rowData);
+        break;
+
+    }
+ 
+  };
+
+  // ----------这是父组件的button 调用该方法，编辑、删除！
+  parent_call_edit_rome(rowdatas){
+    var value = rowdatas.value;
+    var action = rowdatas.action;
+    switch (action) {
+      case "edit":
+        this.rowData.forEach(row => {
+          if (row.id === value.id){
+            var row_index = this.rowData.indexOf(row);
+            value.active = value.active === 1 || value.active === true? "是": "否";
+            this.rowData[row_index] = value
+          }
+        });
+        this.gridApi.setRowData(this.rowData)
+        break;
+      case "remove":
+        this.rowData.forEach(row => {
+          if (row.id === value.id){
+            var row_index = this.rowData.indexOf(row);
+            this.rowData.splice(row_index, 1)
+          }
+        });
+        this.gridApi.setRowData(this.rowData);
+        break;
+      case "add":
+        console.log("这是父组件的button 调用该方法，编辑、删除！------------------------------------------------", rowdatas);
+        this.rowData.push(value)
+        this.gridApi.setRowData(this.rowData);
+        break;
+
+    }
+  }
+
+
+
+  // ============================== 渲染组件调用的方法
+  
+
 }

@@ -44,7 +44,7 @@ import { AgGridActionComponent } from './components/ag-table/ag-grid-action/ag-g
     Ng2SmartTableModule,
     NzPaginationModule,
 
-    AgGridModule,
+    AgGridModule.withComponents([]),
   ]
 })
 export class SystemSetModule { }

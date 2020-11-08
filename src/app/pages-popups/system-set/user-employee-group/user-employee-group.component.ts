@@ -65,12 +65,12 @@ export class UserEmployeeGroupComponent implements OnInit {
           if (! str){
             return "组名称不能有特殊字符！"
           }
-          if (! new RegExp(EmployeeGroup["group_"]).test(value)){
-            if (value.length > 20){
-              return "组名称最大长度不超过20！"
-            }
-            return "组名称不能有特殊字符或中文字符"
+          if (value.length > 20){
+            return "组名称最大长度不超过20！"
           }
+          // if (! new RegExp(EmployeeGroup["group_"]).test(value)){
+          //   return "组名称不能有特殊字符或中文字符"
+          // }
           
         },
         group_name: function(value, item){
@@ -87,12 +87,12 @@ export class UserEmployeeGroupComponent implements OnInit {
             return "组名称不能有特殊字符！"
           }
           
-          if (! new RegExp(EmployeeGroup["group_name"]).test(value)){
-            if (value.length > 100){
-              return "组名称最大长度不超过100！"
-            }
-            return "组名称不能有特殊字符"
+          if (value.length > 100){
+            return "组名称最大长度不超过100！"
           }
+          // if (! new RegExp(EmployeeGroup["group_name"]).test(value)){
+          //   return "组名称不能有特殊字符"
+          // }
           
           
         },
@@ -113,15 +113,11 @@ export class UserEmployeeGroupComponent implements OnInit {
         getsecurity("employee", "insert_group",send_data,http).subscribe((res)=>{
           console.log("KKKKKKKKKKK", res);
           if (res ===1 ){
-            // publicmethod
-            // publicmethod.toastr(UpSuccess);
+            // publicmeth
             success(publicmethod)
-            dialogRef.close(true);
-            // setTimeout(() => {
-            //   location.reload();
-            // }, 1000);
+            dialogRef.close(send_data);
+            
           }else{
-            // publicmethod.toastr(UpDanger);
             danger(publicmethod)
           }
         })

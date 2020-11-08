@@ -269,7 +269,20 @@ ngOnDestory(){
       name=>{
         if (name){
           this.isloding = true;
-          this.updatetabledata();
+          // 成功之后，重新请求
+          this.http.callRPC('group_', 'get_group', {}).subscribe((res)=>{
+            var get_employee_limit = res['result']['message'][0]
+            console.log("get_employee_limit", get_employee_limit);
+            if (get_employee_limit){
+              get_employee_limit.forEach(r => {
+                r["active"] = r["active"] === 1 ? '是': '否';
+              });
+              console.log("初始化用户组表！", get_employee_limit)
+            }
+            this.gridData = [];
+            this.gridData.push(...get_employee_limit)
+            this.updatetabledata({value: this.gridData, action: "add"});
+          })
         }
       }
     );
@@ -280,16 +293,17 @@ ngOnDestory(){
     // var rowdata = this.rowdata;
     // 得到选中的aggrid rowdatas
     var rowdata = this.agGrid.getselectedrows();
+    
     console.log("=====this.rowdata",rowdata);
     if ( rowdata.length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       // this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(this.rowdata), res: JSON.stringify(res)} })
     }else if (rowdata.length > 1){
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择一条要需要修改的的行数`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       
@@ -297,14 +311,14 @@ ngOnDestory(){
     else{
       var rowdata_ = rowdata[0]
       console.log("---------------------rowdata_===",rowdata_)
-      rowdata_["active"] = rowdata_["active"] === "是" || rowdata_["active"] === 1? 1 :0;
+      rowdata_["active"] = rowdata_["active"] === "是" || rowdata_["active"] === 1|| rowdata_["active"] === true? 1 :0;
       console.log("---------------------rowdata_===",rowdata_)
       this.dialogService.open(EditUserEmployeeGroupComponent, { closeOnBackdropClick: false,context: { rowdata: JSON.stringify(rowdata_)} }).onClose.subscribe(name=>{
         if (name){
           // 更新table
           console.log("更新用户组！", name)
           this.isloding = true;
-          this.updatetabledata();
+          this.updatetabledata({value: name, action: "edit"});
         }
       })
 
@@ -318,7 +332,7 @@ ngOnDestory(){
     if (rowdata.length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户组提示', content:   `请选择要需要删除的行！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       // this.dialogService.open(EditUserEmployeeGroupComponent, { context: { rowdata: JSON.stringify(this.rowdata), res: JSON.stringify(res)} })
@@ -330,7 +344,7 @@ ngOnDestory(){
       var http = this.http;
       var success = this.success;
       var danger = this.danger;
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除用户组提示', content:   `确定要删除${rownum}数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `确定要删除${rownum}数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           if (name){
@@ -340,24 +354,18 @@ ngOnDestory(){
                 getsecurity_edit2('groups', 'delete_group', rd, http).subscribe((res)=>{
                   console.log("delete_group", res);
                   if (res === 1){
+                    this.updatetabledata({value: rd, action: "remove"});
                   }else{
-                    // DelDanger["conent"] = res
-                    // publicservice.toastr(DelDanger);
                     danger(publicservice)
                     throw 'error, 删除失败！'
                   }
                 });
               });
               this.isloding = true;
-              this.updatetabledata();
-
-              // setTimeout(() => {
-              //   location.reload();
-              // }, 1000);
-              // publicservice.toastr(DelSuccess);
+              // this.updatetabledata();
+              
               success(publicservice)
             }catch(err){
-              // publicservice.toastr(DelDanger)
               danger(publicservice)
             }
           }
@@ -552,42 +560,10 @@ ngOnDestory(){
   }
 
   updatetabledata(event?){
-    var offset;
-    var limit;
-    console.log("event------------------------------------------------", event, this.agGrid);
-    if (event != undefined){
-      offset = event.offset;
-      limit = event.limit;
-    }else{
-      offset = 0;
-      limit = 50;
-    }
-    // this.getsecurity('sys_security_log', 'get_security_log_limit', {offset:event.offset,limit:10});
-    // 得到员工信息！
-    this.http.callRPC('group_', 'get_group', {}).subscribe((res)=>{
-      console.log("updatetabledata\n\n", res)
-      var get_employee_limit = res['result']['message'][0]
-      console.log("get_employee_limit", get_employee_limit, "this.agGrid",this.agGrid);
-
-      this.isloding = false;
-      // 发布组件，编辑用户的组件
-      this.publicmethod.getcomponent(EditUserEmployeeGroupComponent);
-      this.publicmethod.getmethod("delete_group");
-
-
-      var message = res["result"]["message"][0];
-      if (message){
-        message.forEach(r => {
-          r["active"] = r["active"] === 1 ? '是': '否';
-        });
-        console.log("初始化用户组表！", message)
-      }
-      this.gridData = [];
-      this.gridData.push(...message)
-      this.tableDatas.rowData = this.gridData;
-      this.agGrid.update_agGrid(this.tableDatas); // 告诉组件刷新！
-    })
-
+    // {value: name, action: "edit"}
+    this.agGrid.methodFromParent(event);
+    // this.agGrid.parent_call_edit_rome(event);
+    
   }
       
 
@@ -595,6 +571,16 @@ ngOnDestory(){
   nzpageindexchange(event){
     console.log("页码改变的回调", event);
     this.getetabledata(event);
+  }
+
+    // 该方法是让agGrid子组件调用的！
+  children_call_for_updata_table(updatedata){
+    console.log("=========================")
+    console.log("=========================该方法是让agGrid子组件调用的！",updatedata);
+    console.log("=========================");
+    // 更新table
+    var up_row = updatedata; // 要更新的一行数据
+
   }
 
 

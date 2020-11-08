@@ -59,6 +59,8 @@ export class RoleComponent implements OnInit {
   isloding = false; // agGrid
   role_agGrid;
 
+  // 得到日志的plv8函数名
+  GetRole = "get_role_limit";
 
 
     // 展示状态
@@ -100,12 +102,10 @@ export class RoleComponent implements OnInit {
       // 得到员工信息！
     var sysrole = localStorage.getItem(SYSROLE) == null ? {code: 0} : JSON.parse(localStorage.getItem(SYSROLE));
     console.log("sysrole------------------------------------------------", sysrole);
-    const colums = {
-    };
-    console.log("---colums--",colums)
+  
     const table = "role";
-    const method = "get_role";
-    // const columns = {offset: offset, limit: limit}
+    const method = this.GetRole;
+    const colums = {offset: 0, limit: 50}
     this.http.callRPC(table, method, colums).subscribe((result)=>{
       console.log("sys_role--------------------------", result)
       const baseData = result['result']['message'][0];
@@ -452,12 +452,12 @@ export class RoleComponent implements OnInit {
     if (rowdata.length === 0){
       console.log("没有选中行数据", rowdata);
       // 提示选择行数据
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑角色提示', content:   `请选择要需要修改的的行数！`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
     }else if (rowdata.length > 1){
       console.log("button按钮执行222！ 编辑", rowdata);
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '编辑用户组提示', content:   `请选择一条要需要修改的的行数`}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
         name=>{console.log("----name-----", name)}
       );
       
@@ -501,14 +501,14 @@ export class RoleComponent implements OnInit {
     if (rowdata.length === 0){
           console.log("没有选中行数据", rowdata);
           // 提示选择行数据
-          this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除角色提示', content:   `请选择要需要删除的的行数！`}} ).onClose.subscribe(
+          this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `请选择一行数据！`}} ).onClose.subscribe(
             name=>{console.log("----name-----", name)}
           );
     }else{
       var rowData = rowdata;
       var text = rowData.length > 1 ? "这些": "这条";
       console.log("-------------------->>>>>>>>>>>>",rowData);   
-      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '删除角色提示', content:   `确定要删除${text}数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
+      this.dialogService.open(EditDelTooltipComponent, { closeOnBackdropClick: false,context: { title: '提示', content:   `确定要删除${text}数据吗？`,rowData: JSON.stringify(rowData)}} ).onClose.subscribe(
         name=>{
           console.log("----name-----", name);
           if (name){
@@ -1167,10 +1167,9 @@ export class RoleComponent implements OnInit {
       { field: 'role', headerName: '英文名称',  },
       { field: 'active', headerName: '是否启用', },
       { field: 'createdby', headerName: '创建人', },
-      { field: 'active', headerName: '是否启用', },
       { field: 'createdon', headerName: '创建时间', },
-      { field: 'lastupdatedby', headerName: '最后一次修改人', },
-      { field: 'lastupdateon', headerName: '最后一次修改时间', },
+      { field: 'lastupdatedby', headerName: '更新人', },
+      { field: 'lastupdateon', headerName: '更新时间', },
       
     ],
     rowData: [ // data
@@ -1193,13 +1192,10 @@ export class RoleComponent implements OnInit {
       offset = 0;
       limit = 50;
     }
-    // 得到员工信息！
-    const colums = {
-    };
-    console.log("---colums--",colums)
+
     const table = "role";
-    const method = "get_role";
-    // const columns = {offset: offset, limit: limit}
+    const method = this.GetRole;
+    const colums = {offset: offset, limit: limit}
     this.http.callRPC(table, method, colums).subscribe((result)=>{
       console.log("sys_role--------------------------", result)
       const baseData = result['result']['message'][0];
@@ -1235,13 +1231,9 @@ export class RoleComponent implements OnInit {
       offset = 0;
       limit = 50;
     }
-    // 得到员工信息！
-    const colums = {
-    };
-    console.log("---colums--",colums)
     const table = "role";
-    const method = "get_role";
-    // const columns = {offset: offset, limit: limit}
+    const method = this.GetRole;
+    const colums = {offset: offset, limit: limit}
     this.http.callRPC(table, method, colums).subscribe((result)=>{
       console.log("sys_role--------------------------", result)
       const baseData = result['result']['message'][0];
@@ -1289,12 +1281,10 @@ export class RoleComponent implements OnInit {
     var sysrole = localStorage.getItem(SYSROLE) == null ? {code: 0} : JSON.parse(localStorage.getItem(SYSROLE));
     console.log("sysrole------------------------------------------------", sysrole);
     if (sysrole.code === 0){
-      const colums = {
-      };
-      console.log("---colums--",colums)
+     
       const table = "role";
-      const method = "get_role";
-      // const columns = {offset: offset, limit: limit}
+      const method = this.GetRole;
+      const colums = {offset: offset, limit: limit}
       this.gridData = []
       this.http.callRPC(table, method, colums).subscribe((result)=>{
         console.log("sys_role--------------------------", result)
