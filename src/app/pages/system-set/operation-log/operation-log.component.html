@@ -1,0 +1,27 @@
+<nb-card>
+    <nb-card-header>
+        操作日志
+    </nb-card-header>
+
+    <nb-card-body>
+        <div class="row" style="margin-bottom: 20px; ">
+            <div class="col-md-3">
+                <!-- <label for=""  style="margin-right: 20px;" >账号</label>
+                <input nbInput shape="rectangle" placeholder="Rectangle" status="success" type="text" id="employeenumber"> -->
+            </div>
+            <div class="col-md-6">
+            </div>
+            <div class="col-md-3">
+                <div class="example-items-rows" style="text-align: right;margin-right: 27px;margin-top: 5px;margin-left: 15px;" *ngFor="let button of buttons2">
+                    <button nbButton [status]="button.class" (click)="action(button.permission)"  [disabled]="button.active == 0? true:false"><nb-icon [icon]="button.icon"></nb-icon>{{button.title}}</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <!-- <ngx-ag-table #agGrid  [tableDatas]="tableDatas" (nzpageindexchange)="nzpageindexchange($event)"></ngx-ag-table> -->
+            </div>
+        </div>
+    </nb-card-body>
+</nb-card>

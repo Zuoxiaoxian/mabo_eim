@@ -16,6 +16,7 @@ import { UserInfoService } from '../../../services/user-info/user-info.service';
 
 import { HttpHeaders,HttpClient,  } from '@angular/common/http';
 import { tick } from '@angular/core/testing';
+import { PublicmethodService } from '../../../services/publicmethod/publicmethod.service';
 
 let kpi_detail = require("../../../../assets/pages/system-set/js/kpi_detail");
 @Component({
@@ -82,6 +83,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
               private router: Router,
               private dialogService: NbDialogService,
               private userinfoservice: UserInfoService,
+              private publicservice: PublicmethodService,
               private http: HttpClient,
   ) {
     // 加载时，进行翻译
@@ -199,6 +201,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // 注销
     if (title == this.userMenu[1]["title"]){
       this.authService.isLoggedIn = false;
+      this.RecordLogin()
       // localStorage.removeItem(MULU);
       // localStorage.removeItem(SYSMENU);
       // localStorage.removeItem(adminlocalstorage);
@@ -262,6 +265,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         localStorage.removeItem(SYSROLEMENU);
       }
 
+      
+
     }
     // 修改password
     if (title == this.userMenu[0]["title"]){
@@ -270,6 +275,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
       // this.router.navigate(['/setup/changepassword'])
       // this.dialogService.open(ChangepasswordComponent, {context: { title: "修改密码" }});
     }
+  }
+
+   // 记录登出
+   RecordLogin(){
+
+    if(this.userinfoservice.getLoginName()){
+      const source = this.userinfoservice.getSourceid();        // 本机IP地址
+      const employeeid = this.userinfoservice.getEmployeeID();  // employeeid
+      // result 1
+      // info 登录
+      const createdby = this.userinfoservice.getLoginName();     // 登录名
+      this.publicservice.record(source, employeeid, 1, '登出', createdby);
+    }
+    console.log("this.userinfoservice.getLoginName()", this.userinfoservice.getLoginName())
+    alert(1)
+
   }
 
 }

@@ -3,6 +3,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { Observable } from 'rxjs';
 import { HttpserviceService } from '../../../services/http/httpservice.service';
 import { PublicmethodService } from '../../../services/publicmethod/publicmethod.service';
+import { UserInfoService } from '../../../services/user-info/user-info.service';
 
 declare let layui;
 
@@ -21,7 +22,8 @@ export class EditUserEmployeeGroupComponent implements OnInit {
   @Input() res: string;
 
   
-  constructor(protected dialogRef: NbDialogRef<EditUserEmployeeGroupComponent>, private http: HttpserviceService, private publicmethod: PublicmethodService) { }
+  constructor(protected dialogRef: NbDialogRef<EditUserEmployeeGroupComponent>, private http: HttpserviceService, 
+    private publicmethod: PublicmethodService, private userinfo: UserInfoService) { }
   
   
   UpSuccess :any = {position: 'bottom-end', status: 'success', conent:"修改成功!"};
@@ -55,6 +57,7 @@ export class EditUserEmployeeGroupComponent implements OnInit {
     var success = this.success;
     var danger = this.danger;
 
+    var that = this;
     layui.use('form', function(){
       var form = layui.form;
 
@@ -149,8 +152,15 @@ export class EditUserEmployeeGroupComponent implements OnInit {
             success(publicmethod);
             dialogRef.close(send_data);
 
+            var option = "编辑用户组";
+            var infodata = "组名称:" + send_data["group"] + "," + "组名称(en):" + send_data["group_name"];
+            that.RecordOperation(option, 1, infodata)
+
           }else{
-            danger(publicmethod)
+            danger(publicmethod);
+            var option = "编辑用户组";
+            var infodata = "组名称:" + send_data["group"] + "," + "组名称(en):" + send_data["group_name"];
+            that.RecordOperation(option, 0, infodata);
           }
         })
         return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
@@ -189,6 +199,22 @@ export class EditUserEmployeeGroupComponent implements OnInit {
   }
   danger(publicservice){
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"修改失败!"});
+  }
+
+  // option_record
+  RecordOperation(option, result, infodata){
+    console.warn("==============>", this.userinfo.getLoginName())
+    console.warn("infodata==============>", infodata)
+    console.warn("==============>")
+    if(this.userinfo.getLoginName()){
+      var employeeid = this.userinfo.getEmployeeID();
+      var result = result; // 1;
+      var transactiontype = option; // '新增'
+      var info = infodata;
+      var createdby = this.userinfo.getLoginName();
+      this.publicmethod.option_record(employeeid, result,transactiontype,info,createdby);
+    }
+
   }
 
 }

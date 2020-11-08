@@ -19,6 +19,7 @@ import { LocalStorageService } from '../../services/local-storage/local-storage.
 import { Md5 } from 'ts-md5';
 import { PublicmethodService } from '../../services/publicmethod/publicmethod.service';
 import {  map  } from 'rxjs/operators';
+import { UserInfoService } from '../../services/user-info/user-info.service';
 
 @Component({
   selector: 'ngx-admin-login',
@@ -48,6 +49,7 @@ export class AdminLoginComponent implements OnInit {
     private httpserviceService: HttpserviceService,
     private http: HttpClient,
     private publicmethodService: PublicmethodService,
+    private userInfoService: UserInfoService,
   ) { }
 
   ngOnInit(): void {
@@ -110,6 +112,7 @@ export class AdminLoginComponent implements OnInit {
             const userinfo = JSON.stringify(userInfo['userInfo']);
             localStorage.removeItem(USERINFO);
             localStorage.setItem(USERINFO, userInfo ? this.publicmethodService.compileStr(userinfo) : null);
+            this.RecordLogin();
           } else {
             this.publicmethodService.toastr({position: 'top-right', status: 'danger', conent:"当前用户菜单权限不足，请联系管理员添加权限！"});
           }
@@ -154,6 +157,21 @@ export class AdminLoginComponent implements OnInit {
   checkboxchange(checked: boolean){
     this.checked = checked;
     console.log("记住密码被点击，执行", this.checked)
+  }
+
+  RecordLogin(){
+
+    if(this.userInfoService.getLoginName()){
+      const source = this.userInfoService.getSourceid();        // 本机IP地址
+      const employeeid = this.userInfoService.getEmployeeID();  // employeeid
+      // result 1
+      // info 登录
+      const createdby = this.userInfoService.getLoginName();     // 登录名
+      this.publicmethodService.record(source, employeeid, 1, '登录', createdby);
+      // this.publicservice.record('local', source, employeeid, 1, '登录成功！', createdby);
+      console.log("============= 存入登录日志并得到菜单",source);
+    }
+
   }
 
 

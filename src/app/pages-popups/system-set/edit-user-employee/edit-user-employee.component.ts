@@ -3,6 +3,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { Observable } from 'rxjs';
 import { HttpserviceService } from '../../../services/http/httpservice.service';
 import { PublicmethodService } from '../../../services/publicmethod/publicmethod.service';
+import { UserInfoService } from '../../../services/user-info/user-info.service';
 
 
 // 验证表单！
@@ -24,7 +25,9 @@ export class EditUserEmployeeComponent implements OnInit {
   @Input() res: string;
   @Input() goups: string;
 
-  constructor(protected dialogRef: NbDialogRef<EditUserEmployeeComponent>, private http: HttpserviceService, private publicmethod: PublicmethodService) { 
+  constructor(protected dialogRef: NbDialogRef<EditUserEmployeeComponent>, 
+    private http: HttpserviceService, private publicmethod: PublicmethodService,
+    private userinfo: UserInfoService) { 
   }
 
 
@@ -100,7 +103,7 @@ export class EditUserEmployeeComponent implements OnInit {
 
     
     
-
+    var that = this
     layui.use(['form', ], function(){
       var form = layui.form;
 
@@ -288,18 +291,128 @@ export class EditUserEmployeeComponent implements OnInit {
 
         // 更新修改的数据！ update_employee
         getsecurity("employee", "update_employee",send_data_list,http).subscribe((res)=>{
-          console.log("KKKKKKKKKKK", res);
           if (res ===1 ){
             // publicmethod
             // publicmethod.toastr(UpSuccess);
             success(publicmethod)
             localStorage.removeItem("employee_agGrid");
-            dialogRef.close(send_data_list);
-            // location.reload();
+
+            var empid = send_data_list[0].employeeid;
+            var column = {employeeid: empid};
+            
+            // this.http.callRPC('emeployee', 'get_employee_withid', column)
+            getsecurity("employee", "get_employee_withid",column,http).subscribe(res=>{
+              if( res["code"] === 0){
+                // 表示token过期了，跳转到 / 
+              }
+              // 处理data
+              var result_data = res["message"].reverse();
+              console.log("----result_data----", result_data)
+         
+              var other_result_data_after = [];
+              result_data.forEach(result => {
+                other_result_data_after = other_result_data_after.concat(result);
+              });
+              console.log("-------other_result_data_after-----------",other_result_data_after);
+              // -----------------------
+              var result = other_result_data_after;
+              var employee_list = [];
+              for (let item of result){
+                var rids = [];
+                var items_dict = {};
+                var role_name_lists = []; 
+                var groups_name_lists = []; 
+                for (let element of result){
+                  var rid_name = {}
+                  if (item["employeeid"] === element["employeeid"]){
+                    // items_dict["active"] = element["active"] == 1?'是': "否";
+                    items_dict["active"] = element["active"] == 1?'是': "否";
+                    items_dict["company"] = element["company"];
+                    items_dict["department"] = element["department"];
+                    items_dict["email"] = element["email"];
+                    items_dict["employeeid"] = element["employeeid"];
+                    items_dict["employeeno"] = element["employeeno"];
+                    items_dict["facility"] = element["facility"];
+                    items_dict["loginname"] = element["loginname"];
+                    items_dict["name"] = element["name"];
+                    items_dict["phoneno"] = element["phoneno"];
+                    items_dict["pictureurl"] = element["pictureurl"];
+                    items_dict["rid"] = element["rid"];
+                    items_dict["groupid"] = element["groupid"];
+                    
+                    items_dict["role"] = element["role"];
+                    items_dict["lastsignondate"] = element["lastsignondate"];
+                    
+                    items_dict["role_name"] = element["role_name"];
+        
+                    rid_name["role"] = element["role"];
+                    rid_name["rid"] = element["rid"];
+                    var role_name_str: string | null = element["role_name"] ? element["role_name"]: null;
+                    var groups_name_str: string | null = element["groups"] ? element["groups"]: null;
+                    // rid_name["role_name"] =  role_name_str.replace(/\s/g, "");
+                    role_name_lists.push(role_name_str)
+                    groups_name_lists.push(groups_name_str)
+                    rids.push(rid_name)
+                    items_dict["rids"] = rids;
+                    items_dict["role_name"] = role_name_lists;
+                    items_dict["groups_name"] = groups_name_lists;
+                    continue
+                  }else{
+                    
+                  }
+                }
+                // 处理 role_names，将以第一， 去掉！
+                employee_list.push(items_dict)
+              }
+        
+              // 列表去重！
+              var unique_result = unique(employee_list, "employeeid")
+        
+              unique_group_role(unique_result, "groups_name");
+              unique_group_role(unique_result, "role_name");
+        
+              send_data_list[0] = unique_result[0]
+              console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+              console.log("&&&    unique_result[0]                &", unique_result[0])
+              console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+              dialogRef.close(unique_result[0]);
+              // 记录操作
+              var infodata = "姓名:" + unique_result[0]["name"] + "," + "域账号:" + unique_result[0]["loginname"] + "id:" + unique_result[0]["employeeid"];
+              that.RecordOperation("编辑用户", 1, infodata)
+              
+              function unique(arr, field) { // 根据employeeid去重
+                const map = {};
+                const res = [];
+                for (let i = 0; i < arr.length; i++) {
+                  if (!map[arr[i][field]]) {
+                    map[arr[i][field]] = 1;
+                    res.push(arr[i]);
+                  }
+                }
+                return res;
+              };
+        
+              // groups_name、role_name去重
+              function unique_group_role(arr, fild){
+                arr.forEach(element => {
+                  var arr_list = [];
+                  var groups_name_list = element[fild];
+                  groups_name_list.forEach(groups => {
+                    if(arr_list.indexOf(groups) === -1){
+                      arr_list.push(groups)
+                    }
+                  });
+                  // arr_list [] 改为 str
+                  element[fild] = arr_list.join(";")
+                });
+              }
+            })
+            
 
           }else{
             // publicmethod.toastr(UpDanger);
-            danger(publicmethod)
+            danger(publicmethod);
+            that.RecordOperation("编辑用户", 0, String(res["message"]))
           }
         })
         return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
@@ -354,5 +467,21 @@ export class EditUserEmployeeComponent implements OnInit {
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"编辑失败!"});
   }
 
+
+  // option_record
+  RecordOperation(option, result, infodata){
+    console.warn("==============>", this.userinfo.getLoginName())
+    console.warn("infodata==============>", infodata)
+    console.warn("==============>")
+    if(this.userinfo.getLoginName()){
+      var employeeid = this.userinfo.getEmployeeID();
+      var result = result; // 1;
+      var transactiontype = option; // '新增'
+      var info = infodata;
+      var createdby = this.userinfo.getLoginName();
+      this.publicmethod.option_record(employeeid, result,transactiontype,info,createdby);
+    }
+
+  }
 
 }

@@ -18,13 +18,18 @@ export class SecurityLogComponent implements OnInit {
   constructor(private http: HttpserviceService, private publicmethod: PublicmethodService) { 
 
     this.http.callRPC('sys_security_log', 'get_security_log_limit', {offset: 0, limit: 50}).subscribe((res)=>{
+      console.log("******************************");
+      console.log("**************安全日志****************",res);
+      console.log("******************************");
+      
       var get_employee_limit = res['result']['message'][0]
       console.log("get_employee_limit", get_employee_limit);
       this.isloding = false;
       // 发布组件，编辑用户的组件
       // this.publicmethod.getcomponent(EditUserEmployeeComponent);
       this.gridData = []
-      var message = res["result"]["message"][0];
+      var message = res["result"]["message"][0]['message'];
+      console.log("***************message***************",message);
       this.gridData.push(...message)
       this.tableDatas.rowData = this.gridData;
       localStorage.setItem("system_log_agGrid", JSON.stringify(this.tableDatas))

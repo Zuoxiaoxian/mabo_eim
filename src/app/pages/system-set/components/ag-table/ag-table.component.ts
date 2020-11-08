@@ -7,6 +7,8 @@ import { EditDelTooltipComponent } from '../../../../pages-popups/prompt-diallog
 
 import * as XLSX from 'xlsx';
 import { NbDialogService } from '@nebular/theme';
+import { UserInfoService } from '../../../../services/user-info/user-info.service';
+import { PublicmethodService } from '../../../../services/publicmethod/publicmethod.service';
 
 
 interface Data {
@@ -59,7 +61,7 @@ export class AgTableComponent implements OnInit {
   rowData; // 行数据
   action; // 是否操作
 
-  constructor(private dialogService: NbDialogService) { 
+  constructor(private dialogService: NbDialogService, private userinfo: UserInfoService, private publicservice: PublicmethodService) { 
   }
   
   // action = { field: 'action', headerName: '操作', cellRendererFramework: AgGridActionComponent, pinned: 'right'};
@@ -378,47 +380,76 @@ export class AgTableComponent implements OnInit {
     var value = rowdata.value;
     switch (action) {
       case "edit":
-       
+        console.log("edit--------------》》》》》》》》》》》》》》》》》》》》》》》",action, value);
         // true 表示编辑、删除成功
         // var rowNode  = this.gridApi.getRowNode(String(cell.id));
         // rowNode.setData(cell); // Cannot read property 'setData' of undefined 未能解决
         this.rowData.forEach(row => {
           // 用户组管理
-          if (row.id === value.id){
-            alert(22)
+          if (row.id === value.id && row.id){
             var row_index = this.rowData.indexOf(row);
             value.active = value.active === 1 || value.active === true|| value.active === "是"? "是": "否";
             this.rowData[row_index] = value
           }
           // 用户管理
-          if (row.employeeid === value.employeeid){
+          if (row.employeeid === value.employeeid && row.employeeid){
             var row_index = this.rowData.indexOf(row);
-            console.log("------------------------------")
-            console.log("--------------row, value, row_index----------------", row, value,row_index)
-            console.log("------------------------------")
-            // value.active = value.active === 1 || value.active === true|| value.active === "是"? "是": "否";
-            // this.rowData[row_index] = value
+            value.active = value.active === 1 || value.active === true|| value.active === "是"? "是": "否";
+            this.rowData[row_index] = value
           }
+          // 角色管理 roleid
+          if (row.roleid === value.roleid && row.roleid){
+            var row_index = this.rowData.indexOf(row);
+            value.active = value.active === 1 || value.active === true|| value.active === "是"? "是": "否";
+            this.rowData[row_index] = value
+          }
+
         });
     
+        this.totalPageNumbers = this.rowData.length
         this.gridApi.setRowData(this.rowData)
         // 调用父组件方法，告诉父组件 编辑、删除成功
         // this.children_call_for_updata_table(cell);
         
         break;
       case "remove":
+        console.log("remove--------------》》》》》》》》》》》》》》》》》》》》》》》",action, value);
         this.rowData.forEach(row => {
-          if (row.id === value.id){
+          // 用户组管理
+          if (row.id === value.id && row.id){
+            // console.log("remove--------------row》》》》》》》》》》》》》》》》》》》》》》》",row);
             var row_index = this.rowData.indexOf(row);
-            this.rowData.splice(row_index, 1)
+            this.rowData.splice(row_index, 1);
+            var operationdata = "组名称:" + value["group"] + "," + "组名称(en):" + value["group_name"];
+            var option = '删除用户组'; 
+            this.RecordOperation(option, 1, operationdata);
+          }
+          // 用户管理
+          if (row.employeeid === value.employeeid && row.employeeid){
+            var row_index = this.rowData.indexOf(row);
+            this.rowData.splice(row_index, 1);
+            var operationdata = "姓名:" + value["name"] + "," + "域账号:" + value["loginname"];
+            var option = '删除用户'; 
+            this.RecordOperation(option, 1, operationdata)
+          }
+          // 角色管理 roleid
+          if (row.roleid === value.roleid && row.roleid){
+            var row_index = this.rowData.indexOf(row);
+            this.rowData.splice(row_index, 1);
+            var operationdata = "姓名:" + value["name"] + "," + "域账号:" + value["loginname"];
+            var option = '删除角色';
+            var operationdata = '角色名称(en):' + value["role"] + ',' + '角色名称:' + value["role_name"];
+            this.RecordOperation(option, 1, operationdata);
           }
         });
+        this.totalPageNumbers = this.rowData.length
         this.gridApi.setRowData(this.rowData)
         break;
       case "add":
         console.log("--------------》》》》》》》》》》》》》》》》》》》》》》》",action, value);
         // value.active = value.active === 1?"是":"否";
         this.rowData = value
+        this.totalPageNumbers = this.rowData.length
         this.gridApi.setRowData(this.rowData);
         break;
 
@@ -463,5 +494,21 @@ export class AgTableComponent implements OnInit {
 
   // ============================== 渲染组件调用的方法
   
+
+  // option_record
+  RecordOperation(option, result,infodata){
+    console.warn("==============>", this.userinfo.getLoginName())
+    console.warn("infodata==============>", infodata)
+    console.warn("==============>")
+    if(this.userinfo.getLoginName()){
+      var employeeid = this.userinfo.getEmployeeID();
+      var result = result; // 1:成功 0 失败
+      var transactiontype = option; // '新增用户';
+      var info = infodata;
+      var createdby = this.userinfo.getLoginName();
+      this.publicservice.option_record(employeeid, result,transactiontype,info,createdby);
+    }
+
+  }
 
 }

@@ -10,6 +10,7 @@ import { EmployeeComponent } from './employee/employee.component';
 import { SecurityLogComponent } from './security-log/security-log.component';
 import { UserEmployeeComponent } from './user-employee/user-employee.component';
 import { UserEmployeeGroupComponent } from './user-employee-group/user-employee-group.component';
+import { OperationLogComponent } from './operation-log/operation-log.component';
 
 const routes: Routes = [
   {
@@ -40,6 +41,10 @@ const routes: Routes = [
       {
         path: 'security_log',
         component: SecurityLogComponent,
+      },
+      {
+        path: 'operation_log',
+        component: OperationLogComponent,
       },
       {
         path: '',

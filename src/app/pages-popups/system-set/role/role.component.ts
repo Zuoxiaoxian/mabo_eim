@@ -34,6 +34,7 @@ export class RoleComponent implements OnInit {
     var danger = this.danger;
     var publicservice = this.publicservice;
     
+    var that = this;
     layui.use(['layer','form','layedit'], function(){
       var layer = layui.layer;
       var form = layui.form;
@@ -52,7 +53,7 @@ export class RoleComponent implements OnInit {
             return "防止SQL注入，请不要输入关于sql语句的特殊字符！"
           }
           if (! str){
-            return "角色名称不能有特殊字符！"
+            return "角色名称(en)不能有特殊字符！"
           }
           if (value.length > 20){
             return "角色名称(en)最大长度不超过20！"
@@ -89,15 +90,13 @@ export class RoleComponent implements OnInit {
       form.on('submit(role)', function(data){
         
         // 调用确认！
-        var is_success = confirm(data.field, userinfo,http);
+        var is_success = confirm(data.field, userinfo,http,that);
         if (is_success){
           dialogRef.close(true);
           // 刷新界面
           localStorage.removeItem(SYSROLE);
           success(publicservice);
-          // setTimeout(() => {
-          //   location.reload();
-          // }, 1000);
+          
           return false;
         }else{
           danger(publicservice);
@@ -120,7 +119,7 @@ export class RoleComponent implements OnInit {
   }
   
   // 确定
-  confirm(data, userinfo,http){
+  confirm(data, userinfo,http,that){
     console.log("修改--确认",data,userinfo.getName());
     const colums = {
       role: data["role"],
@@ -135,7 +134,17 @@ export class RoleComponent implements OnInit {
     const method = 'insert_role';
     http.callRPC(table, method, colums).subscribe((result)=>{
       const baseData = result['result']['message'][0];
-      console.log("delete_role", baseData)
+      console.log("delete_role", baseData);
+      if (baseData["code"] === 1){
+        var option = "新增角色";
+        var infodata = '角色名称(en):' + data["role"] + ',' + '角色名称:' + data["role_name"];
+        that.RecordOperation(option, 1,infodata)
+      }else{
+        var option = "新增角色";
+        var infodata = '角色名称(en):' + data["role"] + ',' + '角色名称:' + data["role_name"];
+        that.RecordOperation(option, 0,infodata)
+
+      }
       
     })
 
@@ -155,5 +164,20 @@ export class RoleComponent implements OnInit {
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"添加失败!"});
   }
 
+  // option_record
+  RecordOperation(option, result,infodata){
+    console.warn("==============>", this.userinfo.getLoginName())
+    console.warn("infodata==============>", infodata)
+    console.warn("==============>")
+    if(this.userinfo.getLoginName()){
+      var employeeid = this.userinfo.getEmployeeID();
+      var result = result; // 1:成功 0 失败
+      var transactiontype = option; // '新增用户';
+      var info = infodata;
+      var createdby = this.userinfo.getLoginName();
+      this.publicservice.option_record(employeeid, result,transactiontype,info,createdby);
+    }
+
+  }
 
 }

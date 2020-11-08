@@ -21,6 +21,7 @@ declare let $;
 declare let layui;
 
 import * as XLSX from 'xlsx';
+import { UserInfoService } from '../../../services/user-info/user-info.service';
 type AOA = any[][];
 
 @Component({
@@ -33,7 +34,7 @@ export class UserEmployeeComponent implements OnInit {
 
 
   constructor(private http: HttpserviceService, private dialogService: NbDialogService, 
-    private publicmethod: PublicmethodService) { 
+    private publicmethod: PublicmethodService, private userinfo: UserInfoService) { 
 
       // 得到用户组和角色 get_groupname get_rolename
       this.http.callRPC("role", "get_rolename",{}).subscribe(roles=>{
@@ -224,7 +225,7 @@ export class UserEmployeeComponent implements OnInit {
     }
     
 
-    ngAfterViewInit(){
+  ngAfterViewInit(){
       console.log("&&&&&&&&&&&&&&&&&&&&&&&this.employee_agGrid&&&&&&&&&&&&&&&&", this.employee_agGrid);
       if (this.employee_agGrid == null){
         this.pagemployee()
@@ -537,141 +538,9 @@ export class UserEmployeeComponent implements OnInit {
 
 
   updategetemployee(event?){
-    // this.agGrid.methodFromParent(event);
-    // 根据要修改的 员工id 得到修改后的员工信息！
-    var empid = event.value[0].employeeid;
-    var column = {employeeid: empid};
-    console.log("-----------------column---------------\n", column)
-    this.http.callRPC('emeployee', 'get_employee_withid', column).subscribe(res=>{
-      var get_employee_limit = res['result']['message'][0]
-      console.log("get_employee_limit", get_employee_limit);
-      var get_employee_limit = res["result"]["message"][0];
-      if( get_employee_limit.code === 0){
-        // 表示token过期了，跳转到 / 
-      }
-      // 处理data
-      var result_data = get_employee_limit.message.reverse();
-      console.log("----result_data----", result_data)
- 
-      var other_result_data_after = [];
-      result_data.forEach(result => {
-        other_result_data_after = other_result_data_after.concat(result);
-      });
-      console.log("-------other_result_data_after-----------",other_result_data_after);
-      // -----------------------
-      var result = other_result_data_after;
-      var employee_list = [];
-      for (let item of result){
-        var rids = [];
-        var items_dict = {};
-        var role_name_lists = []; 
-        var groups_name_lists = []; 
-        for (let element of result){
-          var rid_name = {}
-          if (item["employeeid"] === element["employeeid"]){
-            // items_dict["active"] = element["active"] == 1?'是': "否";
-            items_dict["active"] = element["active"] == 1?'是': "否";
-            items_dict["company"] = element["company"];
-            items_dict["department"] = element["department"];
-            items_dict["email"] = element["email"];
-            items_dict["employeeid"] = element["employeeid"];
-            items_dict["employeeno"] = element["employeeno"];
-            items_dict["facility"] = element["facility"];
-            items_dict["loginname"] = element["loginname"];
-            items_dict["name"] = element["name"];
-            items_dict["phoneno"] = element["phoneno"];
-            items_dict["pictureurl"] = element["pictureurl"];
-            items_dict["rid"] = element["rid"];
-            items_dict["groupid"] = element["groupid"];
-            
-            items_dict["role"] = element["role"];
-            items_dict["lastsignondate"] = element["lastsignondate"];
-            
-            items_dict["role_name"] = element["role_name"];
+    this.agGrid.methodFromParent(event);
+    
 
-            rid_name["role"] = element["role"];
-            rid_name["rid"] = element["rid"];
-            var role_name_str: string | null = element["role_name"] ? element["role_name"]: null;
-            var groups_name_str: string | null = element["groups"] ? element["groups"]: null;
-            // rid_name["role_name"] =  role_name_str.replace(/\s/g, "");
-            role_name_lists.push(role_name_str)
-            groups_name_lists.push(groups_name_str)
-            rids.push(rid_name)
-            items_dict["rids"] = rids;
-            items_dict["role_name"] = role_name_lists;
-            items_dict["groups_name"] = groups_name_lists;
-            continue
-          }else{
-            
-          }
-        }
-        // 处理 role_names，将以第一， 去掉！
-        employee_list.push(items_dict)
-      }
-
-      // 列表去重！
-      var unique_result = unique(employee_list, "employeeid")
-
-      unique_group_role(unique_result, "groups_name");
-      unique_group_role(unique_result, "role_name");
-
-      // this.gridData = [];
-      // this.gridData.push(...unique_result)
-      // this.tableDatas.rowData = this.gridData;
-      // this.agGrid.init_agGrid(this.tableDatas);
-      event.value = unique_result[0]
-      console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-      console.log("&&&    这是修改后的数据                 &", unique_result)
-      console.log("&&&    这是修改后的数据                 &", unique_result[0])
-      console.log("&&&    event                 &", event)
-      console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-      this.agGrid.methodFromParent(event);
-      
-      function unique(arr, field) { // 根据employeeid去重
-        const map = {};
-        const res = [];
-        for (let i = 0; i < arr.length; i++) {
-          if (!map[arr[i][field]]) {
-            map[arr[i][field]] = 1;
-            res.push(arr[i]);
-          }
-        }
-        return res;
-      };
-
-      // groups_name、role_name去重
-      function unique_group_role(arr, fild){
-        arr.forEach(element => {
-          var arr_list = [];
-          var groups_name_list = element[fild];
-          groups_name_list.forEach(groups => {
-            if(arr_list.indexOf(groups) === -1){
-              arr_list.push(groups)
-            }
-          });
-          // arr_list [] 改为 str
-          element[fild] = arr_list.join(";")
-        });
-      }
-    })
-
-    // 初始化的table数据！
-    var rowdatas = this.tableDatas.rowData;
-    rowdatas.forEach(rowdata=>{
-      if (rowdata.employeeid === event.value[0].employeeid){
-        rowdata.name = event.value[0].name;
-        rowdata.loginname = event.value[0].loginname;
-        // 角色？用户组 employee_rolename  employee_groupname
-
-        rowdata.active = event.value[0].active;
-        rowdata.employeeno = event.value[0].employeeno;
-        rowdata.email = event.value[0].email;
-        rowdata.department = event.value[0].department;
-      }
-    })
-    console.log("原来的rowdatas>>>>>>>>>>>>>>>>", rowdatas);
-
-    console.log("updategetemployee>>>>>>>>>>>>>>>>", event);
   }
 
 
@@ -908,7 +777,115 @@ export class UserEmployeeComponent implements OnInit {
     this.dialogService.open(AddUserEmployeeComponent,{closeOnBackdropClick: false}).onClose.subscribe(name=>{
       if (name){
         this.isloding = true
-        this.updategetemployee();
+
+        // 得到员工信息！
+        this.http.callRPC('emeployee', 'get_employee_limit', {offset: 0, limit: 50}).subscribe((res)=>{
+          console.log("get_menu_role", result)
+          this.isloding = false;
+          var message = res["result"]["message"][0];
+          if( message.code === 0){
+            // 表示token过期了，跳转到 / 
+          }
+          // 处理data
+          var result_data = message.message.reverse();
+          if (result_data[0] && result_data[0][0]["numbers"]){
+            var other_result_data = result_data.splice(1, result_data.length);
+          }else{
+            var other_result_data = result_data;
+          }
+          var other_result_data_after = [];
+          other_result_data.forEach(result => {
+            other_result_data_after = other_result_data_after.concat(result);
+          });
+          console.log("-------other_result_data_after-----------",other_result_data_after);
+          // -----------------------
+          var result = other_result_data_after;
+          var employee_list = [];
+          for (let item of result){
+            var rids = [];
+            var items_dict = {};
+            var role_name_lists = []; 
+            var groups_name_lists = []; 
+            for (let element of result){
+              var rid_name = {}
+              if (item["employeeid"] === element["employeeid"]){
+                // items_dict["active"] = element["active"] == 1?'是': "否";
+                items_dict["active"] = element["active"] == 1?'是': "否";
+                items_dict["company"] = element["company"];
+                items_dict["department"] = element["department"];
+                items_dict["email"] = element["email"];
+                items_dict["employeeid"] = element["employeeid"];
+                items_dict["employeeno"] = element["employeeno"];
+                items_dict["facility"] = element["facility"];
+                items_dict["loginname"] = element["loginname"];
+                items_dict["name"] = element["name"];
+                items_dict["phoneno"] = element["phoneno"];
+                items_dict["pictureurl"] = element["pictureurl"];
+                items_dict["rid"] = element["rid"];
+                items_dict["groupid"] = element["groupid"];
+                
+                items_dict["role"] = element["role"];
+                items_dict["lastsignondate"] = element["lastsignondate"];
+                
+                items_dict["role_name"] = element["role_name"];
+    
+                rid_name["role"] = element["role"];
+                rid_name["rid"] = element["rid"];
+                var role_name_str: string | null = element["role_name"] ? element["role_name"]: null;
+                var groups_name_str: string | null = element["groups"] ? element["groups"]: null;
+                // rid_name["role_name"] =  role_name_str.replace(/\s/g, "");
+                role_name_lists.push(role_name_str)
+                groups_name_lists.push(groups_name_str)
+                rids.push(rid_name)
+                items_dict["rids"] = rids;
+                items_dict["role_name"] = role_name_lists;
+                items_dict["groups_name"] = groups_name_lists;
+                continue
+              }else{
+                
+              }
+            }
+            // 处理 role_names，将以第一， 去掉！
+            employee_list.push(items_dict)
+          }
+    
+          // 列表去重！
+          var unique_result = unique(employee_list, "employeeid")
+    
+          unique_group_role(unique_result, "groups_name");
+          unique_group_role(unique_result, "role_name");
+          
+          this.updategetemployee({value: unique_result, action: "add"});
+
+          
+          
+          function unique(arr, field) { // 根据employeeid去重
+            const map = {};
+            const res = [];
+            for (let i = 0; i < arr.length; i++) {
+              if (!map[arr[i][field]]) {
+                map[arr[i][field]] = 1;
+                res.push(arr[i]);
+              }
+            }
+            return res;
+          };
+    
+          // groups_name、role_name去重
+          function unique_group_role(arr, fild){
+            arr.forEach(element => {
+              var arr_list = [];
+              var groups_name_list = element[fild];
+              groups_name_list.forEach(groups => {
+                if(arr_list.indexOf(groups) === -1){
+                  arr_list.push(groups)
+                }
+              });
+              // arr_list [] 改为 str
+              element[fild] = arr_list.join(";")
+            });
+          }
+        })
       }
     });
   }
@@ -993,17 +970,20 @@ export class UserEmployeeComponent implements OnInit {
                 getsecurity_edit2('employee', 'delete_employee', rd, http).subscribe((res)=>{
                   console.log("delete_employee", res);
                   if (res === 1){
+                    this.updategetemployee({value: rd, action: "remove"});
+
                   }else{
+                    this.RecordOperation("删除用户", 0, "删除失败")
                     throw 'error, 删除失败！'
+
                   }
                 });
               });
-              this.isloding = true
-              this.updategetemployee();
+              this.isloding = true;
+              // this.updategetemployee();
               // setTimeout(() => {
               //   location.reload();
               // }, 1000);
-              // publicservice.toastr(DelSuccess);
               success(publicservice)
               // layer.close(index);
             }catch(err){
@@ -1052,12 +1032,14 @@ export class UserEmployeeComponent implements OnInit {
     var employeenumber = $("#employeenumber").val();
     if (employeenumber != ""){
       console.log("button 搜索按钮", employeenumber, "--");
+      this.RecordOperation("搜索", 1, '搜索:' + employeenumber);
     }
   }
 
   //  button导出未excel
   download(title){
     this.agGrid.download(title);
+    this.RecordOperation("导出"+title, 1, "导出excel表格")
   }
 
 
@@ -1159,7 +1141,8 @@ export class UserEmployeeComponent implements OnInit {
     
           // 将 rowData 显示到 agGrid中
           this.tableDatas.rowData = rowData
-          this.agGrid.update_agGrid(this.tableDatas)
+          this.agGrid.update_agGrid(this.tableDatas);
+          this.RecordOperation("导入用户管理", 1, "导入excel表格")
           // this.gridData = [];
           // this.gridData.push(...rowData)
           // this.tableDatas.rowData = this.gridData;
@@ -1169,7 +1152,8 @@ export class UserEmployeeComponent implements OnInit {
           // this.table_data.source.load(rowData);
     
         }catch(err){
-          alert(String(err))
+          alert(String(err));
+          this.RecordOperation("导入用户管理", 1, String(err))
         }
       }
 
@@ -1453,6 +1437,26 @@ importdanger(data){
 verify_import(data){
   this.publicmethod.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"验证不通过："+JSON.stringify(data)});
 }
+
+
+// option_record
+RecordOperation(option, result,infodata){
+  console.warn("==============>", this.userinfo.getLoginName())
+  console.warn("infodata==============>", infodata)
+  console.warn("==============>")
+  if(this.userinfo.getLoginName()){
+    var employeeid = this.userinfo.getEmployeeID();
+    var result = result; // 1:成功 0 失败
+    var transactiontype = option; // '新增用户';
+    var info = infodata;
+    var createdby = this.userinfo.getLoginName();
+    this.publicmethod.option_record(employeeid, result,transactiontype,info,createdby);
+  }
+
+}
+
+
+
 
 }
 // table 中每行数据类型！ 这是将table中的数据改回原始数据

@@ -44,6 +44,8 @@ export class UserEmployeeGroupComponent implements OnInit {
     var danger = this.danger;
 
     var http = this.http;
+
+    var that = this;
     layui.use('form', function(){
       var form = layui.form;
       // 验证 表单
@@ -116,6 +118,10 @@ export class UserEmployeeGroupComponent implements OnInit {
             // publicmeth
             success(publicmethod)
             dialogRef.close(send_data);
+            var option = "新增用户组"
+            var infodata = "组名称:" + send_data["group"] + "," + "组名称(en):" + send_data["group_name"];
+
+            that.RecordOperation(option, 1, infodata)
             
           }else{
             danger(publicmethod)
@@ -154,6 +160,22 @@ export class UserEmployeeGroupComponent implements OnInit {
   }
   danger(publicservice){
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"添加失败!"});
+  }
+
+  // option_record
+  RecordOperation(option, result, infodata){
+    console.warn("==============>", this.userinfo.getLoginName())
+    console.warn("infodata==============>", infodata)
+    console.warn("==============>")
+    if(this.userinfo.getLoginName()){
+      var employeeid = this.userinfo.getEmployeeID();
+      var result = result; // 1;
+      var transactiontype = option; // '新增'
+      var info = infodata;
+      var createdby = this.userinfo.getLoginName();
+      this.publicmethod.option_record(employeeid, result,transactiontype,info,createdby);
+    }
+
   }
 
 }

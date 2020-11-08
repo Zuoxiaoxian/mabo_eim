@@ -193,19 +193,17 @@ export class PublicmethodService {
   };
 
   // 写入系统日志
-  public record(application: string, source: string, employeeid: number, result: number , info: string, createdby: string) {
+  public record(source: string, employeeid: number, result: number , info: string, createdby: string) {
     /*
      */
     const table = 'sys_security_log';
-    const method = 'insert_security_log';
+    const method = 'insert_sys_login_log';
     const operationmessage = {
-        "application": application,          // 调用外部系统
-        "source": source,                    // IP
-        "employeeid": employeeid,            // 登录ID
-        "result": result,                    // 结果 0 失败 1 成功
-        "info": info,                        // 描述
-        "createdby": createdby ,             // 登录人
-        "machinename": "mabo"                // 计算机名称
+      "source": source,                    // IP
+      "employeeid": employeeid,            // 登录ID
+      "result": result,                    // 结果 0 失败 1 成功
+      "info": info,                        // 描述 登录、登出
+      "createdby": createdby ,             // 登录人
     };
     this.httpservice.callRPC(table, method, operationmessage).subscribe(
      res => {
@@ -213,6 +211,28 @@ export class PublicmethodService {
       }
     );
   };
+
+  // 写入操作日志
+  public option_record(employeeid: number, result: number , transactiontype:string, info: string, createdby: string) {
+    /*
+     */
+    const table = 'sys_transaction_log';
+    const method = 'insert_sys_transaction_log';
+    const operationmessage = {
+      employeeid: employeeid,            // 登录ID
+      result: result,                    // 结果 0 失败 1 成功
+      transactiontype: transactiontype, // 类型：新增、删除、修改、查看、导入导出等！
+      info: info,                        // 具体操作！
+      createdby: createdby ,             // 登录人
+    };
+    this.httpservice.callRPC(table, method, operationmessage).subscribe(
+     res => {
+       console.warn('option_record>>', res);
+      }
+    );
+  };
+
+
 
 
 

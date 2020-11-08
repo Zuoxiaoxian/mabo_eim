@@ -24,9 +24,10 @@ import { LayuiTableComponent } from './components/layui-table/layui-table.compon
 import { AgTableComponent } from './components/ag-table/ag-table.component';
 import { AgGridModule } from 'ag-grid-angular';
 import { AgGridActionComponent } from './components/ag-table/ag-grid-action/ag-grid-action.component';
+import { OperationLogComponent } from './operation-log/operation-log.component';
 @NgModule({
   declarations: [SystemSetComponent, RoleComponent, MenuComponent, EmployeeComponent, MyTableNg2Component, SecurityLogComponent, UserEmployeeComponent, 
-    UserEmployeeGroupComponent, LayuiTableComponent, AgTableComponent, AgGridActionComponent, ],
+    UserEmployeeGroupComponent, LayuiTableComponent, AgTableComponent, AgGridActionComponent, OperationLogComponent, ],
   imports: [
     CommonModule,
     SystemSetRoutingModule,

@@ -28,7 +28,8 @@ export class UserEmployeeComponent implements OnInit {
   SavWarning :any = {position: 'bottom-end', status: 'warning', conent:"添加失败！请确认是否选择了`角色`"}
 
 
-  constructor(protected dialogRef: NbDialogRef<UserEmployeeComponent>, private http: HttpserviceService,private userinfo: UserInfoService, private publicservice: PublicmethodService) { 
+  constructor(protected dialogRef: NbDialogRef<UserEmployeeComponent>, private http: HttpserviceService,private userinfo: UserInfoService, 
+    private publicservice: PublicmethodService, ) { 
 
     this.getsecurity('employee', 'get_rolename', {}, this.http).subscribe((res: any[])=>{
       // 初始化角色名
@@ -77,6 +78,7 @@ export class UserEmployeeComponent implements OnInit {
     var danger = this.danger;
     // roleinput
 
+    var that = this
     
     layui.use(['form', ], function(){
       var form = layui.form;
@@ -276,26 +278,28 @@ export class UserEmployeeComponent implements OnInit {
 
           console.log("新增",send_data_list) //被执行事件的元素DOM对象，一般为button对象
           if (send_data_list.length <= 1){
-            publicservice.toastr(SavWarning)
+            // publicservice.toastr(SavWarning);
+            that.warning();
+            that.RecordOperation('新增用户', 0, '警告:没有选择角色')
           }
           else{
             getsecurity("employee", "insert_employee", send_data_list, http).subscribe((res)=>{
               if (res === 1){
                 // 成功
-                dialogRef.close(true);
-                // publicservice.toastr(SavSuccess);
-                success(publicservice)
-                // location.reload();
+                dialogRef.close(send_data_list);
+                success(publicservice);
+                var operationdata = "姓名:" + send_data_list[0]["name"] + "," + "域账号:" + send_data_list[0]["loginname"];
+                var option = '新增用户'; 
+                that.RecordOperation(option, 1, operationdata)
                 
-                // setTimeout(() => {
-                //   location.reload();
-                // }, 1000);
                 
               }else{
                 // 失败
-                SavDanger["conent"] = res
+                // SavDanger["conent"] = res
                 // publicservice.toastr(SavDanger)
-                danger(publicservice)
+                danger(publicservice);
+                var operationdata = String(res)
+                that.RecordOperation(option, 0, operationdata)
               }
             })
           }
@@ -344,6 +348,24 @@ export class UserEmployeeComponent implements OnInit {
   danger(publicservice){
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"添加失败!"});
   }
+  warning(){
+    this.publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"添加失败！请确认是否选择了`角色`"});
+  }
 
+  // option_record
+  RecordOperation(option, result,infodata){
+    console.warn("==============>", this.userinfo.getLoginName())
+    console.warn("infodata==============>", infodata)
+    console.warn("==============>")
+    if(this.userinfo.getLoginName()){
+      var employeeid = this.userinfo.getEmployeeID();
+      var result = result; // 1:成功 0 失败
+      var transactiontype = option; // '新增用户';
+      var info = infodata;
+      var createdby = this.userinfo.getLoginName();
+      this.publicservice.option_record(employeeid, result,transactiontype,info,createdby);
+    }
+
+  }
 
 }

@@ -36,7 +36,7 @@ export class PagesComponent {
     private userInfoService:UserInfoService,
     private router: Router){
     // 先注释了
-    this.RecordLogin();
+    // this.RecordLogin();
   }
     
   ngOnInit() {
@@ -199,14 +199,17 @@ export class PagesComponent {
   }
 
 
-  // 记录登录名称
+  // 记录登录
   RecordLogin(){
 
     if(this.userInfoService.getLoginName()){
       const source = this.userInfoService.getSourceid();        // 本机IP地址
       const employeeid = this.userInfoService.getEmployeeID();  // employeeid
+      // result 1
+      // info 登录
       const createdby = this.userInfoService.getLoginName();     // 登录名
-      this.publicservice.record('local', source, employeeid, 1, '登录成功！', createdby);
+      this.publicservice.record(source, employeeid, 1, '登录', createdby);
+      // this.publicservice.record('local', source, employeeid, 1, '登录成功！', createdby);
       console.log("============= 存入登录日志并得到菜单",source);
     }
 

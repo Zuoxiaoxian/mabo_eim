@@ -121,6 +121,7 @@ export class UserLoginComponent implements OnInit {
             const userinfo = JSON.stringify(userInfo['userInfo']);
             localStorage.removeItem(USERINFO);
             localStorage.setItem(USERINFO, userInfo ? this.publicmethodService.compileStr(userinfo) : null);
+            this.RecordLogin();
           } else {
             this.publicmethodService.toastr({position: 'top-right', status: 'danger', conent:"当前用户菜单权限不足，请联系管理员添加权限！"});
           }
@@ -351,6 +352,21 @@ export class UserLoginComponent implements OnInit {
       })
 
     })
+  }
+
+  RecordLogin(){
+
+    if(this.userInfoService.getLoginName()){
+      const source = this.userInfoService.getSourceid();        // 本机IP地址
+      const employeeid = this.userInfoService.getEmployeeID();  // employeeid
+      // result 1
+      // info 登录
+      const createdby = this.userInfoService.getLoginName();     // 登录名
+      this.publicmethodService.record(source, employeeid, 1, '登录', createdby);
+      // this.publicservice.record('local', source, employeeid, 1, '登录成功！', createdby);
+      console.log("============= 存入登录日志并得到菜单",source);
+    }
+
   }
   
 }

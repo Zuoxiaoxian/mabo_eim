@@ -14,6 +14,7 @@ import { NbDialogService } from '@nebular/theme';
 import { EditUserEmployeeGroupComponent } from '../../../pages-popups/system-set/edit-user-employee-group/edit-user-employee-group.component';
 import { UserEmployeeGroupComponent as AddUserEmployeeGroupComponent} from '../../../pages-popups/system-set/user-employee-group/user-employee-group.component';
 import { EditDelTooltipComponent } from '../../../pages-popups/prompt-diallog/edit-del-tooltip/edit-del-tooltip.component';
+import { UserInfoService } from '../../../services/user-info/user-info.service';
 
 
 
@@ -55,7 +56,8 @@ export class UserEmployeeGroupComponent implements OnInit {
   GetDanger :any = {position: 'top-right', status: 'waring', conent:"获取用户组！"}
 
 
-  constructor(private publicmethod: PublicmethodService, private http: HttpserviceService, private dialogService: NbDialogService) { 
+  constructor(private publicmethod: PublicmethodService, private http: HttpserviceService, 
+    private dialogService: NbDialogService, private userinfo: UserInfoService) { 
     // this.updatabutton_list();
     // 改界面具有的button
     this.getbuttons();
@@ -356,6 +358,7 @@ ngOnDestory(){
                   if (res === 1){
                     this.updatetabledata({value: rd, action: "remove"});
                   }else{
+                    this.RecordOperation("删除用户组", 0, "删除失败")
                     danger(publicservice)
                     throw 'error, 删除失败！'
                   }
@@ -382,6 +385,7 @@ ngOnDestory(){
     var employeenumber = $("#employeenumber").val();
     if (employeenumber != ""){
       console.log("button 搜索按钮", employeenumber, "--");
+      this.RecordOperation("搜索", 1, '搜索:' + employeenumber);
     }
   }
 
@@ -393,6 +397,7 @@ ngOnDestory(){
   //  button导出未excel
   download(title){
     this.agGrid.download(title);
+    this.RecordOperation("导出"+title, 1, "导出excel表格");
   }
 
   // 点击行执行
@@ -586,5 +591,21 @@ ngOnDestory(){
 
   // =================================================agGrid
 
+
+  // option_record
+RecordOperation(option, result,infodata){
+  console.warn("==============>", this.userinfo.getLoginName())
+  console.warn("infodata==============>", infodata)
+  console.warn("==============>")
+  if(this.userinfo.getLoginName()){
+    var employeeid = this.userinfo.getEmployeeID();
+    var result = result; // 1:成功 0 失败
+    var transactiontype = option; // '新增用户';
+    var info = infodata;
+    var createdby = this.userinfo.getLoginName();
+    this.publicmethod.option_record(employeeid, result,transactiontype,info,createdby);
+  }
+
+}
 
 }

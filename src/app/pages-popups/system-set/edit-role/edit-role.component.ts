@@ -52,6 +52,7 @@ export class EditRoleComponent implements OnInit {
     var danger = this.danger;
 
     var formdatar = {}; 
+    var that = this;
     layui.use(['layer','form','layedit'], function(){
       var layer = layui.layer;
       var form = layui.form;
@@ -113,7 +114,11 @@ export class EditRoleComponent implements OnInit {
           active: data.field["visible"] === "on"? 1: 0,
           roledetail: data.field["remark"],
           roleid: rowdata["roleid"],
-          lastupdatedby: userinfoservice.getName()
+          lastupdatedby: userinfoservice.getName(),
+
+          createdon: rowdata["createdon"],
+          lastupdateon: rowdata["lastupdateon"],
+          createdby: rowdata["createdby"],
         };
 
         console.log("---colums--",colums)
@@ -125,12 +130,15 @@ export class EditRoleComponent implements OnInit {
           console.log("更新角色数据：status", status)
           if (status["code"] === 1){
             localStorage.removeItem(SYSROLE);
-            dialogRef.close(true)
-            success(publicservice)
-            // SYSROLE
-            // location.reload();
+            dialogRef.close(colums)
+            success(publicservice);
+            var option = '编辑角色';
+            var infodata = '角色名称(en):' + colums["role"] + ',' + '角色名称:' + colums["role_name"];
+            that.RecordOperation(option, 1,infodata);
           }else{
-            danger(publicservice, status["message"])
+            danger(publicservice, status["message"]);
+            var option = '编辑角色';
+            that.RecordOperation(option, 0,String(status["message"]));
           }
         })
         return false;
@@ -178,6 +186,22 @@ export class EditRoleComponent implements OnInit {
   }
   danger(publicservice,message){
     publicservice.showngxtoastr({position: 'toast-top-right', status: 'danger', conent:"修改失败!" + message });
+  }
+
+  // option_record
+  RecordOperation(option, result,infodata){
+    console.warn("==============>", this.userinfoservice.getLoginName())
+    console.warn("infodata==============>", infodata)
+    console.warn("==============>")
+    if(this.userinfoservice.getLoginName()){
+      var employeeid = this.userinfoservice.getEmployeeID();
+      var result = result; // 1:成功 0 失败
+      var transactiontype = option; // '新增用户';
+      var info = infodata;
+      var createdby = this.userinfoservice.getLoginName();
+      this.publicservice.option_record(employeeid, result,transactiontype,info,createdby);
+    }
+
   }
 
 
